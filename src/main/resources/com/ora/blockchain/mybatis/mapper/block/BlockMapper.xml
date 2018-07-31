@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ora.blockchain.mybatis.mapper.block.BlockMapper">
+    <insert id="insertBlock">
+      INSERT INTO ${database}.block (`block_hash`,`previous_block_hash`,`merkleroot`,`chainwork`,`size`,`height`,`version`,`time`,`median_time`,`bits`,`nonce`,`difficulty`,`create_ts`)
+      VALUES (#{pojo.blockHash},#{pojo.previousBlockHash},#{pojo.merkleroot},#{pojo.chainwork},#{pojo.size},#{pojo.height},#{pojo.version},#{pojo.time},#{pojo.medianTime},
+      #{pojo.bits},#{pojo.nonce},#{pojo.difficulty},now())
+    </insert>
+    <select id="queryBlockList" resultType="com.ora.blockchain.mybatis.entity.block.Block">
+        SELECT block_hash AS blockHash,height FROM ${database}.block
+        <where>
+            <if test='height != null and height > 0'>
+                <![CDATA[ height <= #{height}]]>
+            </if>
+        </where>
+        ORDER BY height DESC LIMIT #{size};
+    </select>
+</mapper>
