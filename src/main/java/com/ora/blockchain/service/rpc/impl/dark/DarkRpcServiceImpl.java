@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service
+import javax.annotation.Resource;
+
+//@Resource(name="darkRpcServiceImpl")
+@Service("darkRpcServiceImpl")
 public class DarkRpcServiceImpl extends RpcServiceImpl {
 
-    @Autowired
+    @Resource
     @Qualifier("darkRpcRestTemplate")
     private RestTemplate darkRpcRestTemplate;
 

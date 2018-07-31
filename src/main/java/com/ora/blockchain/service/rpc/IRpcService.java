@@ -49,6 +49,8 @@ public interface IRpcService {
                 ArrayNode vins = (ArrayNode) node.get("vin");
                 for (JsonNode vin : vins) {
                     Input input = new Input();
+                    if (node.has("blockhash"))
+                        input.setBlockHash(node.get("blockhash").textValue());
                     if (node.has("txid"))
                         input.setTransactionTxid(node.get("txid").textValue());
                     if (vin.has("sequence"))
@@ -76,6 +78,8 @@ public interface IRpcService {
                 ArrayNode vouts = (ArrayNode) node.get("vout");
                 for (JsonNode vout : vouts) {
                     Output output = new Output();
+                    if (node.has("blockhash"))
+                        output.setBlockHash(node.get("blockhash").textValue());
                     if (node.has("txid"))
                         output.setTransactionTxid(node.get("txid").textValue());
                     if (vout.has("value"))

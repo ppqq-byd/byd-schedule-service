@@ -6,10 +6,11 @@ import com.ora.blockchain.service.block.IBlockService;
 import com.ora.blockchain.service.rpc.IRpcService;
 import com.ora.blockchain.utils.BlockchainUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Component
@@ -18,12 +19,21 @@ public class Task {
 
     public static final int BLOCK_DEPTH = 6;
 
-    //@Autowired
-    private IRpcService rpcService;
-    @Autowired
-    private IBlockService blockService;
+    @Resource
+    @Qualifier("darkRpcServiceImpl")
+    private IRpcService darkRpcService;
+    @Resource
+    @Qualifier("darkBlockServiceImpl")
+    private IBlockService darkBlockService;
 
-    public void task(String database) {
+    @Resource
+    @Qualifier("ltcRpcServiceImpl")
+    private IRpcService ltcRpcService;
+    @Resource
+    @Qualifier("ltcBlockServiceImpl")
+    private IBlockService ltcBlockService;
+
+    public void task(String database,IBlockService blockService,IRpcService rpcService) {
         List<Block> dbBlockList = blockService.queryBlockList(Constants.COIN_TYPE_DARK, null,6);
         if (null == dbBlockList || dbBlockList.isEmpty()) {
             List<Block> blockList = rpcService.getPreviousBlockList(BLOCK_DEPTH, null);
@@ -44,4 +54,12 @@ public class Task {
         }
     }
 
+//    @Scheduled(fixedRate = 2 * 60 * 1000)
+    public void darkTask() {
+        task(Constants.COIN_TYPE_DARK,darkBlockService,darkRpcService);
+    }
+//    @Scheduled(fixedRate = 2 * 60 * 1000)
+    public void ltcTask(){
+        task(Constants.COIN_TYPE_LTC,ltcBlockService,ltcRpcService);
+    }
 }

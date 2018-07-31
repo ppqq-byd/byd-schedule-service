@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Service
 @Slf4j
 public abstract class RpcServiceImpl implements IRpcService {
 
