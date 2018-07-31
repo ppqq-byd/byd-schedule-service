@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 public class TransactionServiceImpl implements ITransactionService {
 
-    @Autowired
+   // @Autowired
     private IRpcService rpcService;
     @Autowired
     private TransactionMapper transMapper;

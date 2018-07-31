@@ -24,3 +24,12 @@ spring:
         testOnReturn: false
         poolPreparedStatements: true
         maxOpenPreparedStatements: 20
+rpc:
+    dark:
+        url: "http://localhost:9998/"
+        username: "ora"
+        password: "Oradt!1234"
+    ltc:
+        url: "http://localhost:9332/"
+        username: "ora"
+        password: "Oradt!1234"

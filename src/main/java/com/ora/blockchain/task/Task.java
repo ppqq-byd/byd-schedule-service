@@ -18,7 +18,7 @@ public class Task {
 
     public static final int BLOCK_DEPTH = 6;
 
-    @Autowired
+    //@Autowired
     private IRpcService rpcService;
     @Autowired
     private IBlockService blockService;
@@ -44,8 +44,4 @@ public class Task {
         }
     }
 
-//    @Scheduled(fixedRate = 2 * 60 * 1000)
-    public void darkTask() {
-        task(Constants.COIN_TYPE_DARK);
-    }
 }

@@ -30,7 +30,7 @@ public class BlockServiceImpl implements IBlockService {
     private InputMapper inputMapper;
     @Autowired
     private OutputMapper outputMapper;
-    @Autowired
+    //@Autowired
     private IRpcService rpcService;
 
     @Override
