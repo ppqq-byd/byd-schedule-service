@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service
+import javax.annotation.Resource;
+
+//@Resource(name="ltcRpcServiceImpl")
+@Service("ltcRpcServiceImpl")
 public class LtcRpcServiceImpl extends RpcServiceImpl {
 
-    @Autowired
+    @Resource
     @Qualifier("ltcRpcRestTemplate")
     private RestTemplate ltcRpcRestTemplate;
 

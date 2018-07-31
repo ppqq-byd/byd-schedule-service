@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -24,8 +25,10 @@ import java.util.List;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IBlockTest {
     @Autowired
+    @Qualifier("darkBlockServiceImpl")
     private IBlockService blockService;
     @Autowired
+    @Qualifier("darkRpcServiceImpl")
     private IRpcService rpcService;
 
     private String database;
@@ -82,28 +85,6 @@ public class IBlockTest {
                     break;
                 }
                 blockService.updateBlock("dark",dbBlockList,blockList);
-            }
-        }
-    }
-
-    @Test
-    public  void testLTCTask(){
-        List<Block> dbBlockList = blockService.queryBlockList("ltc", null,6);
-        if (null == dbBlockList || dbBlockList.isEmpty()) {
-            List<Block> blockList = rpcService.getPreviousBlockList(6, null);
-            for (Block block : blockList) {
-                blockService.insertBlock("ltc", block);
-            }
-        }else{
-            List<Block> blockList = rpcService.getPreviousBlockList(6,null);
-            blockService.updateBlock("ltc",dbBlockList,blockList);
-            while(true){
-                blockList = rpcService.getPreviousBlockList(1,blockList.get(blockList.size()-1).getPreviousBlockHash());
-                dbBlockList = blockService.queryBlockList("ltc",blockList.get(0).getHeight(),1);
-                if(BlockchainUtil.isEqualCollection(blockList,dbBlockList)){
-                    break;
-                }
-                blockService.updateBlock("ltc",dbBlockList,blockList);
             }
         }
     }

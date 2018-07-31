@@ -6,7 +6,6 @@ import com.ora.blockchain.mybatis.entity.transaction.Transaction;
 import com.ora.blockchain.mybatis.mapper.input.InputMapper;
 import com.ora.blockchain.mybatis.mapper.output.OutputMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.TransactionMapper;
-import com.ora.blockchain.service.rpc.IRpcService;
 import com.ora.blockchain.service.transaction.ITransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +17,6 @@ import java.util.List;
 @Service
 public class TransactionServiceImpl implements ITransactionService {
 
-    @Autowired
-    private IRpcService rpcService;
     @Autowired
     private TransactionMapper transMapper;
     @Autowired

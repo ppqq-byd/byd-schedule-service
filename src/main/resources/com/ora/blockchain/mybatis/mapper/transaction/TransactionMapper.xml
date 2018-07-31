@@ -15,4 +15,7 @@
     <select id="queryTransactionListByBlockHash" resultType="com.ora.blockchain.mybatis.entity.transaction.Transaction">
         SELECT txid FROM ${database}.transaction WHERE block_hash = #{blockHash}
     </select>
+    <delete id="deleteTransactionByBlockHash">
+        DELETE FROM ${database}.transaction WHERE block_hash = #{blockHash}
+    </delete>
 </mapper>

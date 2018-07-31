@@ -10,7 +10,6 @@ import com.ora.blockchain.mybatis.mapper.output.OutputMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.TransactionMapper;
 import com.ora.blockchain.service.block.IBlockService;
 import com.ora.blockchain.service.rpc.IRpcService;
-import com.ora.blockchain.utils.BlockchainUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BlockServiceImpl implements IBlockService {
+public abstract class BlockServiceImpl implements IBlockService {
     @Autowired
     private BlockMapper blockMapper;
     @Autowired
@@ -30,14 +29,12 @@ public class BlockServiceImpl implements IBlockService {
     private InputMapper inputMapper;
     @Autowired
     private OutputMapper outputMapper;
-    @Autowired
-    private IRpcService rpcService;
 
     @Override
     @Transactional
     public void insertBlock(String database, Block block) {
         blockMapper.insertBlock(database, block);
-        List<Transaction> transactionList = rpcService.getTransactionList(1, block.getBlockHash());
+        List<Transaction> transactionList = getRpcService().getTransactionList(1, block.getBlockHash());
         if (null != transactionList && !transactionList.isEmpty()) {
             List<Output> outputList = new ArrayList<>();
             List<Input> inputList = new ArrayList<>();
@@ -48,9 +45,9 @@ public class BlockServiceImpl implements IBlockService {
             transMapper.insertTransactionList(database, transactionList);
             inputMapper.insertInputList(database, inputList);
             outputMapper.insertOutputList(database, outputList);
-            for (Input input : inputList) {
-                outputMapper.updateOutput(database, Output.STATUS_SPENT, input.getTransactionTxid(), input.getVout());
-            }
+//            for (Input input : inputList) {
+//                outputMapper.updateOutput(database, Output.STATUS_SPENT, input.getTransactionTxid(), input.getVout());
+//            }
         }
     }
 
@@ -90,10 +87,10 @@ public class BlockServiceImpl implements IBlockService {
                 continue;
             }
             if (dbBlockList.get(dbIter).getHeight().longValue() == paramBlockList.get(paraIter).getHeight().longValue()) {
-                updateBlock(database, paramBlockList.get(paraIter));
+                //更新当前区块所有交易
+                updateBlock(database, dbBlockList.get(dbIter),paramBlockList.get(paraIter));
                 dbIter += 1;
                 paraIter += 1;
-//            } else if (dbBlockList.get(dbIter).getBlockHash().compareTo(paramBlockList.get(paraIter).getBlockHash()) > 0) {
             } else if (dbBlockList.get(dbIter).getHeight().longValue() < paramBlockList.get(paraIter).getHeight().longValue()) {
                 insertBlock(database, paramBlockList.get(paraIter));
                 paraIter += 1;
@@ -106,16 +103,24 @@ public class BlockServiceImpl implements IBlockService {
 
     @Override
     @Transactional
-    public void updateBlock(String database, Block block) {
-        if (null == block) {
+    public void updateBlock(String database, Block dbBlock,Block paramBlock) {
+        if (null == paramBlock) {
             return;
         }
-        List<Transaction> paramList = rpcService.getTransactionList(1, block.getBlockHash());
+        //如果当前区块高等且BlockHash不相等，删除数据库的区块并写入链上区块
+        if(!dbBlock.getBlockHash().equals(paramBlock.getBlockHash())){
+            blockMapper.deleteBlockByBlockHash(database,dbBlock.getBlockHash());
+            outputMapper.deleteOutput(database,dbBlock.getBlockHash());
+            inputMapper.deleteInput(database,dbBlock.getBlockHash());
+        }
+        //当前区块包含的链上交易记录
+        List<Transaction> paramList = getRpcService().getTransactionList(1, paramBlock.getBlockHash());
         if (null == paramList || paramList.isEmpty()) {
             return;
         }
         paramList = paramList.stream().sorted(Comparator.comparing(Transaction::getTxid)).collect(Collectors.toList());
-        List<Transaction> dbList = transMapper.queryTransactionListByBlockHash(database, block.getBlockHash());
+        //当前区块包含的数据库中交易记录
+        List<Transaction> dbList = transMapper.queryTransactionListByBlockHash(database, paramBlock.getBlockHash());
         if (null != dbList) {
             dbList = dbList.stream().sorted(Comparator.comparing(Transaction::getTxid)).collect(Collectors.toList());
         }
@@ -164,4 +169,6 @@ public class BlockServiceImpl implements IBlockService {
     public List<Block> queryBlockList(String database, Long height, int size) {
         return blockMapper.queryBlockList(database, height, size);
     }
+
+    public abstract IRpcService getRpcService();
 }
