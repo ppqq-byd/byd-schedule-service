@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -24,6 +26,9 @@ public class QuartzConfig {
 
     @Autowired
     private DataSource dataSource;
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
 
     @Bean
     public JobFactory jobFactory(ApplicationContext applicationContext) {
@@ -39,6 +44,7 @@ public class QuartzConfig {
         factory.setJobFactory(jobFactory);
         factory.setQuartzProperties(quartzProperties());
         factory.setDataSource(dataSource);
+        factory.setTransactionManager(transactionManager);
         return factory;
     }
 
