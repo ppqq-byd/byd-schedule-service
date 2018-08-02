@@ -15,4 +15,7 @@
         </where>
         ORDER BY height DESC LIMIT #{size};
     </select>
+    <delete id="deleteBlockByBlockHash">
+        DELETE FROM ${database}.block WHERE block_hash = #{blockHash}
+    </delete>
 </mapper>

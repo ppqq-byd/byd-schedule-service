@@ -1,15 +1,16 @@
 package com.ora.blockchain.service.rpc.impl.dark;
 
 import com.ora.blockchain.service.rpc.impl.RpcServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service
+import javax.annotation.Resource;
+
+@Service("darkRpcServiceImpl")
 public class DarkRpcServiceImpl extends RpcServiceImpl {
 
-    @Autowired
+    @Resource
     @Qualifier("darkRpcRestTemplate")
     private RestTemplate darkRpcRestTemplate;
 

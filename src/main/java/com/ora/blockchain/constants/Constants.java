@@ -17,17 +17,17 @@ public interface Constants {
     String ORA_RPC_EXCEPTION = "701";
     String ORA_RPCEXCEPTION_MSG = "RPC接口调用异常";
 
-    public static final String COIN_TYPE_BTC = "btc";
-    public static final String COIN_TYPE_LTC = "ltc";
-    public static final String COIN_TYPE_ETH = "eth";
-    public static final String COIN_TYPE_ETC = "etc";
-    public static final String COIN_TYPE_EOS = "eos";
-    public static final String COIN_TYPE_BCD = "bcd";
-    public static final String COIN_TYPE_BTG = "btg";
-    public static final String COIN_TYPE_DOGE = "doge";
-    public static final String COIN_TYPE_BCH = "bch";
-    public static final String COIN_TYPE_SBTC = "sbtc";
-    public static final String COIN_TYPE_NAS = "nas";
-    public static final String COIN_TYPE_XRP = "xrp";
-    public static final String COIN_TYPE_DARK = "dark";
+    public static final String COIN_TYPE_BTC = "coin_btc";
+    public static final String COIN_TYPE_LTC = "coin_ltc";
+    public static final String COIN_TYPE_ETH = "coin_eth";
+    public static final String COIN_TYPE_ETC = "coin_etc";
+    public static final String COIN_TYPE_EOS = "coin_eos";
+    public static final String COIN_TYPE_BCD = "coin_bcd";
+    public static final String COIN_TYPE_BTG = "coin_btg";
+    public static final String COIN_TYPE_DOGE = "coin_doge";
+    public static final String COIN_TYPE_BCH = "coin_bch";
+    public static final String COIN_TYPE_SBTC = "coin_sbtc";
+    public static final String COIN_TYPE_NAS = "coin_nas";
+    public static final String COIN_TYPE_XRP = "coin_xrp";
+    public static final String COIN_TYPE_DARK = "coin_dark";
 }

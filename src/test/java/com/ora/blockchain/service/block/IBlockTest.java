@@ -1,5 +1,6 @@
 package com.ora.blockchain.service.block;
 
+import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.block.Block;
 import com.ora.blockchain.service.rpc.IRpcService;
 import com.ora.blockchain.utils.BlockchainUtil;
@@ -10,12 +11,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
@@ -23,10 +28,19 @@ import java.util.List;
 @Rollback
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IBlockTest {
-    @Autowired
+    @Resource
+    @Qualifier("darkBlockServiceImpl")
     private IBlockService blockService;
-    @Autowired
+    @Resource
+    @Qualifier("darkRpcServiceImpl")
     private IRpcService rpcService;
+
+    @Resource
+    @Qualifier("ltcBlockServiceImpl")
+    private IBlockService ltcBlockService;
+    @Resource
+    @Qualifier("ltcRpcServiceImpl")
+    private IRpcService ltcRpcService;
 
     private String database;
     private Block block;
@@ -65,45 +79,67 @@ public class IBlockTest {
     }
 
     @Test
-    public void testDarkTask(){
-        List<Block> dbBlockList = blockService.queryBlockList("dark", null,6);
+    public void testDarkTask() {
+        List<Block> dbBlockList = blockService.queryBlockList(Constants.COIN_TYPE_DARK, null, 6);
+        if (!BlockchainUtil.isDistinctCollection(dbBlockList)) {
+           List<String> blockHashList = dbBlockList.stream().map(Block::getBlockHash).collect(Collectors.toList());
+           blockService.deleteBlockByBlockHash(Constants.COIN_TYPE_DARK,blockHashList);
+           dbBlockList = blockService.queryBlockList(Constants.COIN_TYPE_DARK, null, 6);
+        }
+
         if (null == dbBlockList || dbBlockList.isEmpty()) {
             List<Block> blockList = rpcService.getPreviousBlockList(6, null);
             for (Block block : blockList) {
-                blockService.insertBlock("dark", block);
+                blockService.insertBlock(Constants.COIN_TYPE_DARK, block);
             }
-        }else{
-            List<Block> blockList = rpcService.getPreviousBlockList(6,null);
-            blockService.updateBlock("dark",dbBlockList,blockList);
-            while(true){
-                blockList = rpcService.getPreviousBlockList(1,blockList.get(blockList.size()-1).getPreviousBlockHash());
-                dbBlockList = blockService.queryBlockList("dark",blockList.get(0).getHeight(),1);
-                if(BlockchainUtil.isEqualCollection(blockList,dbBlockList)){
-                    break;
-                }
-                blockService.updateBlock("dark",dbBlockList,blockList);
+            return;
+        }
+        List<Block> blockList = rpcService.getPreviousBlockList(6, null);
+        blockService.updateBlock(Constants.COIN_TYPE_DARK, dbBlockList, blockList);
+
+        while (true) {
+            blockList = rpcService.getPreviousBlockList(6, blockList.get(blockList.size() - 1).getPreviousBlockHash());
+            dbBlockList = blockService.queryBlockList(Constants.COIN_TYPE_DARK, blockList.get(0).getHeight(), 6);
+            if (null == dbBlockList || dbBlockList.isEmpty() || BlockchainUtil.isEqualCollection(blockList, dbBlockList)) {
+                break;
+            }
+            try {
+                blockService.updateBlock(Constants.COIN_TYPE_DARK, dbBlockList, blockList);
+            } catch (DuplicateKeyException e) {
+                break;
             }
         }
     }
 
-    @Test
-    public  void testLTCTask(){
-        List<Block> dbBlockList = blockService.queryBlockList("ltc", null,6);
+//    @Test
+    public void testLitecoinTask(){
+        List<Block> dbBlockList = ltcBlockService.queryBlockList(Constants.COIN_TYPE_LTC, null, 6);
+        if (!BlockchainUtil.isDistinctCollection(dbBlockList)) {
+            List<String> blockHashList = dbBlockList.stream().map(Block::getBlockHash).collect(Collectors.toList());
+            ltcBlockService.deleteBlockByBlockHash(Constants.COIN_TYPE_LTC,blockHashList);
+            dbBlockList = ltcBlockService.queryBlockList(Constants.COIN_TYPE_LTC, null, 6);
+        }
+
         if (null == dbBlockList || dbBlockList.isEmpty()) {
-            List<Block> blockList = rpcService.getPreviousBlockList(6, null);
+            List<Block> blockList = ltcRpcService.getPreviousBlockList(6, null);
             for (Block block : blockList) {
-                blockService.insertBlock("ltc", block);
+                ltcBlockService.insertBlock(Constants.COIN_TYPE_LTC, block);
             }
-        }else{
-            List<Block> blockList = rpcService.getPreviousBlockList(6,null);
-            blockService.updateBlock("ltc",dbBlockList,blockList);
-            while(true){
-                blockList = rpcService.getPreviousBlockList(1,blockList.get(blockList.size()-1).getPreviousBlockHash());
-                dbBlockList = blockService.queryBlockList("ltc",blockList.get(0).getHeight(),1);
-                if(BlockchainUtil.isEqualCollection(blockList,dbBlockList)){
-                    break;
-                }
-                blockService.updateBlock("ltc",dbBlockList,blockList);
+            return;
+        }
+        List<Block> blockList = ltcRpcService.getPreviousBlockList(6, null);
+        ltcBlockService.updateBlock(Constants.COIN_TYPE_LTC, dbBlockList, blockList);
+
+        while (true) {
+            blockList = ltcRpcService.getPreviousBlockList(6, blockList.get(blockList.size() - 1).getPreviousBlockHash());
+            dbBlockList = ltcBlockService.queryBlockList(Constants.COIN_TYPE_LTC, blockList.get(0).getHeight(), 6);
+            if (null == dbBlockList || dbBlockList.isEmpty() || BlockchainUtil.isEqualCollection(blockList, dbBlockList)) {
+                break;
+            }
+            try {
+                ltcBlockService.updateBlock(Constants.COIN_TYPE_LTC, dbBlockList, blockList);
+            } catch (DuplicateKeyException e) {
+                break;
             }
         }
     }

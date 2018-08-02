@@ -2,17 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ora.blockchain.mybatis.mapper.output.OutputMapper">
   <insert id="insertOutput">
-    insert into ${database}.output (`transaction_txid`, `value`, `value_sat`, `n`, `script_pub_key_asm`, `script_pub_key_hex`, `script_pub_key_req_sigs`, `script_pub_key_type`, `script_pub_key_addresses`,`create_ts`)
-    values (#{pojo.transactionTxid}, #{pojo.value}, #{pojo.valueSat}, #{pojo.n}, #{pojo.scriptPubKeyAsm}, #{pojo.scriptPubKeyHex}, #{pojo.scriptPubKeyReqSigs}, #{pojo.scriptPubKeyType}, #{pojo.scriptPubKeyAddresses},now())
+    insert into ${database}.output (`block_hash`,`transaction_txid`, `value`, `value_sat`, `n`, `script_pub_key_asm`, `script_pub_key_hex`, `script_pub_key_req_sigs`, `script_pub_key_type`, `script_pub_key_addresses`,`create_ts`)
+    values (#{pojo.blockHash},#{pojo.transactionTxid}, #{pojo.value}, #{pojo.valueSat}, #{pojo.n}, #{pojo.scriptPubKeyAsm}, #{pojo.scriptPubKeyHex}, #{pojo.scriptPubKeyReqSigs}, #{pojo.scriptPubKeyType}, #{pojo.scriptPubKeyAddresses},now())
   </insert>
   <insert id="insertOutputList">
-    insert into ${database}.output (`transaction_txid`, `value`, `value_sat`, `n`, `script_pub_key_asm`, `script_pub_key_hex`, `script_pub_key_req_sigs`, `script_pub_key_type`, `script_pub_key_addresses`,`create_ts`)
+    insert into ${database}.output (`block_hash`,`transaction_txid`, `value`, `value_sat`, `n`, `script_pub_key_asm`, `script_pub_key_hex`, `script_pub_key_req_sigs`, `script_pub_key_type`, `script_pub_key_addresses`,`create_ts`)
     VALUES
     <foreach collection="outputList" item="pojo" index="index" separator=",">
-      (#{pojo.transactionTxid}, #{pojo.value}, #{pojo.valueSat}, #{pojo.n}, #{pojo.scriptPubKeyAsm}, #{pojo.scriptPubKeyHex}, #{pojo.scriptPubKeyReqSigs}, #{pojo.scriptPubKeyType}, #{pojo.scriptPubKeyAddresses},now())
+      (#{pojo.blockHash},#{pojo.transactionTxid}, #{pojo.value}, #{pojo.valueSat}, #{pojo.n}, #{pojo.scriptPubKeyAsm}, #{pojo.scriptPubKeyHex}, #{pojo.scriptPubKeyReqSigs}, #{pojo.scriptPubKeyType}, #{pojo.scriptPubKeyAddresses},now())
     </foreach>
   </insert>
   <update id="updateOutput">
     UPDATE ${database}.output SET status = #{status} WHERE transaction_txid = #{transactionTxid} AND n = #{n}
   </update>
+  <delete id="deleteOutput">
+    DELETE FROM ${database}.output WHERE block_hash = #{blockHash}
+  </delete>
 </mapper>

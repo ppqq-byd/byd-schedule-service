@@ -11,7 +11,9 @@ public interface IBlockService {
 
     public void updateBlock(String database, List<Block> paramList);
 
-    public void updateBlock(String database, Block block);
+    public void updateBlock(String database, Block dbBlock,Block paramBlock);
 
     public List<Block> queryBlockList(String database, Long height,int size);
+
+    public void deleteBlockByBlockHash(String database,List<String> blockHashList);
 }

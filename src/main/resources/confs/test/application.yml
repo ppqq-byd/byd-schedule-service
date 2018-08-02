@@ -5,7 +5,7 @@ server:
 spring:
     datasource:
         name: oracloud
-        url: jdbc:mysql://stage-audio.oradt.com?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
+        url: jdbc:mysql://stage-audio.oradt.com/schedule?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
         username: root
         password: Oradt!123
         # 使用druid数据源
@@ -24,3 +24,12 @@ spring:
         testOnReturn: false
         poolPreparedStatements: true
         maxOpenPreparedStatements: 20
+rpc:
+    dark:
+        url: "http://localhost:9998/"
+        username: "ora"
+        password: "Oradt!1234"
+    ltc:
+        url: "http://localhost:9332/"
+        username: "ora"
+        password: "Oradt!1234"

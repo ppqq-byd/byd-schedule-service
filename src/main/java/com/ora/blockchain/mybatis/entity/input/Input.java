@@ -9,6 +9,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Input {
+    private String blockHash;
     private String transactionTxid;
     private String txid;
     private String coinbase;
