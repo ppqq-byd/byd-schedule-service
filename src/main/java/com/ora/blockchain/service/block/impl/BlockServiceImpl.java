@@ -10,6 +10,7 @@ import com.ora.blockchain.mybatis.mapper.output.OutputMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.TransactionMapper;
 import com.ora.blockchain.service.block.IBlockService;
 import com.ora.blockchain.service.rpc.IRpcService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public abstract class BlockServiceImpl implements IBlockService {
     @Autowired
@@ -45,9 +47,9 @@ public abstract class BlockServiceImpl implements IBlockService {
             transMapper.insertTransactionList(database, transactionList);
             inputMapper.insertInputList(database, inputList);
             outputMapper.insertOutputList(database, outputList);
-//            for (Input input : inputList) {
-//                outputMapper.updateOutput(database, Output.STATUS_SPENT, input.getTransactionTxid(), input.getVout());
-//            }
+            for (Input input : inputList) {
+                outputMapper.updateOutput(database, Output.STATUS_SPENT, input.getTransactionTxid(), input.getVout());
+            }
         }
     }
 
@@ -61,14 +63,14 @@ public abstract class BlockServiceImpl implements IBlockService {
     }
 
     @Override
-    public void updateBlock(String database, List<Block> dbList, List<Block> paramList) {
+    public void updateBlock(String database, List<Block> dbList, List<Block> paramList){
         List<Block> dbBlockList = new ArrayList<>();
         if (null != dbList) {
-            dbBlockList = dbList.stream().sorted(Comparator.comparing(Block::getHeight)).collect(Collectors.toList());
+            dbBlockList = dbList.stream().sorted(Comparator.comparing(Block::getHeight).reversed()).collect(Collectors.toList());
         }
         List<Block> paramBlockList = new ArrayList<>();
         if (null != paramList) {
-            paramBlockList = paramList.stream().sorted(Comparator.comparing(Block::getHeight)).collect(Collectors.toList());
+            paramBlockList = paramList.stream().sorted(Comparator.comparing(Block::getHeight).reversed()).collect(Collectors.toList());
         }
         int dbIter = 0;
         int paraIter = 0;
@@ -107,11 +109,12 @@ public abstract class BlockServiceImpl implements IBlockService {
         if (null == paramBlock) {
             return;
         }
-        //如果当前区块高等且BlockHash不相等，删除数据库的区块并写入链上区块
         if(!dbBlock.getBlockHash().equals(paramBlock.getBlockHash())){
             blockMapper.deleteBlockByBlockHash(database,dbBlock.getBlockHash());
-            outputMapper.deleteOutput(database,dbBlock.getBlockHash());
+            transMapper.deleteTransactionByBlockHash(database,dbBlock.getBlockHash());
             inputMapper.deleteInput(database,dbBlock.getBlockHash());
+            outputMapper.deleteOutput(database,dbBlock.getBlockHash());
+            blockMapper.insertBlock(database,paramBlock);
         }
         //当前区块包含的链上交易记录
         List<Transaction> paramList = getRpcService().getTransactionList(1, paramBlock.getBlockHash());
@@ -150,7 +153,7 @@ public abstract class BlockServiceImpl implements IBlockService {
 //                updateTransaction();
                 dbIter += 1;
                 paraIter += 1;
-            } else if (dbList.get(dbIter).getTxid().compareTo(paramList.get(paraIter).getTxid()) > 0) {
+            } else if (dbList.get(dbIter).getTxid().compareTo(paramList.get(paraIter).getTxid()) < 0) {
                 transMapper.insertTransaction(database, paramList.get(paraIter));
                 if (null != paramList.get(paraIter).getInputList() && !paramList.get(paraIter).getInputList().isEmpty()) {
                     inputMapper.insertInputList(database, paramList.get(paraIter).getInputList());
@@ -166,8 +169,20 @@ public abstract class BlockServiceImpl implements IBlockService {
         }
     }
 
+    @Override
     public List<Block> queryBlockList(String database, Long height, int size) {
         return blockMapper.queryBlockList(database, height, size);
+    }
+
+    @Override
+    @Transactional
+    public void deleteBlockByBlockHash(String database,List<String> blockHashList){
+        for(String blockHash:blockHashList){
+            inputMapper.deleteInput(database,blockHash);
+            outputMapper.deleteOutput(database,blockHash);
+            transMapper.deleteTransactionByBlockHash(database,blockHash);
+            blockMapper.deleteBlockByBlockHash(database,blockHash);
+        }
     }
 
     public abstract IRpcService getRpcService();

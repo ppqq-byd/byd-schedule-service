@@ -16,6 +16,6 @@
     UPDATE ${database}.output SET status = #{status} WHERE transaction_txid = #{transactionTxid} AND n = #{n}
   </update>
   <delete id="deleteOutput">
-        DELETE FROM ${database}.output WHERE block_hash = #{blockHash}
-    </delete>
+    DELETE FROM ${database}.output WHERE block_hash = #{blockHash}
+  </delete>
 </mapper>
