@@ -3,8 +3,8 @@ package com.ora.blockchain.service.block;
 import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.block.Block;
 import com.ora.blockchain.service.rpc.IRpcService;
+import com.ora.blockchain.task.Task;
 import com.ora.blockchain.utils.BlockchainUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -42,6 +42,15 @@ public class IBlockTest {
     @Qualifier("ltcRpcServiceImpl")
     private IRpcService ltcRpcService;
 
+    @Resource
+    @Qualifier("btcBlockServiceImpl")
+    private IBlockService btcBlockService;
+    @Resource
+    @Qualifier("btcRpcServiceImpl")
+    private IRpcService btcRpcService;
+
+    @Autowired
+    private Task task;
     private String database;
     private Block block;
 
@@ -142,5 +151,10 @@ public class IBlockTest {
                 break;
             }
         }
+    }
+
+//    @Test
+    public void testBtcTask() {
+        task.task(Constants.COIN_TYPE_BTC,btcBlockService,btcRpcService);
     }
 }

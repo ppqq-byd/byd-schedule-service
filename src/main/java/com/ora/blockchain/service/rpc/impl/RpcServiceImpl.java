@@ -21,12 +21,12 @@ import java.util.List;
 @Slf4j
 public abstract class RpcServiceImpl implements IRpcService {
 
-//    @Autowired
-//    private RestTemplate darkRpcRestTemplate;
-
     @Override
     public List<Transaction> getTransactionList(Integer blockDepth, String lastBlockhash){
+        long start = System.currentTimeMillis();
         List<JsonNode> nodeList = getTransactions(blockDepth,lastBlockhash);
+        long end = System.currentTimeMillis();
+        log.info("getTransactions spent : " + (end - start));
         return IRpcService.convertToTransactionList(nodeList);
     }
 
@@ -40,7 +40,6 @@ public abstract class RpcServiceImpl implements IRpcService {
         } else {
             blockHash = lastBlockhash;
         }
-        ;
         log.info("Scanning depth = " + blockDepth + ", blockHash = " + blockHash);
         HttpEntity<String> blockRequestEntity = IRpcService.getRequestEntity("getblock", Arrays.asList(blockHash));
         BlockInfo blockInfo = getRpcRestTemplate().exchange("/", HttpMethod.POST, blockRequestEntity,
@@ -85,6 +84,7 @@ public abstract class RpcServiceImpl implements IRpcService {
     }
 
     private List<JsonNode> getBlocks(String direction, Integer blockDepth, String lastBlockhash) {
+        long start = System.currentTimeMillis();
         String blockHash = null;
         if (lastBlockhash == null) {
             HttpEntity<String> blockHashRequestEntity = IRpcService.getRequestEntity("getbestblockhash", new ArrayList<>());
@@ -106,6 +106,8 @@ public abstract class RpcServiceImpl implements IRpcService {
             String previousBlockHash = blockNode.get(direction).textValue();
             blocks.addAll(getBlocks(direction,blockDepth - 1, previousBlockHash));
         }
+        long end = System.currentTimeMillis();
+        log.info("getBlocks spent : " + (end - start));
         return blocks;
     }
 

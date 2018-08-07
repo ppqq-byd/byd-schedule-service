@@ -30,4 +30,5 @@ public interface Constants {
     public static final String COIN_TYPE_NAS = "coin_nas";
     public static final String COIN_TYPE_XRP = "coin_xrp";
     public static final String COIN_TYPE_DARK = "coin_dark";
+    public static final String DATABASE_COMMON = "saifu_common";
 }

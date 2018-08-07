@@ -13,6 +13,7 @@ public class Output {
     public static final Integer STATUS_UNSPENT = 1;
     public static final Integer STATUS_SPENT = 0;
 
+    private Long walletAccountId;
     private String blockHash;
     private String transactionTxid;
     private Double value;
