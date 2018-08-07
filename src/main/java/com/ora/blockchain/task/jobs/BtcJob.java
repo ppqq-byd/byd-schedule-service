@@ -16,24 +16,24 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 @Component
-@ScheduledJob(name = "LtcJob", cronExp = "10 */1 * * * ?")
+@ScheduledJob(name = "BtcJob", cronExp = "* */10 * * * ?")
 @DisallowConcurrentExecution
-public class LtcJob implements Job {
+public class BtcJob implements Job {
     @Resource
-    @Qualifier("ltcRpcServiceImpl")
-    private IRpcService ltcRpcService;
+    @Qualifier("btcRpcServiceImpl")
+    private IRpcService btcRpcService;
     @Resource
-    @Qualifier("ltcBlockServiceImpl")
-    private IBlockService ltcBlockService;
+    @Qualifier("btcBlockServiceImpl")
+    private IBlockService btcBlockService;
     @Autowired
     private Task task;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        System.out.println("********************LTC Job start......************************");
+        System.out.println("********************Btc Job start......************************");
         long start = System.currentTimeMillis();
-//        task.task(Constants.COIN_TYPE_LTC, ltcBlockService, ltcRpcService);
+        task.task(Constants.COIN_TYPE_BTC, btcBlockService, btcRpcService);
         long end = System.currentTimeMillis();
-        System.out.println(String.format("*********************LTC Job end(spent : %s)*****************************", end - start));
+        System.out.println(String.format("*********************Btc Job end(spent : %s)*****************************", end - start));
     }
 }

@@ -24,14 +24,19 @@ spring:
         testOnReturn: false
         poolPreparedStatements: true
         maxOpenPreparedStatements: 20
+
 rpc:
     dark:
-        url: "http://localhost:9998/"
+        url: "http://ELB-TCP-Blockchain-8ce9078d9f50e341.elb.cn-northwest-1.amazonaws.com.cn:9998/"
         username: "ora"
         password: "Oradt!1234"
     ltc:
-        url: "http://localhost:9332/"
+        url: "http://ELB-TCP-Blockchain-8ce9078d9f50e341.elb.cn-northwest-1.amazonaws.com.cn:9332/"
+        username: "ora"
+        password: "Oradt!1234"
+    btc:
+        url: "http://ELB-Blockchain-1732218811.cn-northwest-1.elb.amazonaws.com.cn:8332"
         username: "ora"
         password: "Oradt!1234"
     web3j:
-        url:"http://52.83.130.131:8545"
+        url: "http://52.83.130.131:8545"

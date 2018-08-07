@@ -4,20 +4,21 @@ import com.ora.blockchain.mybatis.entity.block.Block;
 import com.ora.blockchain.mybatis.entity.input.Input;
 import com.ora.blockchain.mybatis.entity.output.Output;
 import com.ora.blockchain.mybatis.entity.transaction.Transaction;
+import com.ora.blockchain.mybatis.entity.wallet.Wallet;
 import com.ora.blockchain.mybatis.mapper.block.BlockMapper;
 import com.ora.blockchain.mybatis.mapper.input.InputMapper;
 import com.ora.blockchain.mybatis.mapper.output.OutputMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.TransactionMapper;
+import com.ora.blockchain.mybatis.mapper.wallet.WalletMapper;
 import com.ora.blockchain.service.block.IBlockService;
 import com.ora.blockchain.service.rpc.IRpcService;
+import com.ora.blockchain.utils.BlockchainUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,25 +32,62 @@ public abstract class BlockServiceImpl implements IBlockService {
     private InputMapper inputMapper;
     @Autowired
     private OutputMapper outputMapper;
+    @Autowired
+    private WalletMapper walletMapper;
+
+    private List<Transaction> filterTransaction(List<Transaction> blockchainTrans, Set<String> addressSet) {
+        if (null == blockchainTrans || blockchainTrans.isEmpty() || null == addressSet || addressSet.isEmpty()) {
+            return null;
+        }
+
+        List<Transaction> transList = new ArrayList<>();
+        transaction:
+        for (Transaction t : blockchainTrans) {
+            List<Output> outputList = t.getOutputList();
+            for (Output o : outputList) {
+                if (addressSet.contains(o.getScriptPubKeyAddresses())) {
+                    transList.add(t);
+                    continue transaction;
+                }
+            }
+        }
+        return transList;
+    }
 
     @Override
     @Transactional
     public void insertBlock(String database, Block block) {
         blockMapper.insertBlock(database, block);
         List<Transaction> transactionList = getRpcService().getTransactionList(1, block.getBlockHash());
-        if (null != transactionList && !transactionList.isEmpty()) {
+
+        List<String> addressList = BlockchainUtil.getAddress(transactionList);
+        if(null == addressList || addressList.isEmpty()){
+            return;
+        }
+        List<Wallet> walletList = walletMapper.queryWalletByAddress(addressList);
+        if(null == walletList || walletList.isEmpty()){
+            return;
+        }
+        Map<String,Long> walletMap = walletList.stream().collect(Collectors.toMap(Wallet::getAddress,Wallet::getWalletAccountId));
+
+        List<Transaction> oraTransactinList = filterTransaction(transactionList,walletMap.keySet());
+        if(null != oraTransactinList && !oraTransactinList.isEmpty()){
             List<Output> outputList = new ArrayList<>();
             List<Input> inputList = new ArrayList<>();
-            for (Transaction t : transactionList) {
+            for (Transaction t : oraTransactinList) {
                 outputList.addAll(t.getOutputList());
                 inputList.addAll(t.getInputList());
             }
-            transMapper.insertTransactionList(database, transactionList);
+
+            outputList.forEach((Output output)->{
+                output.setWalletAccountId(walletMap.get(output.getScriptPubKeyAddresses()));
+            });
+            inputList.forEach((Input input)->{
+                outputMapper.updateOutput(database, Output.STATUS_SPENT, input.getTransactionTxid(), input.getVout());
+            });
+            transMapper.insertTransactionList(database, oraTransactinList);
             inputMapper.insertInputList(database, inputList);
             outputMapper.insertOutputList(database, outputList);
-            for (Input input : inputList) {
-                outputMapper.updateOutput(database, Output.STATUS_SPENT, input.getTransactionTxid(), input.getVout());
-            }
         }
     }
 
@@ -117,10 +155,35 @@ public abstract class BlockServiceImpl implements IBlockService {
             blockMapper.insertBlock(database,paramBlock);
         }
         //当前区块包含的链上交易记录
-        List<Transaction> paramList = getRpcService().getTransactionList(1, paramBlock.getBlockHash());
-        if (null == paramList || paramList.isEmpty()) {
+        List<Transaction> blockchainTransList = getRpcService().getTransactionList(1, paramBlock.getBlockHash());
+        if (null == blockchainTransList || blockchainTransList.isEmpty()) {
             return;
         }
+        // TODO 过滤非ORA交易
+        List<String> addressList = BlockchainUtil.getAddress(blockchainTransList);
+        if(null == addressList || addressList.isEmpty()){
+            return;
+        }
+        List<Wallet> walletList = walletMapper.queryWalletByAddress(addressList);
+        if(null == walletList || walletList.isEmpty()){
+            return;
+        }
+        Map<String,Long> walletMap = walletList.stream().collect(Collectors.toMap(Wallet::getAddress,Wallet::getWalletAccountId));
+
+        List<Transaction> paramList = filterTransaction(blockchainTransList,walletMap.keySet());
+        if(null == paramList || paramList.isEmpty()){
+            return;
+        }
+        paramList.forEach((Transaction t) ->{
+            List<Output> outputList = t.getOutputList();
+            if(null != outputList && !outputList.isEmpty()){
+                for(Output o : outputList){
+                    if(walletMap.containsKey(o.getScriptPubKeyAddresses())){
+                        o.setWalletAccountId(walletMap.get(o.getScriptPubKeyAddresses()));
+                    }
+                }
+            }
+        });
         paramList = paramList.stream().sorted(Comparator.comparing(Transaction::getTxid)).collect(Collectors.toList());
         //当前区块包含的数据库中交易记录
         List<Transaction> dbList = transMapper.queryTransactionListByBlockHash(database, paramBlock.getBlockHash());

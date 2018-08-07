@@ -1,6 +1,5 @@
 package com.ora.blockchain.task;
 
-import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.block.Block;
 import com.ora.blockchain.service.block.IBlockService;
 import com.ora.blockchain.service.rpc.IRpcService;
@@ -19,6 +18,8 @@ public class Task {
     public static final int BLOCK_DEPTH = 6;
 
     public void task(String database,IBlockService blockService,IRpcService rpcService) {
+        log.info("********************" + database + " Job start......************************");
+        long start = System.currentTimeMillis();
         List<Block> dbBlockList = blockService.queryBlockList(database, null, BLOCK_DEPTH);
         if (!BlockchainUtil.isDistinctCollection(dbBlockList)) {
             List<String> blockHashList = dbBlockList.stream().map(Block::getBlockHash).collect(Collectors.toList());
@@ -48,5 +49,7 @@ public class Task {
                 break;
             }
         }
+        long end = System.currentTimeMillis();
+        log.info(String.format("*********************" + database + " Job end(spent : %s)*****************************", end - start));
     }
 }

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50722
 File Encoding         : 65001
 
-Date: 2018-08-02 08:36:45
+Date: 2018-08-07 09:52:23
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -36,7 +36,8 @@ CREATE TABLE `block` (
   `status` tinyint(3) NOT NULL DEFAULT '1' COMMENT '0:无效，1:有效',
   `create_ts` datetime DEFAULT NULL,
   `update_ts` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`block_hash`)
+  PRIMARY KEY (`block_hash`),
+  KEY `idx_height` (`height`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -62,6 +63,7 @@ CREATE TABLE `input` (
 -- ----------------------------
 DROP TABLE IF EXISTS `output`;
 CREATE TABLE `output` (
+  `wallet_account_id` bigint(20) DEFAULT NULL,
   `block_hash` char(64) DEFAULT NULL,
   `transaction_txid` char(64) NOT NULL COMMENT '当前vout所属transaction',
   `value` double DEFAULT NULL,
@@ -74,7 +76,8 @@ CREATE TABLE `output` (
   `script_pub_key_addresses` varchar(512) DEFAULT NULL,
   `status` tinyint(3) NOT NULL DEFAULT '1' COMMENT '0:无效，1:有效',
   `create_ts` datetime DEFAULT NULL,
-  `update_ts` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `update_ts` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `idx_txid_n` (`transaction_txid`,`n`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -94,5 +97,6 @@ CREATE TABLE `transaction` (
   `status` tinyint(3) NOT NULL DEFAULT '1' COMMENT '0:无效,1:有效',
   `create_ts` datetime DEFAULT NULL,
   `update_ts` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`txid`)
+  PRIMARY KEY (`txid`),
+  KEY `idx_block_hash` (`block_hash`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

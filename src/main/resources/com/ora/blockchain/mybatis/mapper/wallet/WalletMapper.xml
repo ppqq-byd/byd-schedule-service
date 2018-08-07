@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ora.blockchain.mybatis.mapper.wallet.WalletMapper">
+    <select id="queryWallet" resultType="com.ora.blockchain.mybatis.entity.wallet.Wallet">
+        SELECT address,account_id AS walletAccountId  FROM ${@com.ora.blockchain.constants.Constants@DATABASE_COMMON}.wallet_account_bind WHERE address = #{address} LIMIT 1;
+    </select>
+    <select id="queryWalletByAddress" resultType="com.ora.blockchain.mybatis.entity.wallet.Wallet">
+        SELECT address,account_id AS walletAccountId FROM ${@com.ora.blockchain.constants.Constants@DATABASE_COMMON}.wallet_account_bind WHERE address IN
+        <foreach item="item" index="index" collection="addressList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

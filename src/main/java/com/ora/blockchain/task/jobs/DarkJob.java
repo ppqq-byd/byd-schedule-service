@@ -6,6 +6,7 @@ import com.ora.blockchain.service.rpc.IRpcService;
 import com.ora.blockchain.task.ScheduledJob;
 import com.ora.blockchain.task.Task;
 import org.apache.tomcat.util.bcel.Const;
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
 
 @Component
 @ScheduledJob(name = "darkJob", cronExp = "0 */1 * * * ?")
+@DisallowConcurrentExecution
 public class DarkJob implements Job {
     @Resource
     @Qualifier("darkRpcServiceImpl")
@@ -29,7 +31,7 @@ public class DarkJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        System.out.println("********************LTC Job start......************************");
+        System.out.println("********************Dark Job start......************************");
         long start = System.currentTimeMillis();
 //        task.task(Constants.COIN_TYPE_DARK, darkBlockService, darkRpcService);
         long end = System.currentTimeMillis();
