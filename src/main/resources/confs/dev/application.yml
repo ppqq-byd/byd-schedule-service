@@ -38,3 +38,5 @@ rpc:
         url: "http://192.168.12.39:8332"
         username: "bitcoinrpc"
         password: "2XA4DuKNCbtZXsBQRRNDEwEY2nM6M4H9Tx5dFjoAVVbK"
+    web3j:
+        url: "http://52.83.130.131:8545"

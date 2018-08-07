@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ora.blockchain.mybatis.mapper.transaction.EthereumTransactionMapper">
+
+    <!--auto generated Code-->
+    <sql id="all_column">
+        `id`,
+        `tx_id`,
+        `from`,
+        `to`,
+        `block_time`,
+        `block_height`,
+        `value`,
+        `gas_price`,
+        `gas_limit`,
+        `gas_used`,
+        `nonce`,
+        `status`,
+        `create_ts`,
+        `update_ts`
+    </sql>
+
+    <insert id="insertTransaction">
+        INSERT INTO ${database}.tx_ethereum ( `id`,
+        `tx_id`,
+        `from`,
+        `to`,
+        `block_time`,
+        `block_height`,
+        `value`,
+        `gas_price`,
+        `gas_limit`,
+        `gas_used`,
+        `nonce`)
+        VALUES (#{pojo.id}, #{pojo.txId}, #{pojo.from}, #{pojo.to},
+        #{pojo.blockTime}, #{pojo.blockHeight},#{pojo.value}, #{pojo.gasPrice},
+         #{pojo.gasLimit},  #{pojo.gasUsed},#{pojo.nonce})
+    </insert>
+
+
+</mapper>
