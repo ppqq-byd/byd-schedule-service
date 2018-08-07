@@ -13,7 +13,9 @@ import com.ora.blockchain.mybatis.mapper.wallet.WalletMapper;
 import com.ora.blockchain.service.block.IBlockService;
 import com.ora.blockchain.service.rpc.IRpcService;
 import com.ora.blockchain.utils.BlockchainUtil;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,22 +37,23 @@ public abstract class BlockServiceImpl implements IBlockService {
     @Autowired
     private WalletMapper walletMapper;
 
-    private List<Transaction> filterTransaction(List<Transaction> blockchainTrans, Set<String> addressSet) {
+    private List<Transaction> filterTransaction(String database, List<Transaction> blockchainTrans, Set<String> addressSet) {
         if (null == blockchainTrans || blockchainTrans.isEmpty() || null == addressSet || addressSet.isEmpty()) {
             return null;
         }
 
         List<Transaction> transList = new ArrayList<>();
-        transaction:
-        for (Transaction t : blockchainTrans) {
-            List<Output> outputList = t.getOutputList();
-            for (Output o : outputList) {
-                if (addressSet.contains(o.getScriptPubKeyAddresses())) {
-                    transList.add(t);
-                    continue transaction;
-                }
+        blockchainTrans.forEach((Transaction t) -> {
+            List<String> outputAddrList = t.getOutputList().stream().map(Output::getScriptPubKeyAddresses).collect(Collectors.toList());
+            List<String> inputAddrList = t.getInputList().stream().map(input -> {
+                Output output = outputMapper.queryOutputByPrimary(database, input.getTransactionTxid(), input.getVout());
+                input.setAddress(null == output ? null : output.getScriptPubKeyAddresses());
+                return input.getAddress();
+            }).collect(Collectors.toList());
+            if (CollectionUtils.containsAny(addressSet, outputAddrList) || CollectionUtils.containsAny(addressSet, inputAddrList)) {
+                transList.add(t);
             }
-        }
+        });
         return transList;
     }
 
@@ -70,7 +73,7 @@ public abstract class BlockServiceImpl implements IBlockService {
         }
         Map<String,Long> walletMap = walletList.stream().collect(Collectors.toMap(Wallet::getAddress,Wallet::getWalletAccountId));
 
-        List<Transaction> oraTransactinList = filterTransaction(transactionList,walletMap.keySet());
+        List<Transaction> oraTransactinList = filterTransaction(database,transactionList,walletMap.keySet());
         if(null != oraTransactinList && !oraTransactinList.isEmpty()){
             List<Output> outputList = new ArrayList<>();
             List<Input> inputList = new ArrayList<>();
@@ -78,16 +81,18 @@ public abstract class BlockServiceImpl implements IBlockService {
                 outputList.addAll(t.getOutputList());
                 inputList.addAll(t.getInputList());
             }
-
+            transMapper.insertTransactionList(database, oraTransactinList);
             outputList.forEach((Output output)->{
                 output.setWalletAccountId(walletMap.get(output.getScriptPubKeyAddresses()));
             });
+            outputMapper.insertOutputList(database, outputList);
             inputList.forEach((Input input)->{
+                Output output = outputMapper.queryOutputByPrimary(database,input.getTransactionTxid(),input.getVout());
+                input.setAddress(null == output ? null : output.getScriptPubKeyAddresses());
+                input.setWalletAccountId(null == output ? null : output.getWalletAccountId());
                 outputMapper.updateOutput(database, Output.STATUS_SPENT, input.getTransactionTxid(), input.getVout());
             });
-            transMapper.insertTransactionList(database, oraTransactinList);
             inputMapper.insertInputList(database, inputList);
-            outputMapper.insertOutputList(database, outputList);
         }
     }
 
@@ -147,13 +152,15 @@ public abstract class BlockServiceImpl implements IBlockService {
         if (null == paramBlock) {
             return;
         }
-        if(!dbBlock.getBlockHash().equals(paramBlock.getBlockHash())){
-            blockMapper.deleteBlockByBlockHash(database,dbBlock.getBlockHash());
-            transMapper.deleteTransactionByBlockHash(database,dbBlock.getBlockHash());
-            inputMapper.deleteInput(database,dbBlock.getBlockHash());
-            outputMapper.deleteOutput(database,dbBlock.getBlockHash());
-            blockMapper.insertBlock(database,paramBlock);
+        if(dbBlock.getBlockHash().equals(paramBlock.getBlockHash())){
+            return;
         }
+        blockMapper.deleteBlockByBlockHash(database,dbBlock.getBlockHash());
+        transMapper.deleteTransactionByBlockHash(database,dbBlock.getBlockHash());
+        inputMapper.deleteInput(database,dbBlock.getBlockHash());
+        outputMapper.deleteOutput(database,dbBlock.getBlockHash());
+        blockMapper.insertBlock(database,paramBlock);
+
         //当前区块包含的链上交易记录
         List<Transaction> blockchainTransList = getRpcService().getTransactionList(1, paramBlock.getBlockHash());
         if (null == blockchainTransList || blockchainTransList.isEmpty()) {
@@ -170,17 +177,25 @@ public abstract class BlockServiceImpl implements IBlockService {
         }
         Map<String,Long> walletMap = walletList.stream().collect(Collectors.toMap(Wallet::getAddress,Wallet::getWalletAccountId));
 
-        List<Transaction> paramList = filterTransaction(blockchainTransList,walletMap.keySet());
+        List<Transaction> paramList = filterTransaction(database,blockchainTransList,walletMap.keySet());
         if(null == paramList || paramList.isEmpty()){
             return;
         }
         paramList.forEach((Transaction t) ->{
             List<Output> outputList = t.getOutputList();
             if(null != outputList && !outputList.isEmpty()){
-                for(Output o : outputList){
-                    if(walletMap.containsKey(o.getScriptPubKeyAddresses())){
-                        o.setWalletAccountId(walletMap.get(o.getScriptPubKeyAddresses()));
+                for(int i=0;i<outputList.size();i++){
+                    if(walletMap.containsKey(outputList.get(i).getScriptPubKeyAddresses())){
+                        outputList.get(i).setWalletAccountId(walletMap.get(outputList.get(i).getScriptPubKeyAddresses()));
                     }
+                }
+            }
+            List<Input> inputList = t.getInputList();
+            if(null != inputList && !inputList.isEmpty()){
+                for(int i=0;i<inputList.size();i++){
+                    Output output = outputMapper.queryOutputByPrimary(database,inputList.get(i).getTransactionTxid(),inputList.get(i).getVout());
+                    inputList.get(i).setWalletAccountId(output.getWalletAccountId());
+                    inputList.get(i).setAddress(output.getScriptPubKeyAddresses());
                 }
             }
         });

@@ -28,4 +28,7 @@
     <select id="queryOutputByWalletAccount" resultType="com.ora.blockchain.mybatis.entity.output.Output">
       SELECT script_pub_key_addresses AS scriptPubKeyAddresses, transaction_txid AS transactionTxid,n FROM ${database}.output WHERE wallet_account_id IS NULL
   </select>
+    <select id="queryOutputByPrimary" resultType="com.ora.blockchain.mybatis.entity.output.Output">
+        SELECT script_pub_key_addresses AS scriptPubKeyAddresses, transaction_txid AS transactionTxid,n FROM ${database}.output WHERE transaction_txid = #{transactionTxid} AND n = #{n} LIMIT 1
+    </select>
 </mapper>

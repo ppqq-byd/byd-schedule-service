@@ -2,6 +2,8 @@ package com.ora.blockchain.service.block;
 
 import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.block.Block;
+import com.ora.blockchain.mybatis.entity.wallet.Wallet;
+import com.ora.blockchain.mybatis.mapper.wallet.WalletMapper;
 import com.ora.blockchain.service.rpc.IRpcService;
 import com.ora.blockchain.task.Task;
 import com.ora.blockchain.utils.BlockchainUtil;
@@ -19,6 +21,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,10 +33,10 @@ import java.util.stream.Collectors;
 public class IBlockTest {
     @Resource
     @Qualifier("darkBlockServiceImpl")
-    private IBlockService blockService;
+    private IBlockService darkBlockService;
     @Resource
     @Qualifier("darkRpcServiceImpl")
-    private IRpcService rpcService;
+    private IRpcService darkRpcService;
 
     @Resource
     @Qualifier("ltcBlockServiceImpl")
@@ -73,51 +76,9 @@ public class IBlockTest {
         block.setDifficulty("56549991.12853394");
     }
 
-//    @Test
-    public void testInsertBlock() {
-//        blockService.insertBlock(database,block);
-        List<Block> blockList = rpcService.getPreviousBlockList(5, null);
-        for (Block b : blockList) {
-            blockService.insertBlock(database, b);
-        }
-    }
-//    @Test
-    public void testUpdateBlock(){
-        List<Block> blockList = rpcService.getPreviousBlockList(5, null);
-        blockService.updateBlock(database,blockList);
-    }
-
     @Test
     public void testDarkTask() {
-        List<Block> dbBlockList = blockService.queryBlockList(Constants.COIN_TYPE_DARK, null, 6);
-        if (!BlockchainUtil.isDistinctCollection(dbBlockList)) {
-           List<String> blockHashList = dbBlockList.stream().map(Block::getBlockHash).collect(Collectors.toList());
-           blockService.deleteBlockByBlockHash(Constants.COIN_TYPE_DARK,blockHashList);
-           dbBlockList = blockService.queryBlockList(Constants.COIN_TYPE_DARK, null, 6);
-        }
-
-        if (null == dbBlockList || dbBlockList.isEmpty()) {
-            List<Block> blockList = rpcService.getPreviousBlockList(6, null);
-            for (Block block : blockList) {
-                blockService.insertBlock(Constants.COIN_TYPE_DARK, block);
-            }
-            return;
-        }
-        List<Block> blockList = rpcService.getPreviousBlockList(6, null);
-        blockService.updateBlock(Constants.COIN_TYPE_DARK, dbBlockList, blockList);
-
-        while (true) {
-            blockList = rpcService.getPreviousBlockList(6, blockList.get(blockList.size() - 1).getPreviousBlockHash());
-            dbBlockList = blockService.queryBlockList(Constants.COIN_TYPE_DARK, blockList.get(0).getHeight(), 6);
-            if (null == dbBlockList || dbBlockList.isEmpty() || BlockchainUtil.isEqualCollection(blockList, dbBlockList)) {
-                break;
-            }
-            try {
-                blockService.updateBlock(Constants.COIN_TYPE_DARK, dbBlockList, blockList);
-            } catch (DuplicateKeyException e) {
-                break;
-            }
-        }
+        task.task(Constants.COIN_TYPE_DARK,darkBlockService,darkRpcService);
     }
 
 //    @Test
@@ -153,7 +114,7 @@ public class IBlockTest {
         }
     }
 
-//    @Test
+    @Test
     public void testBtcTask() {
         task.task(Constants.COIN_TYPE_BTC,btcBlockService,btcRpcService);
     }

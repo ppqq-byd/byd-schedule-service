@@ -11,6 +11,8 @@ import java.util.Date;
 public class Input {
     private String blockHash;
     private String transactionTxid;
+    private String address;
+    private Long walletAccountId;
     private String txid;
     private String coinbase;
     private Integer vout;
