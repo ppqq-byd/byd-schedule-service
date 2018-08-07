@@ -32,9 +32,10 @@
         `gas_limit`,
         `gas_used`,
         `nonce`)
-        VALUES (#{pojo.id}, #{pojo.tx_id}, #{pojo.from}, #{pojo.to},
-        #{pojo.block_time}, #{pojo.block_height},#{pojo.value}, #{pojo.gas_price},
-         #{pojo.gas_limit},  #{pojo.gas_used},#{pojo.nonce})
+        VALUES (#{pojo.id}, #{pojo.txId}, #{pojo.from}, #{pojo.to},
+        #{pojo.blockTime}, #{pojo.blockHeight},#{pojo.value}, #{pojo.gasPrice},
+         #{pojo.gasLimit},  #{pojo.gasUsed},#{pojo.nonce})
     </insert>
+
 
 </mapper>

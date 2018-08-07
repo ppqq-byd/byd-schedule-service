@@ -6,4 +6,8 @@ import java.util.List;
 
 public interface IEthereumTransactionService {
 
+    public void inserNewBlock();
+
+    public void confirmBlock();
+
 }

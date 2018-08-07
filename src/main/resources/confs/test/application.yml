@@ -33,3 +33,5 @@ rpc:
         url: "http://localhost:9332/"
         username: "ora"
         password: "Oradt!1234"
+    web3j:
+        url:"http://52.83.130.131:8545"
