@@ -15,6 +15,7 @@
         `gas_limit`,
         `gas_used`,
         `nonce`,
+         `input`,
         `status`,
         `create_ts`,
         `update_ts`
@@ -29,10 +30,11 @@
         `value`,
         `gas_price`,
         `gas_used`,
+          `input`,
         `nonce`)
         VALUES (#{pojo.id}, #{pojo.txId}, #{pojo.from}, #{pojo.to},
             #{pojo.blockHeight},#{pojo.value}, #{pojo.gasPrice},
-            #{pojo.gasUsed},#{pojo.nonce})
+            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce})
     </insert>
 
     <insert id="insertTxList">
@@ -45,6 +47,7 @@
         `value`,
         `gas_price`,
         `gas_used`,
+        `input`,
         `nonce`
         )
         VALUES
@@ -52,7 +55,7 @@
             (
             #{pojo.txId}, #{pojo.from}, #{pojo.to},
             #{pojo.blockHeight},#{pojo.value}, #{pojo.gasPrice},
-            #{pojo.gasUsed},#{pojo.nonce}
+            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce}
             )
         </foreach>
     </insert>
