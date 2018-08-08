@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBindMapper">
+    <!--auto generated Code-->
+    <resultMap id="AllColumnMap" type="com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind">
+        <result column="id" property="id"/>
+        <result column="account_id" property="accountId"/>
+        <result column="coin_type" property="coinType"/>
+        <result column="address" property="address"/>
+        <result column="create_ts" property="createTs"/>
+        <result column="update_ts" property="updateTs"/>
+    </resultMap>
+
+    <!--auto generated Code-->
+    <sql id="all_column">
+        `id`,
+        `account_id`,
+        `coin_type`,
+        `address`,
+        `create_ts`,
+        `update_ts`
+    </sql>
+
+    <!--auto generated Code-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="pojo.id">
+        INSERT INTO wallet_account_bind (
+            `id`,
+            `account_id`,
+            `coin_type`,
+            `address`,
+            `create_ts`,
+            `update_ts`
+        ) VALUES (
+            #{pojo.id},
+            #{pojo.accountId},
+            #{pojo.coinType},
+            #{pojo.address},
+            #{pojo.createTs},
+            #{pojo.updateTs}
+        )
+    </insert>
+
+    <!--auto generated Code-->
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="pojo.id">
+        INSERT INTO wallet_account_bind
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pojo.id!=null"> `id`,</if>
+            <if test="pojo.accountId!=null"> `account_id`,</if>
+            <if test="pojo.coinType!=null"> `coin_type`,</if>
+            <if test="pojo.address!=null"> `address`,</if>
+            <if test="pojo.createTs!=null"> `create_ts`,</if>
+            <if test="pojo.updateTs!=null"> `update_ts`,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pojo.id!=null">#{pojo.id},</if>
+            <if test="pojo.accountId!=null">#{pojo.accountId},</if>
+            <if test="pojo.coinType!=null">#{pojo.coinType},</if>
+            <if test="pojo.address!=null">#{pojo.address},</if>
+            <if test="pojo.createTs!=null">#{pojo.createTs},</if>
+            <if test="pojo.updateTs!=null">#{pojo.updateTs},</if>
+        </trim>
+    </insert>
+
+    <!--auto generated Code-->
+    <insert id="insertList">
+        INSERT INTO wallet_account_bind (
+        <include refid="all_column"/>
+        )VALUES
+        <foreach collection="pojos" item="pojo" index="index" separator=",">
+            (
+            #{pojo.id},
+            #{pojo.accountId},
+            #{pojo.coinType},
+            #{pojo.address},
+            #{pojo.createTs},
+            #{pojo.updateTs}
+            )
+        </foreach>
+    </insert>
+
+    <!--auto generated Code-->
+    <update id="update">
+        UPDATE wallet_account_bind
+        <set>
+            <if test="pojo.id != null"> `id` = #{pojo.id}, </if>
+            <if test="pojo.accountId != null"> `account_id` = #{pojo.accountId}, </if>
+            <if test="pojo.coinType != null"> `coin_type` = #{pojo.coinType}, </if>
+            <if test="pojo.address != null"> `address` = #{pojo.address}, </if>
+            <if test="pojo.createTs != null"> `create_ts` = #{pojo.createTs}, </if>
+            <if test="pojo.updateTs != null"> `update_ts` = #{pojo.updateTs} </if>
+        </set>
+        WHERE id = #{pojo.id}
+    </update>
+
+
+    <select id="queryWalletAccountBindByCoinType" resultMap="AllColumnMap">
+        SELECT  <include refid="all_column"/> FROM
+            ${@com.ora.blockchain.constants.Constants@DATABASE_COMMON}.wallet_account_bind
+        WHERE coin_type = #{coinType}
+    </select>
+
+
+</mapper>
+

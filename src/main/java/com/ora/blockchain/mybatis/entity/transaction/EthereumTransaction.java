@@ -28,6 +28,8 @@ public class EthereumTransaction {
 
     private Double gasUsed;
 
+    private String input;
+
     private int nonce;
 
     public void transEthTransaction(EthBlock.TransactionObject txObject){
@@ -39,6 +41,7 @@ public class EthereumTransaction {
         this.setGasUsed(txObject.getGas().doubleValue());
         this.setValue(txObject.getValue().doubleValue());
         this.setNonce(txObject.getNonce().intValue());
+        this.setInput(txObject.getInput().length()>65535?txObject.getInput().substring(0,65535):txObject.getInput());
 
     }
 

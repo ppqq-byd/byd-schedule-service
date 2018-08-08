@@ -3,8 +3,10 @@ package com.ora.blockchain.service.transaction.impl;
 
 import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
 import com.ora.blockchain.mybatis.entity.transaction.EthereumTransaction;
+import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumTransactionMapper;
+import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBindMapper;
 import com.ora.blockchain.service.transaction.IEthereumTransactionService;
 import com.ora.blockchain.service.web3j.Web3;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.web3j.protocol.core.methods.response.EthBlock;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,9 +29,12 @@ public class EthereumTransactionServiceImpl implements IEthereumTransactionServi
     @Autowired
     private EthereumBlockMapper blockMapper;
 
+    @Autowired
+    private WalletAccountBindMapper accountBindMapper;
+
     private static final int DEPTH = 12;
 
-
+    private static final int COIN_TYPE_ETH = 2;
 
     private long getSyncNumber( long needSync){
         if(needSync>DEPTH){
@@ -57,6 +59,7 @@ public class EthereumTransactionServiceImpl implements IEthereumTransactionServi
 
                 List<EthereumBlock> list = new ArrayList<>();
                 List<EthereumTransaction> txList = new ArrayList<>();
+
                 for(int i=1;i<=needSync;i++){
                     EthBlock block = Web3.getBlockInfoByNumber(dbBlockHeight+i);
                     EthereumBlock newBlock = new EthereumBlock();
@@ -67,7 +70,11 @@ public class EthereumTransactionServiceImpl implements IEthereumTransactionServi
                 }
 
                 blockMapper.insertBlockList("coin_eth",list);
-                txMapper.insertTxList("coin_eth",txList);
+                txList = filterTx(txList);
+                if(txList.size()!=0){
+                    txMapper.insertTxList("coin_eth",txList);
+                }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,6 +82,30 @@ public class EthereumTransactionServiceImpl implements IEthereumTransactionServi
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * 将不属于平台账户的交易 过滤掉
+     * @param list
+     */
+    private List<EthereumTransaction> filterTx( List<EthereumTransaction> list){
+        List<WalletAccountBind> ethAccounts = accountBindMapper.queryWalletAccountBindByCoinType(COIN_TYPE_ETH);
+
+        Iterator<EthereumTransaction> it = list.iterator();
+        List<EthereumTransaction> needAddList = new ArrayList<>();
+        if(ethAccounts==null)return needAddList;
+        while (it.hasNext()){
+            EthereumTransaction tx = it.next();
+            for(WalletAccountBind account:ethAccounts){
+                if(account.getAddress().equals(tx.getFrom())||
+                        account.getAddress().equals(tx.getTo())){
+                    needAddList.add(tx);
+                    break;
+                }
+            }
+        }
+
+        return needAddList;
     }
 
     private void addTx(EthBlock ethBlock,List<EthereumTransaction> txList){
