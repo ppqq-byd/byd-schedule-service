@@ -1,7 +1,8 @@
 package com.ora.blockchain.service.transaction.impl;
 
-import com.ora.blockchain.mybatis.entity.block.Block;
+
 import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
+import com.ora.blockchain.mybatis.entity.transaction.EthereumTransaction;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumTransactionMapper;
 import com.ora.blockchain.service.transaction.IEthereumTransactionService;
@@ -31,16 +32,7 @@ public class EthereumTransactionServiceImpl implements IEthereumTransactionServi
 
     private static final int DEPTH = 12;
 
-    private EthereumBlock trans(EthBlock ethBlock){
-        EthereumBlock newBlock = new EthereumBlock();
-        newBlock.setBlockNumber(ethBlock.getBlock().getNumber().longValue());
-        newBlock.setBlockTime(new Date(ethBlock.getBlock().getTimestamp().longValue()));
-        newBlock.setConfirmNumber(0);
-        newBlock.setDifficulty(ethBlock.getBlock().getDifficulty().longValue());
-        newBlock.setHash(ethBlock.getBlock().getHash());
-        newBlock.setParentHash(ethBlock.getBlock().getParentHash());
-        return newBlock;
-    }
+
 
     private long getSyncNumber( long needSync){
         if(needSync>DEPTH){
@@ -52,25 +44,47 @@ public class EthereumTransactionServiceImpl implements IEthereumTransactionServi
 
     @Override
     @Transactional
-    public void inserNewBlock() {
+    public void inserNewBlock(Long initBlockNumber) {
 
         try {
             long dbBlockHeight = blockMapper.queryMaxBlockInDb("coin_eth");
+            if(dbBlockHeight==0){
+                dbBlockHeight = initBlockNumber;
+            }
             long needSync = Web3.getCurrentBlockHeight().longValue()-dbBlockHeight;
             if(needSync>0){
                 needSync = getSyncNumber(needSync);
 
                 List<EthereumBlock> list = new ArrayList<>();
+                List<EthereumTransaction> txList = new ArrayList<>();
                 for(int i=1;i<=needSync;i++){
                     EthBlock block = Web3.getBlockInfoByNumber(dbBlockHeight+i);
-                    list.add(trans(block));
+                    EthereumBlock newBlock = new EthereumBlock();
+                    newBlock.trans(block);
+                    list.add(newBlock);
+
+                    addTx(block,txList);
                 }
+
                 blockMapper.insertBlockList("coin_eth",list);
+                txMapper.insertTxList("coin_eth",txList);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+    }
+
+    private void addTx(EthBlock ethBlock,List<EthereumTransaction> txList){
+
+        List<EthBlock.TransactionResult> list = ethBlock.getBlock().getTransactions();
+        for(EthBlock.TransactionResult r:list){
+            EthBlock.TransactionObject o = (EthBlock.TransactionObject) r.get();
+            EthereumTransaction tx = new EthereumTransaction();
+            tx.transEthTransaction(o);
+            txList.add(tx);
         }
 
     }
@@ -82,7 +96,7 @@ public class EthereumTransactionServiceImpl implements IEthereumTransactionServi
         try {
             long blockHeight = blockMapper.queryMaxConfirmBlockInDb("coin_eth");
             if(blockHeight==0){
-                blockHeight = blockMapper.queryMaxBlockInDb("coin_eth");
+                blockHeight = blockMapper.queryMinBlockInDb("coin_eth");
             }
 
             //检查链的状态 如果节点上，当前区块的12个子区块都确认了这个区块 说明可以和数据库同步
@@ -90,7 +104,7 @@ public class EthereumTransactionServiceImpl implements IEthereumTransactionServi
             if(chainBlocks!=null){//如果当前geth节点上 该区块向前12块都是能确认的 比对数据库的状态
                 List<EthereumBlock> list = blockMapper.queryPreEthBlocks("coin_eth",
                         blockHeight,
-                        blockHeight+DEPTH);
+                        blockHeight+DEPTH-1);
 
                 updateDbDataWithChain(chainBlocks,list);
             }
@@ -103,9 +117,10 @@ public class EthereumTransactionServiceImpl implements IEthereumTransactionServi
 
     }
 
+
     private void updateDbDataWithChain(EthBlock[] chainBlocks, List<EthereumBlock> list){
         List<EthereumBlock> sortedList =
-                list.stream().sorted(Comparator.comparing(EthereumBlock::getBlockNumber).reversed()).collect(Collectors.toList());
+                list.stream().sorted(Comparator.comparing(EthereumBlock::getBlockNumber)).collect(Collectors.toList());
 
         List<String> hashList = new ArrayList<>();
 
@@ -117,12 +132,15 @@ public class EthereumTransactionServiceImpl implements IEthereumTransactionServi
                 hashList.add(chainBlock.getHash());
             }else {
                 //update db record and status
-                blockMapper.updateByBlockNumber(trans(chainBlocks[i]));
+                EthereumBlock newDbBlock =new EthereumBlock();
+                newDbBlock.trans(chainBlocks[i]);
+                newDbBlock.setConfirmNumber(1);
+                blockMapper.updateByBlockNumber(newDbBlock);
             }
         }
 
         if(hashList.size()>0){
-            blockMapper.updateSetConfirmStatusByHash(DEPTH,hashList);
+            blockMapper.updateSetConfirmStatusByHash("coin_eth",1,hashList);
         }
     }
 
@@ -143,7 +161,8 @@ public class EthereumTransactionServiceImpl implements IEthereumTransactionServi
             return false;
         }
 
-        if(dbBlock.getBlockTime().getTime()!=chainBlock.getTimestamp().longValue()){
+        //以太坊的时间戳是以秒为单位
+        if(dbBlock.getBlockTime().getTime()!=(chainBlock.getTimestamp().longValue()*1000L)){
             return false;
         }
 

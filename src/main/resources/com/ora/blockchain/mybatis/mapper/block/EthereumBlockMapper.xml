@@ -45,6 +45,10 @@
         SELECT  IFNULL(MAX(block_number),0 ) FROM ${database}.block
     </select>
 
+    <select id="queryMinBlockInDb" resultType="Long">
+        SELECT  IFNULL(MIN(block_number),0 ) FROM ${database}.block
+    </select>
+
     <select id="queryMaxConfirmBlockInDb" resultType="Long">
         SELECT  IFNULL(MAX(block_number),0 ) FROM ${database}.block WHERE confirm_number >0
     </select>
@@ -57,7 +61,7 @@
     <update id="updateSetConfirmStatusByHash">
         UPDATE ${database}.block
         set `confirm_number` = #{confirmNumber}
-        WHERE id IN
+        WHERE hash IN
         <foreach item="item" index="index" collection="hashList"
                  open="(" separator="," close=")">
             #{item}

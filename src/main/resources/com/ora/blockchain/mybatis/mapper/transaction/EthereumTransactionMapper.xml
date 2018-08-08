@@ -25,17 +25,41 @@
         `tx_id`,
         `from`,
         `to`,
-        `block_time`,
         `block_height`,
         `value`,
         `gas_price`,
-        `gas_limit`,
         `gas_used`,
         `nonce`)
         VALUES (#{pojo.id}, #{pojo.txId}, #{pojo.from}, #{pojo.to},
-        #{pojo.blockTime}, #{pojo.blockHeight},#{pojo.value}, #{pojo.gasPrice},
-         #{pojo.gasLimit},  #{pojo.gasUsed},#{pojo.nonce})
+            #{pojo.blockHeight},#{pojo.value}, #{pojo.gasPrice},
+            #{pojo.gasUsed},#{pojo.nonce})
     </insert>
 
+    <insert id="insertTxList">
+        INSERT INTO ${database}.tx_ethereum (
+
+        `tx_id`,
+        `from`,
+        `to`,
+        `block_height`,
+        `value`,
+        `gas_price`,
+        `gas_used`,
+        `nonce`
+        )
+        VALUES
+        <foreach collection="txList" item="pojo" index="index" separator=",">
+            (
+            #{pojo.txId}, #{pojo.from}, #{pojo.to},
+            #{pojo.blockHeight},#{pojo.value}, #{pojo.gasPrice},
+            #{pojo.gasUsed},#{pojo.nonce}
+            )
+        </foreach>
+    </insert>
+
+
+    <select id="queryMaxBlockOfTxInDb" resultType="Long">
+        SELECT  IFNULL(MAX(block_height),0 ) FROM ${database}.tx_ethereum
+    </select>
 
 </mapper>
