@@ -12,17 +12,20 @@ public interface EthereumBlockMapper {
 
     public Long queryMaxBlockInDb(@Param("database") String database);
 
+    public Long queryMinBlockInDb(@Param("database") String database);
+
     public Long queryMaxConfirmBlockInDb(@Param("database") String database);
 
-    public void insertBlockList(@Param("database") String database, @Param("blockList") List<EthereumBlock> transactionList);
+    public void insertBlockList(@Param("database") String database, @Param("blockList") List<EthereumBlock> blockList);
 
     public List<EthereumBlock> queryPreEthBlocks(@Param("database") String database,
                                                  @Param("fromNumber")Long from,
                                                  @Param("toNumber")Long to);
 
     public void updateSetConfirmStatusByHash(
+            @Param("database") String database,
             @Param("confirmNumber") Integer confirmNumber,
-            @Param("hashList")List<String> hash);
+            @Param("hashList")List<String> hashList);
 
     public void updateByBlockNumber(@Param("pojo") EthereumBlock pojo);
 }

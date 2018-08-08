@@ -7,6 +7,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
@@ -18,12 +21,18 @@ public class IEthereumTransactionTest {
 
     @Test
     public void testInsertNewBlock(){
-        ethService.inserNewBlock();
+        Long start = System.currentTimeMillis();
+        ethService.inserNewBlock(6004178L);
+        Long end = System.currentTimeMillis();
+        System.out.println("cost--------------"+(end - start));
     }
 
     @Test
     public void testVerifyBlock(){
+        Long start = System.currentTimeMillis();
         ethService.confirmBlock();
-
+        Long end = System.currentTimeMillis();
+        System.out.println("cost--------------"+(end - start));
     }
+
 }

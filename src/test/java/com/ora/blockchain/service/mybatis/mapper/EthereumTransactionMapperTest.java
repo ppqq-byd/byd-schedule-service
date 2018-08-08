@@ -60,6 +60,13 @@ public class EthereumTransactionMapperTest {
     }
 
     @Test
+    public void testUpdateConfirmBlocks(){
+        List<String> list = new ArrayList<>();
+        list.add("0x8438fdc0701c52032bd90d0921d95dc4d58eb5de95f014dad61af149b4c47d3a");
+        blockMapper.updateSetConfirmStatusByHash("coin_eth",1,list);
+    }
+
+    @Test
     public void testQueryBlocks(){
         List<EthereumBlock> list =
                 blockMapper.queryPreEthBlocks("coin_eth",6095842L,6095852L);
