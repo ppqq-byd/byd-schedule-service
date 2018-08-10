@@ -9,6 +9,16 @@ import org.springframework.stereotype.Service;
 @Service
 public abstract class BlockScanner implements IBlockScanner {
 
+    private void recursionProcessErrorBlock(Long needScanBlock){
+        //因为这一个块是孤立块 所以删除该块 并且更改这个块所属的tx相应的状态
+        deleteBlockAndUpdateTx(needScanBlock);
+
+        if(verifyIsolatedBlock(needScanBlock)){
+
+            recursionProcessErrorBlock(needScanBlock-1);
+        }
+    }
+
 
     @Override
     public void scanBlock(Long initBlockHeight) {
@@ -16,20 +26,21 @@ public abstract class BlockScanner implements IBlockScanner {
 
         //如果是孤块 则设置游标 -1 从上个块重新扫描
         if(verifyIsolatedBlock(needScanBlock)){
-            setScannerCursor(needScanBlock-1);
+            recursionProcessErrorBlock(needScanBlock-1);
             return;
         }
 
-        //将块信息写入数据库
-        insertBlock(needScanBlock);
-        //将交易信息写入数据库
-        syncTransaction(needScanBlock);
+        //将块信息和tx同步到数据库
+        syncBlockAndTx(needScanBlock);
+
     }
 
     @Override
     public void updateAccount() {
 
     }
+
+    public abstract void deleteBlockAndUpdateTx(Long initBlockHeight);
 
     /**
      * 根据初始化的块高度 DB中的块高度 节点上的块高度
@@ -45,19 +56,12 @@ public abstract class BlockScanner implements IBlockScanner {
      */
     public abstract boolean verifyIsolatedBlock(Long needScanBlock);
 
-    /**
-     * 设置扫描的块高度游标
-     */
-    public abstract void setScannerCursor(Long blockHeight);
+
 
     /**
-     * 写块的信息 入数据库
+     * 将块信息和tx同步到数据库
      */
-    public abstract void insertBlock(Long blockHeight);
+    public abstract void syncBlockAndTx(Long blockHeight);
 
-    /**
-     * 同步交易信息
-     * @param blockHeight
-     */
-    public abstract void syncTransaction(Long blockHeight);
+
 }

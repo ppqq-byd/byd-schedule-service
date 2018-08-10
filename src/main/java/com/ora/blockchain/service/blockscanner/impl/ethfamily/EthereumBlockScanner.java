@@ -6,6 +6,12 @@ import org.springframework.stereotype.Service;
 
 @Service("ethBlockServiceImpl")
 public class EthereumBlockScanner extends BlockScanner {
+
+    @Override
+    public void deleteBlockAndUpdateTx(Long initBlockHeight) {
+        
+    }
+
     @Override
     public Long getNeedScanBlockHeight(Long initBlockHeight) {
         return null;
@@ -17,17 +23,7 @@ public class EthereumBlockScanner extends BlockScanner {
     }
 
     @Override
-    public void setScannerCursor(Long blockHeight) {
-
-    }
-
-    @Override
-    public void insertBlock(Long blockHeight) {
-
-    }
-
-    @Override
-    public void syncTransaction(Long blockHeight) {
+    public void syncBlockAndTx(Long blockHeight) {
 
     }
 }
