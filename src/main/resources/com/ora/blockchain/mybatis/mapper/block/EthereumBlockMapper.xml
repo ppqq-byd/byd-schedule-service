@@ -16,7 +16,6 @@
         `difficulty`,
         `block_number`,
         `parent_hash`,
-        `confirm_number`,
         `block_time`
     </sql>
 
@@ -27,18 +26,24 @@
             <if test="pojo.difficulty != null"> `difficulty` = #{pojo.difficulty}, </if>
             <if test="pojo.block_number != null"> `block_number` = #{pojo.blockNumber}, </if>
             <if test="pojo.parent_hash != null"> `parent_hash` = #{pojo.parentHash}, </if>
-            <if test="pojo.confirm_number != null"> `confirm_number` = #{pojo.confirmNumber}, </if>
-            <if test="pojo.block_time != null"> `block_time` = #{pojo.blockTime}, </if>
+
+            <if test="pojo.block_time != null"> `block_time` = #{pojo.blockTime} </if>
         </set>
         WHERE block_number = #{pojo.blockNumber}
     </update>
 
     <insert id="insertBlockList">
-        INSERT INTO ${database}.block (`hash`, `difficulty`, `block_number`,`parent_hash`, `confirm_number`, `block_time`)
+        INSERT INTO ${database}.block (`hash`, `difficulty`, `block_number`,`parent_hash`,  `block_time`)
         VALUES
         <foreach collection="blockList" item="pojo" index="index" separator=",">
             (#{pojo.hash}, #{pojo.difficulty}, #{pojo.blockNumber}, #{pojo.parentHash}, #{pojo.confirmNumber}, #{pojo.blockTime})
         </foreach>
+    </insert>
+
+    <insert id="insertBlock">
+        INSERT INTO ${database}.block (`hash`, `difficulty`, `block_number`,`parent_hash`, `block_time`)
+        VALUES
+         (#{pojo.hash}, #{pojo.difficulty}, #{pojo.blockNumber}, #{pojo.parentHash}, #{pojo.confirmNumber}, #{pojo.blockTime})
     </insert>
 
     <select id="queryMaxBlockInDb" resultType="Long">
@@ -49,13 +54,14 @@
         SELECT  IFNULL(MIN(block_number),0 ) FROM ${database}.block
     </select>
 
-    <select id="queryMaxConfirmBlockInDb" resultType="Long">
-        SELECT  IFNULL(MAX(block_number),0 ) FROM ${database}.block WHERE confirm_number >0
-    </select>
-
     <select id="queryPreEthBlocks" resultMap="AllColumnMap">
         SELECT  <include refid="all_column"/> FROM ${database}.block
           WHERE block_number BETWEEN #{fromNumber} AND #{toNumber}
+    </select>
+
+    <select id="queryEthBlockByBlockNumber" resultMap="AllColumnMap">
+        SELECT  <include refid="all_column"/> FROM ${database}.block
+        WHERE block_number = #{number}
     </select>
 
     <update id="updateSetConfirmStatusByHash">
@@ -68,6 +74,9 @@
         </foreach>
     </update>
 
+    <delete id="deleteBlockByBlockNumber">
+        DELETE FROM ${database}.block WHERE block_number = #{blockNumber}
+    </delete>
 
 
 </mapper>

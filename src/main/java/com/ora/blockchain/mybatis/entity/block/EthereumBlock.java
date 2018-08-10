@@ -22,8 +22,6 @@ public class EthereumBlock {
 
     private Long blockNumber;
 
-    private int confirmNumber;
-
     private Date blockTime;
 
     public void trans(EthBlock ethBlock){
@@ -31,7 +29,7 @@ public class EthereumBlock {
         this.setBlockNumber(ethBlock.getBlock().getNumber().longValue());
         //以太坊的时间戳单位是秒 所以乘以1000
         this.setBlockTime(new Date(ethBlock.getBlock().getTimestamp().longValue()*1000L));
-        this.setConfirmNumber(0);
+
         this.setDifficulty(ethBlock.getBlock().getDifficulty().longValue());
         this.setHash(ethBlock.getBlock().getHash());
         this.setParentHash(ethBlock.getBlock().getParentHash());

@@ -22,6 +22,8 @@ public class EthereumTransaction {
 
     private Long blockHeight;
 
+    private String blockHash;
+
     private Double value;
 
     private Double gasPrice;
@@ -41,6 +43,7 @@ public class EthereumTransaction {
         this.setGasUsed(txObject.getGas().doubleValue());
         this.setValue(txObject.getValue().doubleValue());
         this.setNonce(txObject.getNonce().intValue());
+        this.setBlockHash(txObject.getBlockHash());
         this.setInput(txObject.getInput().length()>65535?txObject.getInput().substring(0,65535):txObject.getInput());
 
     }

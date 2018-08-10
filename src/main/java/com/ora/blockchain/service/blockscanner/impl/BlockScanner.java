@@ -4,6 +4,7 @@ package com.ora.blockchain.service.blockscanner.impl;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
@@ -15,7 +16,7 @@ public abstract class BlockScanner implements IBlockScanner {
      * 递归回溯 直到分叉前
      * @param needScanBlock
      */
-    private void recursionProcessErrorBlock(Long needScanBlock){
+    private void recursionProcessErrorBlock(Long needScanBlock) throws Exception {
         //因为这一个块是孤立块 所以删除该块 并且更改这个块所属的tx相应的状态
         deleteBlockAndUpdateTx(needScanBlock);
 
@@ -27,7 +28,8 @@ public abstract class BlockScanner implements IBlockScanner {
 
 
     @Override
-    public void scanBlock(Long initBlockHeight) {
+    @Transactional
+    public void scanBlock(Long initBlockHeight) throws Exception {
         Long needScanBlock = getNeedScanBlockHeight(initBlockHeight);
         //如果已经是最新块了 那么这次不用扫描了
         if(isNeedScanHeightLasted(needScanBlock)){
@@ -45,6 +47,7 @@ public abstract class BlockScanner implements IBlockScanner {
     }
 
     @Override
+    @Transactional
     public void updateAccount() {
 
     }
@@ -54,7 +57,7 @@ public abstract class BlockScanner implements IBlockScanner {
      * @param needScanBlock
      * @return
      */
-    public abstract boolean isNeedScanHeightLasted(Long needScanBlock);
+    public abstract boolean isNeedScanHeightLasted(Long needScanBlock) throws IOException;
 
     /**
      * 删除块以及更新tx的状态
@@ -74,14 +77,14 @@ public abstract class BlockScanner implements IBlockScanner {
      * 判断孤立块
      * @return
      */
-    public abstract boolean verifyIsolatedBlock(Long needScanBlock);
+    public abstract boolean verifyIsolatedBlock(Long needScanBlock) throws Exception;
 
 
 
     /**
      * 将块信息和tx同步到数据库
      */
-    public abstract void syncBlockAndTx(Long blockHeight);
+    public abstract void syncBlockAndTx(Long blockHeight) throws Exception;
 
 
 }
