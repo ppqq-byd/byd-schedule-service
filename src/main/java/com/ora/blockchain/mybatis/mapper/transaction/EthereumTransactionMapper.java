@@ -13,9 +13,22 @@ public interface EthereumTransactionMapper {
     public void insertTransaction(@Param("database") String database,
                                   @Param("pojo") EthereumTransaction record);
 
+
+    public void updateTransacion(@Param("database") String database,
+                                 @Param("block_height") Long blockNumber,
+                                 @Param("block_hash") String blockHash
+                                 );
+
     public Long queryMaxBlockOfTxInDb(@Param("database") String database);
+
+    public List<EthereumTransaction> queryIsolatedBlockTx(@Param("database") String database);
+
 
     public void insertTxList(@Param("database") String database,
                              @Param("txList") List<EthereumTransaction> txList);
+
+
+    public void deleteTxByTxhash(@Param("database") String database,
+                                 @Param("txList") List<String> txList);
 
 }

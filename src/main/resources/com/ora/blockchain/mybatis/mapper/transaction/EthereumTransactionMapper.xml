@@ -10,6 +10,7 @@
         `to`,
         `block_time`,
         `block_height`,
+        `block_hash`,
         `value`,
         `gas_price`,
         `gas_limit`,
@@ -27,23 +28,24 @@
         `from`,
         `to`,
         `block_height`,
+        `block_hash`,
         `value`,
         `gas_price`,
         `gas_used`,
           `input`,
         `nonce`)
         VALUES (#{pojo.id}, #{pojo.txId}, #{pojo.from}, #{pojo.to},
-            #{pojo.blockHeight},#{pojo.value}, #{pojo.gasPrice},
+            #{pojo.blockHeight}, #{pojo.blockHash},#{pojo.value}, #{pojo.gasPrice},
             #{pojo.gasUsed},#{pojo.input},#{pojo.nonce})
     </insert>
 
     <insert id="insertTxList">
         INSERT INTO ${database}.tx_ethereum (
-
         `tx_id`,
         `from`,
         `to`,
         `block_height`,
+        `block_hash`,
         `value`,
         `gas_price`,
         `gas_used`,
@@ -54,7 +56,7 @@
         <foreach collection="txList" item="pojo" index="index" separator=",">
             (
             #{pojo.txId}, #{pojo.from}, #{pojo.to},
-            #{pojo.blockHeight},#{pojo.value}, #{pojo.gasPrice},
+            #{pojo.blockHeight}, #{pojo.blockHash},#{pojo.value}, #{pojo.gasPrice},
             #{pojo.gasUsed},#{pojo.input},#{pojo.nonce}
             )
         </foreach>
@@ -65,4 +67,24 @@
         SELECT  IFNULL(MAX(block_height),0 ) FROM ${database}.tx_ethereum
     </select>
 
+    <update id="updateTransacion">
+        UPDATE ${database}.tx_ethereum
+        <set>
+            `block_hash` = #{blockHash}
+
+        </set>
+        WHERE block_height = #{blockHeight}
+    </update>
+
+    <select id="queryIsolatedBlockTx" resultMap="AllColumnMap">
+        SELECT  <include refid="all_column"/> FROM ${database}.tx_ethereum
+        WHERE block_hash = NULL
+    </select>
+
+    <delete id="deleteTxByTxhash">
+        DELETE FROM ${database}.tx_ethereum WHERE tx_id in
+        <foreach item="item" index="index" collection="txList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>
