@@ -1,5 +1,6 @@
 package com.ora.blockchain.service.transaction;
 
+import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +18,12 @@ import java.util.Date;
 public class IEthereumTransactionTest {
 
     @Autowired
-    private IEthereumTransactionService ethService;
+    private IBlockScanner ethService;
 
     @Test
-    public void testInsertNewBlock(){
+    public void testInsertNewBlock() throws Exception {
         Long start = System.currentTimeMillis();
-        ethService.inserNewBlock(6004178L);
+        ethService.scanBlock(6004178L);
         Long end = System.currentTimeMillis();
         System.out.println("cost--------------"+(end - start));
     }
@@ -30,7 +31,7 @@ public class IEthereumTransactionTest {
     @Test
     public void testVerifyBlock(){
         Long start = System.currentTimeMillis();
-        ethService.confirmBlock();
+
         Long end = System.currentTimeMillis();
         System.out.println("cost--------------"+(end - start));
     }
