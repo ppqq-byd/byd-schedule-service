@@ -50,7 +50,6 @@ public class EthereumTransactionMapperTest {
         EthereumBlock block = new EthereumBlock();
         block.setBlockNumber(2L);
         block.setBlockTime(new Date());
-        block.setConfirmNumber(4);
         block.setDifficulty(213132L);
         block.setHash("1231dsf");
         block.setParentHash("sdf");
