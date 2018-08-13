@@ -13,7 +13,7 @@ public class WalletAccountBind {
 
     private Long id;
     private Long accountId;
-    private Integer coinType;
+    private String coinType;
     private String address;
     private Date createTs;
     private Date updateTs;

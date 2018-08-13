@@ -15,8 +15,8 @@ public interface EthereumTransactionMapper {
 
 
     public void updateTransacion(@Param("database") String database,
-                                 @Param("block_height") Long blockNumber,
-                                 @Param("block_hash") String blockHash
+                                 @Param("blockHeight") Long blockNumber,
+                                 @Param("blockHash") String blockHash
                                  );
 
     public Long queryMaxBlockOfTxInDb(@Param("database") String database);

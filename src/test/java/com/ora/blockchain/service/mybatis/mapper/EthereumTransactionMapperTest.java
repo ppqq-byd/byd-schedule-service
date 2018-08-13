@@ -59,10 +59,19 @@ public class EthereumTransactionMapperTest {
     }
 
     @Test
-    public void testUpdateConfirmBlocks(){
-        List<String> list = new ArrayList<>();
-        list.add("0x8438fdc0701c52032bd90d0921d95dc4d58eb5de95f014dad61af149b4c47d3a");
-        blockMapper.updateSetConfirmStatusByHash("coin_eth",1,list);
+    public void testInsertTx(){
+        List<EthereumTransaction> list =new ArrayList<>();
+        EthereumTransaction tx = new EthereumTransaction();
+                tx.setBlockHash("aaa");
+        tx.setValue(3.4);
+        tx.setGasUsed(2.0);
+        tx.setGasPrice(0.0003);
+        tx.setTxId("dsafsd");
+        tx.setFrom("a");
+        tx.setTo("b");
+        list.add(tx);
+        txMapper.insertTxList("coin_eth",list);
+
     }
 
     @Test

@@ -69,7 +69,8 @@ public class EthereumBlockScanner extends BlockScanner {
         EthBlock block = Web3.getBlockInfoByNumber(needScanBlock);
         EthereumBlock dbBlock = blockMapper.
                 queryEthBlockByBlockNumber("coin_eth",(needScanBlock-1));
-        if(!dbBlock.getHash().equals(block.getBlock().getParentHash())){
+
+        if(dbBlock!=null&&!dbBlock.getHash().equals(block.getBlock().getParentHash())){
             return true;
         }
 
@@ -87,7 +88,11 @@ public class EthereumBlockScanner extends BlockScanner {
         List<EthereumTransaction> dbTxList = filterTx(block);
         //delete dbTxList中 txhashid 相同 并且 block_hash为 null的 tx
         clearTxOfIsolatedBlock(dbTxList);
-        txMapper.insertTxList("coin_eth",dbTxList);
+        System.out.println("db:"+dbTxList.size());
+        if(dbTxList!=null&&dbTxList.size()>0){
+            txMapper.insertTxList("coin_eth",dbTxList);
+        }
+
     }
 
     private  void clearTxOfIsolatedBlock(List<EthereumTransaction> needInsertTxList){
@@ -106,8 +111,9 @@ public class EthereumBlockScanner extends BlockScanner {
             }
 
         }
-
-        txMapper.deleteTxByTxhash("coin_eth",needDelete);
+        if(needDelete!=null&&needDelete.size()>0){
+            txMapper.deleteTxByTxhash("coin_eth",needDelete);
+        }
 
     }
 
@@ -117,7 +123,7 @@ public class EthereumBlockScanner extends BlockScanner {
      * @return
      */
     private List<EthereumTransaction> filterTx(EthBlock block){
-        List<WalletAccountBind> ethAccounts = accountBindMapper.queryWalletAccountBindByCoinType(2);
+        List<WalletAccountBind> ethAccounts = accountBindMapper.queryWalletAccountBindByCoinType("ETH");
 
         List<EthereumTransaction> needAddList = new ArrayList<>();
         if(ethAccounts==null)return needAddList;

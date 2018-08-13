@@ -6,7 +6,6 @@
         <result column="difficulty" property="difficulty"/>
         <result column="block_number" property="blockNumber"/>
         <result column="parent_hash" property="parentHash"/>
-        <result column="confirm_number" property="confirmNumber"/>
         <result column="block_time" property="blockTime"/>
 
     </resultMap>
@@ -36,14 +35,14 @@
         INSERT INTO ${database}.block (`hash`, `difficulty`, `block_number`,`parent_hash`,  `block_time`)
         VALUES
         <foreach collection="blockList" item="pojo" index="index" separator=",">
-            (#{pojo.hash}, #{pojo.difficulty}, #{pojo.blockNumber}, #{pojo.parentHash}, #{pojo.confirmNumber}, #{pojo.blockTime})
+            (#{pojo.hash}, #{pojo.difficulty}, #{pojo.blockNumber}, #{pojo.parentHash},  #{pojo.blockTime})
         </foreach>
     </insert>
 
     <insert id="insertBlock">
         INSERT INTO ${database}.block (`hash`, `difficulty`, `block_number`,`parent_hash`, `block_time`)
         VALUES
-         (#{pojo.hash}, #{pojo.difficulty}, #{pojo.blockNumber}, #{pojo.parentHash}, #{pojo.confirmNumber}, #{pojo.blockTime})
+         (#{pojo.hash}, #{pojo.difficulty}, #{pojo.blockNumber}, #{pojo.parentHash},  #{pojo.blockTime})
     </insert>
 
     <select id="queryMaxBlockInDb" resultType="Long">
@@ -64,15 +63,7 @@
         WHERE block_number = #{number}
     </select>
 
-    <update id="updateSetConfirmStatusByHash">
-        UPDATE ${database}.block
-        set `confirm_number` = #{confirmNumber}
-        WHERE hash IN
-        <foreach item="item" index="index" collection="hashList"
-                 open="(" separator="," close=")">
-            #{item}
-        </foreach>
-    </update>
+
 
     <delete id="deleteBlockByBlockNumber">
         DELETE FROM ${database}.block WHERE block_number = #{blockNumber}
