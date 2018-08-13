@@ -29,11 +29,11 @@ public class EthereumJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        System.out.println("********************Btc Job start......************************");
+        System.out.println("********************Eth Job start......************************");
         long start = System.currentTimeMillis();
 
         long end = System.currentTimeMillis();
-        System.out.println(String.format("*********************Btc Job end(spent : %s)*****************************", end - start));
+        System.out.println(String.format("*********************Eth Job end(spent : %s)*****************************", end - start));
 
     }
 }

@@ -61,7 +61,7 @@ public class EthereumBlockScanner extends BlockScanner {
             return initBlockHeight;
         }
 
-        return dbBlockHeight++;
+        return ++dbBlockHeight;
     }
 
     @Override
