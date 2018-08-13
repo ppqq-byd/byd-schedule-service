@@ -61,16 +61,21 @@ public class EthereumBlockScanner extends BlockScanner {
             return initBlockHeight;
         }
 
-        return dbBlockHeight++;
+        return ++dbBlockHeight;
     }
 
     @Override
     public boolean verifyIsolatedBlock(Long needScanBlock) throws Exception {
-        EthBlock block = Web3.getBlockInfoByNumber(needScanBlock);
+
+        //现有数据库中最后一个块
         EthereumBlock dbBlock = blockMapper.
                 queryEthBlockByBlockNumber("coin_eth",(needScanBlock-1));
 
-        if(dbBlock!=null&&!dbBlock.getHash().equals(block.getBlock().getParentHash())){
+        //与节点中的对比
+        EthBlock block = Web3.getBlockInfoByNumber(needScanBlock-2);
+
+
+        if(dbBlock!=null&&!dbBlock.getParentHash().equals(block.getBlock().getHash())){
             return true;
         }
 

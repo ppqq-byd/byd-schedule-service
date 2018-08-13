@@ -87,7 +87,7 @@
 
     <select id="queryIsolatedBlockTx" resultMap="AllColumnMap">
         SELECT  <include refid="all_column"/> FROM ${database}.tx_ethereum
-        WHERE block_hash = NULL
+        WHERE block_hash is NULL
     </select>
 
     <delete id="deleteTxByTxhash">
