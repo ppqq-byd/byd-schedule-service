@@ -25,10 +25,6 @@ public interface EthereumBlockMapper {
     public EthereumBlock queryEthBlockByBlockNumber(@Param("database") String database,
                                                     @Param("number")Long number);
 
-    public void updateSetConfirmStatusByHash(
-            @Param("database") String database,
-            @Param("confirmNumber") Integer confirmNumber,
-            @Param("hashList")List<String> hashList);
 
     public void updateByBlockNumber(@Param("pojo") EthereumBlock pojo);
 

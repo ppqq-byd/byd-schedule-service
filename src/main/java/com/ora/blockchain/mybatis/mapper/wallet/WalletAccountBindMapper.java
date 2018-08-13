@@ -16,7 +16,7 @@ public interface WalletAccountBindMapper {
 
     int update(@Param("pojo") WalletAccountBind pojo);
 
-    List<WalletAccountBind> queryWalletAccountBindByCoinType(@Param("coinType")Integer coinType);
+    List<WalletAccountBind> queryWalletAccountBindByCoinType(@Param("coinType")String coinType);
 
 }
 
