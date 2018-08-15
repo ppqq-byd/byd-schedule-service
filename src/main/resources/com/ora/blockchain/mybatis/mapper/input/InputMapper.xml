@@ -15,4 +15,7 @@
     <delete id="deleteInput">
         DELETE FROM ${database}.input WHERE block_hash = #{blockHash}
     </delete>
+    <select id="queryByBlockHash" resultType="com.ora.blockchain.mybatis.entity.input.Input">
+        SELECT block_hash AS blockHash,txid,vout FROM ${database}.input WHERE block_hash = #{blockHash}
+    </select>
 </mapper>

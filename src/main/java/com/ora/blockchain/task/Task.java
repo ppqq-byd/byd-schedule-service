@@ -18,7 +18,7 @@ public class Task {
     public static final int BLOCK_DEPTH = 6;
 
     public void task(String database,IBlockService blockService,IRpcService rpcService) {
-        log.info("********************" + database + " Job start......************************");
+        /*log.info("********************" + database + " Job start......************************");
         long start = System.currentTimeMillis();
         List<Block> dbBlockList = blockService.queryBlockList(database, null, BLOCK_DEPTH);
         if (!BlockchainUtil.isDistinctCollection(dbBlockList)) {
@@ -50,6 +50,6 @@ public class Task {
             }
         }
         long end = System.currentTimeMillis();
-        log.info(String.format("*********************" + database + " Job end(spent : %s)*****************************", end - start));
+        log.info(String.format("*********************" + database + " Job end(spent : %s)*****************************", end - start));*/
     }
 }

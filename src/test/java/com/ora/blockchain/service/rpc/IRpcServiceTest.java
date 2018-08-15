@@ -10,11 +10,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @AutoConfigureMockMvc
@@ -23,26 +25,17 @@ import java.util.List;
 @Rollback
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IRpcServiceTest {
-    @Autowired
+    @Resource
+    @Qualifier("darkRpcServiceImpl")
     private IRpcService rpcService;
 
-//    @Test
-    public void testGetTransactionList() {
-        List<Transaction> transList = rpcService.getTransactionList(1, "000000000000001d9bf0f326224dd8841cb792903a8f5070d8af04680ce4711c");
-        for (Transaction t : transList) {
-            System.out.println(t.toString());
-        }
-    }
+    @Resource
+    @Qualifier("btcRpcServiceImpl")
+    private IRpcService btcRpcService;
+
     @Test
-    public void testGetBlockList(){
-//        List<Block> blockList = rpcService.getPreviousBlockList(6,null);
-//        for(Block block:blockList){
-//            System.out.println(block.toString());
-//        }
-        System.out.println("------------------------------------------------------------");
-        List<Block> blockList = rpcService.getNextBlockList(3,"00000000000000351fa575e134a71ba05e020b57310448f2f6718b6df1ce790e");
-        for(Block block:blockList){
-            System.out.println(block.toString());
-        }
+    public void testGetTransactionList() {
+        List<Transaction> transList = btcRpcService.getTransactionList("0000000000000000002ad091cfbf703e1d44ae118cdd93d66624433fd4bd3c25");
+        System.out.println(transList.size());
     }
 }

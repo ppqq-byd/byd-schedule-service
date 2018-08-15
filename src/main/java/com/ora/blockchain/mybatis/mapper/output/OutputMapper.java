@@ -14,6 +14,8 @@ public interface OutputMapper {
 
     public void updateOutput(@Param("database") String database, @Param("status") Integer status, @Param("transactionTxid") String transactionTxid, @Param("n") Integer n);
 
+    public void updateOutputBatch(@Param("database") String database, @Param("status") Integer status,@Param("outputList") List<Output> outputList);
+
     public void deleteOutput(@Param("database") String database,@Param("blockHash") String blockHash);
 
     public void updateWalletAccountId(@Param("database") String database,@Param("walletAccountId") Long walletAccountId,@Param("transactionTxid") String transactionTxid,@Param("n") Integer n);

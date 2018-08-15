@@ -13,6 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction {
+    public static final Integer STATUS_VALID = 1;
+    public static final Integer STATUS_INVALID = 0;
+
     private String txid;
     private String hex;
     private Long size;

@@ -45,7 +45,7 @@ public abstract class BlockchainUtil {
     public static List<String> getAddress(List<Transaction> transactionList){
         List<Output> outputList = new ArrayList<>();
         for(Transaction t : transactionList){
-            if(null != t.getOutputList() && !t.getOutputList().isEmpty()){
+            if(null != t && null != t.getOutputList() && !t.getOutputList().isEmpty()){
                 outputList.addAll(t.getOutputList());
             }
         }

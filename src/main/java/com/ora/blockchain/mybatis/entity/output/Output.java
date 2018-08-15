@@ -16,6 +16,7 @@ public class Output {
     private Long walletAccountId;
     private String blockHash;
     private String transactionTxid;
+    private Integer coinbase;
     private Double value;
     private Long valueSat;
     private Integer n;

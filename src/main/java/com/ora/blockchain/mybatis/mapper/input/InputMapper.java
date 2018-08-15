@@ -14,4 +14,6 @@ public interface InputMapper {
     public void insertInputList(@Param("database") String database, @Param("inputList") List<Input> inputList);
 
     public void deleteInput(@Param("database") String database,@Param("blockHash") String blockHash);
+
+    public List<Input> queryByBlockHash(@Param("database") String database,@Param("blockHash") String blockHash);
 }

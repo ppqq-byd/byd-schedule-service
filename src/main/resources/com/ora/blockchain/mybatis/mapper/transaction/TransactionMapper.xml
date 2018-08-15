@@ -13,9 +13,19 @@
         </foreach>
     </insert>
     <select id="queryTransactionListByBlockHash" resultType="com.ora.blockchain.mybatis.entity.transaction.Transaction">
-        SELECT txid FROM ${database}.transaction WHERE block_hash = #{blockHash}
+        SELECT txid,status,block_hash AS blockHash FROM ${database}.transaction WHERE block_hash = #{blockHash}
     </select>
     <delete id="deleteTransactionByBlockHash">
         DELETE FROM ${database}.transaction WHERE block_hash = #{blockHash}
     </delete>
+    <update id="updateTransaction">
+        <foreach collection="transactionList" item="pojo" separator=";">
+            UPDATE ${database}.transaction
+            <set>
+                <if test="pojo.status != null"> `status` = #{pojo.status}, </if>
+                <if test="pojo.blockHash != null"> `block_hash` = #{pojo.blockHash} </if>
+            </set>
+            WHERE txid = #{pojo.txid}
+        </foreach>
+    </update>
 </mapper>

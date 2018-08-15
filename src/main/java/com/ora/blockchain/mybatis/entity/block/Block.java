@@ -2,6 +2,7 @@ package com.ora.blockchain.mybatis.entity.block;
 
 import lombok.*;
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -17,6 +18,7 @@ public class Block{
     private Long size;
     private Long height;
     private Long version;
+    private List<String> txidList;
     private Long time;
     private Long medianTime;
     private String bits;

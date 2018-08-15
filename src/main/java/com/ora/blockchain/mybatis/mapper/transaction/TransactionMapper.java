@@ -15,4 +15,6 @@ public interface TransactionMapper {
     public List<Transaction> queryTransactionListByBlockHash(@Param("database") String database, @Param("blockHash") String blockHash);
 
     public void deleteTransactionByBlockHash(@Param("database") String database, @Param("blockHash") String blockHash);
+
+    public void updateTransaction(@Param("database") String database, @Param("transactionList") List<Transaction> transactionList);
 }

@@ -8,7 +8,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>byd-wallet-server</name>
+    <name>byd-schedule-service</name>
     <description>Server for wallet</description>
 
     <parent>

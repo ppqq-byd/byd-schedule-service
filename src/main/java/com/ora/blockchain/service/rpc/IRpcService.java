@@ -25,7 +25,11 @@ public interface IRpcService {
             return null;
         }
         return nodeList.stream().map(node -> {
+            if (null == node) {
+                return null;
+            }
             Transaction transaction = new Transaction();
+            boolean coinbaseTransaction = false;
             if (node.has("txid"))
                 transaction.setTxid(node.get("txid").textValue());
             if (node.has("hex"))
@@ -67,6 +71,7 @@ public interface IRpcService {
                             input.setVout(vin.get("vout").intValue());
                     } else if (vin.has("coinbase")) {
                         input.setCoinbase(vin.get("coinbase").textValue());
+                        coinbaseTransaction = true;
                     }
                     inputList.add(input);
                 }
@@ -78,6 +83,7 @@ public interface IRpcService {
                 ArrayNode vouts = (ArrayNode) node.get("vout");
                 for (JsonNode vout : vouts) {
                     Output output = new Output();
+                    output.setCoinbase(coinbaseTransaction ? 1 : 0);
                     if (node.has("blockhash"))
                         output.setBlockHash(node.get("blockhash").textValue());
                     if (node.has("txid"))
@@ -115,28 +121,34 @@ public interface IRpcService {
         }).collect(Collectors.toList());
     }
 
-    public static List<Block> convertToBlockList(List<JsonNode> nodeList) {
-        if (null == nodeList || nodeList.isEmpty()) {
+    public static Block convertToBlock(JsonNode node) {
+        if (null == node) {
             return null;
         }
-        return nodeList.stream().map(node -> {
-            Block block = new Block();
-            block.setBlockHash(node.get("hash").textValue());
-            block.setSize(node.get("size").longValue());
-            block.setHeight(node.get("height").longValue());
-            block.setVersion(node.get("version").longValue());
-            block.setMerkleroot(node.get("merkleroot").textValue());
-            block.setTime(node.get("time").longValue());
-            block.setMedianTime(node.get("mediantime").longValue());
-            block.setNonce(node.get("nonce").longValue());
-            block.setBits(node.get("bits").textValue());
-            block.setDifficulty(node.get("difficulty").doubleValue() + "");
-            block.setChainwork(node.get("chainwork").textValue());
-            block.setPreviousBlockHash(node.get("previousblockhash").textValue());
-            if (node.has("nextblockhash"))
-                block.setNextBlockHash(node.get("nextblockhash").textValue());
-            return block;
-        }).collect(Collectors.toList());
+        Block block = new Block();
+        block.setBlockHash(node.get("hash").textValue());
+        block.setSize(node.get("size").longValue());
+        block.setHeight(node.get("height").longValue());
+        block.setVersion(node.get("version").longValue());
+        block.setMerkleroot(node.get("merkleroot").textValue());
+        block.setTime(node.get("time").longValue());
+        block.setMedianTime(node.get("mediantime").longValue());
+        block.setNonce(node.get("nonce").longValue());
+        block.setBits(node.get("bits").textValue());
+        block.setDifficulty(node.get("difficulty").doubleValue() + "");
+        block.setChainwork(node.get("chainwork").textValue());
+        block.setPreviousBlockHash(node.get("previousblockhash").textValue());
+        if (node.has("nextblockhash"))
+            block.setNextBlockHash(node.get("nextblockhash").textValue());
+        if (node.has("tx")){
+            List<String> txidList = new ArrayList<>();
+            ArrayNode txids = (ArrayNode) node.get("tx");
+            for(JsonNode txNode : txids){
+                txidList.add(txNode.asText());
+            }
+            block.setTxidList(txidList);
+        }
+        return block;
     }
 
     public static HttpEntity<String> getRequestEntity(String method, List<Object> params) {
@@ -162,9 +174,15 @@ public interface IRpcService {
         return request;
     }
 
-    public List<Transaction> getTransactionList(Integer blockDepth, String lastBlockhash);
+    public Long getBestBlockHeight();
 
-    public List<Block> getNextBlockList(Integer blockDepth, String lastBlockhash);
+    public String getBlockHash(Long blockHeight);
 
-    public List<Block> getPreviousBlockList(Integer blockDepth, String lastBlockhash);
+    public String getBestBlockHash();
+
+    public Block getBlock(String blockHash);
+
+    public Block getBlock(Long blockHeight);
+
+    public List<Transaction> getTransactionList(String blockhash);
 }

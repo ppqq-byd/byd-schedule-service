@@ -13,4 +13,8 @@ public interface BlockMapper {
     public List<Block> queryBlockList(@Param("database") String database, @Param("height") Long height, @Param("size") int size);
 
     public void deleteBlockByBlockHash(@Param("database") String database, @Param("blockHash") String blockHash);
+
+    public Block queryLastBlock(@Param("database") String database);
+
+    public Block queryByBlockHeight(@Param("database") String database, @Param("blockHeight") Long blockHeight);
 }

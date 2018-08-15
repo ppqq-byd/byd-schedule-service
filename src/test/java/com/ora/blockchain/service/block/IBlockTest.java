@@ -4,6 +4,7 @@ import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.block.Block;
 import com.ora.blockchain.mybatis.entity.wallet.Wallet;
 import com.ora.blockchain.mybatis.mapper.wallet.WalletMapper;
+import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import com.ora.blockchain.service.rpc.IRpcService;
 import com.ora.blockchain.task.Task;
 import com.ora.blockchain.utils.BlockchainUtil;
@@ -19,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -52,6 +54,14 @@ public class IBlockTest {
     @Qualifier("btcRpcServiceImpl")
     private IRpcService btcRpcService;
 
+    @Resource
+    @Qualifier("btcBlockScanner")
+    private IBlockScanner btcScanner;
+
+    @Resource
+    @Qualifier("darkBlockScanner")
+    private IBlockScanner darkScanner;
+
     @Autowired
     private Task task;
     private String database;
@@ -81,41 +91,43 @@ public class IBlockTest {
         task.task(Constants.COIN_TYPE_DARK,darkBlockService,darkRpcService);
     }
 
-//    @Test
+    @Test
     public void testLitecoinTask(){
-        List<Block> dbBlockList = ltcBlockService.queryBlockList(Constants.COIN_TYPE_LTC, null, 6);
-        if (!BlockchainUtil.isDistinctCollection(dbBlockList)) {
-            List<String> blockHashList = dbBlockList.stream().map(Block::getBlockHash).collect(Collectors.toList());
-            ltcBlockService.deleteBlockByBlockHash(Constants.COIN_TYPE_LTC,blockHashList);
-            dbBlockList = ltcBlockService.queryBlockList(Constants.COIN_TYPE_LTC, null, 6);
-        }
-
-        if (null == dbBlockList || dbBlockList.isEmpty()) {
-            List<Block> blockList = ltcRpcService.getPreviousBlockList(6, null);
-            for (Block block : blockList) {
-                ltcBlockService.insertBlock(Constants.COIN_TYPE_LTC, block);
-            }
-            return;
-        }
-        List<Block> blockList = ltcRpcService.getPreviousBlockList(6, null);
-        ltcBlockService.updateBlock(Constants.COIN_TYPE_LTC, dbBlockList, blockList);
-
-        while (true) {
-            blockList = ltcRpcService.getPreviousBlockList(6, blockList.get(blockList.size() - 1).getPreviousBlockHash());
-            dbBlockList = ltcBlockService.queryBlockList(Constants.COIN_TYPE_LTC, blockList.get(0).getHeight(), 6);
-            if (null == dbBlockList || dbBlockList.isEmpty() || BlockchainUtil.isEqualCollection(blockList, dbBlockList)) {
-                break;
-            }
-            try {
-                ltcBlockService.updateBlock(Constants.COIN_TYPE_LTC, dbBlockList, blockList);
-            } catch (DuplicateKeyException e) {
-                break;
-            }
-        }
+        task.task(Constants.COIN_TYPE_LTC,ltcBlockService,ltcRpcService);
     }
 
     @Test
     public void testBtcTask() {
         task.task(Constants.COIN_TYPE_BTC,btcBlockService,btcRpcService);
+    }
+
+    @Test
+    public void testBtcScanner(){
+        for(int i=0 ;i<10 ;i++){
+            try {
+                btcScanner.scanBlock(536051L-1);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Test
+    public void testDarkScanner(){
+        try {
+            darkScanner.scanBlock(2L);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    public void deleteBlock(){
+        btcBlockService.deleteByHeight(Constants.COIN_TYPE_BTC,536051L);
+    }
+
+    @Test
+    public void queryBlock(){
+        Block block = btcBlockService.queryLastBlock("coin_btc");
+        System.out.println(block.getBlockHash());
     }
 }

@@ -18,4 +18,10 @@
     <delete id="deleteBlockByBlockHash">
         DELETE FROM ${database}.block WHERE block_hash = #{blockHash}
     </delete>
+    <select id="queryLastBlock" resultType="com.ora.blockchain.mybatis.entity.block.Block">
+        SELECT block_hash AS blockHash,height FROM ${database}.block ORDER BY height DESC LIMIT 1;
+    </select>
+    <select id="queryByBlockHeight" resultType="com.ora.blockchain.mybatis.entity.block.Block">
+        SELECT block_hash AS blockHash FROM ${database}.block WHERE height = #{blockHeight} LIMIT 1
+    </select>
 </mapper>
