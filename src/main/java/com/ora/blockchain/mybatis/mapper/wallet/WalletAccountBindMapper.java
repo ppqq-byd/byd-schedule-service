@@ -1,9 +1,12 @@
 package com.ora.blockchain.mybatis.mapper.wallet;
 
+import com.ora.blockchain.mybatis.entity.wallet.Wallet;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
+
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 
 @Mapper
@@ -17,6 +20,8 @@ public interface WalletAccountBindMapper {
     int update(@Param("pojo") WalletAccountBind pojo);
 
     List<WalletAccountBind> queryWalletAccountBindByCoinType(@Param("coinType")String coinType);
+
+    public List<WalletAccountBind> queryWalletByAddress(@Param("addressList") Set<String> addressList);
 
 }
 

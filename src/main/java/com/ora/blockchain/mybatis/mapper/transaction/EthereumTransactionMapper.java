@@ -31,4 +31,6 @@ public interface EthereumTransactionMapper {
     public void deleteTxByTxhash(@Param("database") String database,
                                  @Param("txList") List<String> txList);
 
+    public void batchUpdateStatusAndBlockHashAndUpdateTs(@Param("database") String database,
+                                                         @Param("txList") List<EthereumTransaction> txList);
 }

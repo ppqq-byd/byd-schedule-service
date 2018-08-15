@@ -100,6 +100,13 @@
         WHERE coin_type = #{coinType}
     </select>
 
+    <select id="queryWalletByAddress" resultMap="AllColumnMap">
+        SELECT <include refid="all_column"/> FROM ${@com.ora.blockchain.constants.Constants@DATABASE_COMMON}.
+          wallet_account_bind WHERE address IN
+        <foreach item="item" index="index" collection="addressList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
 </mapper>
 
