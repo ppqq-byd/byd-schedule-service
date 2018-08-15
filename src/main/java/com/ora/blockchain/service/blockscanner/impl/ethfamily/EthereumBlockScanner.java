@@ -1,7 +1,9 @@
 package com.ora.blockchain.service.blockscanner.impl.ethfamily;
 
 
+import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
+import com.ora.blockchain.mybatis.entity.output.Output;
 import com.ora.blockchain.mybatis.entity.transaction.EthereumTransaction;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
@@ -12,12 +14,12 @@ import com.ora.blockchain.service.web3j.Web3;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.web3j.abi.datatypes.Int;
 import org.web3j.protocol.core.methods.response.EthBlock;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("ethBlockScaner")
 @Slf4j
@@ -90,36 +92,44 @@ public class EthereumBlockScanner extends BlockScanner {
         dbBlock.trans(block);
         blockMapper.insertBlock("coin_eth",dbBlock);
 
-        List<EthereumTransaction> dbTxList = filterTx(block);
-        //delete dbTxList中 txhashid 相同 并且 block_hash为 null的 tx
-        clearTxOfIsolatedBlock(dbTxList);
-        System.out.println("db:"+dbTxList.size());
-        if(dbTxList!=null&&dbTxList.size()>0){
-            txMapper.insertTxList("coin_eth",dbTxList);
+        List<EthereumTransaction> sendTx = filterTx(block,false);
+        List<EthereumTransaction> receiveTx = filterTx(block,true);
+        System.out.println("sendTx:"+sendTx.size()+"/receiveTx:"+receiveTx.size());
+        if(sendTx!=null&&sendTx.size()>0){
+            //TODO sendTx 中的ERC20重新处理
+            txMapper.batchUpdateStatusAndBlockHashAndUpdateTs("coin_eth",
+                    sendTx);
+        }
+
+        if(receiveTx!=null&&receiveTx.size()>0){
+            //TODO receiveTx 中的ERC20重新处理
+            txMapper.insertTxList("coin_eth",receiveTx);
         }
 
     }
 
-    private  void clearTxOfIsolatedBlock(List<EthereumTransaction> needInsertTxList){
-        List<EthereumTransaction> txOfIsolatedBlock = txMapper.queryIsolatedBlockTx("coin_eth");
 
-        List<String> needDelete = new ArrayList<>();
-        Iterator<EthereumTransaction> it =txOfIsolatedBlock.iterator();
-        while (it.hasNext()){
-            EthereumTransaction txIsolated = it.next();
-
-            for(EthereumTransaction needInsert:needInsertTxList){
-                if(needInsert.getTxId().equals(txIsolated.getTxId())){
-                    needDelete.add(txIsolated.getTxId());
-                    break;
-                }
+    /**
+     * 获取和平台相关的账户
+     * @param results
+     * @param isReceive 收款还是付款
+     * @return
+     */
+    private List<WalletAccountBind> getEthAccounts( List<EthBlock.TransactionResult> results,
+                                                    boolean isReceive){
+        HashSet<String> address = new HashSet<String>();
+        for(int i=0;i<results.size();i++)
+        {
+            EthBlock.TransactionObject tx = (EthBlock.TransactionObject) results.get(i);
+            if(isReceive){
+                address.add(tx.getTo());
+            }else {
+                address.add(tx.getFrom());
             }
 
         }
-        if(needDelete!=null&&needDelete.size()>0){
-            txMapper.deleteTxByTxhash("coin_eth",needDelete);
-        }
-
+        List<WalletAccountBind> ethAccounts = accountBindMapper.queryWalletByAddress(address);
+        return ethAccounts;
     }
 
     /**
@@ -127,24 +137,25 @@ public class EthereumBlockScanner extends BlockScanner {
      * @param block
      * @return
      */
-    private List<EthereumTransaction> filterTx(EthBlock block){
-        List<WalletAccountBind> ethAccounts = accountBindMapper.queryWalletAccountBindByCoinType("ETH");
+    private List<EthereumTransaction> filterTx(EthBlock block,boolean isReceive){
 
         List<EthereumTransaction> needAddList = new ArrayList<>();
-        if(ethAccounts==null)return needAddList;
 
         List<EthBlock.TransactionResult> results = block.getBlock().getTransactions();
+        List<WalletAccountBind> ethAccounts = getEthAccounts(results,isReceive);
 
-        for(EthBlock.TransactionResult r:results)
-        {
-            EthBlock.TransactionObject tx = (EthBlock.TransactionObject) r.get();
-            for(WalletAccountBind account:ethAccounts){
-                if(account.getAddress().equals(tx.getFrom())||
-                        account.getAddress().equals(tx.getTo())){
-                    EthereumTransaction dbTx = new EthereumTransaction();
-                    dbTx.transEthTransaction(tx);
-                    needAddList.add(dbTx);
-                    break;
+        if(ethAccounts!=null&&ethAccounts.size()>0){
+            for(EthBlock.TransactionResult r:results)
+            {
+                EthBlock.TransactionObject tx = (EthBlock.TransactionObject) r.get();
+                for(WalletAccountBind account:ethAccounts){
+                    if(account.getAddress().equals(tx.getFrom())||
+                            account.getAddress().equals(tx.getTo())){
+                        EthereumTransaction dbTx = new EthereumTransaction();
+                        dbTx.transEthTransaction(tx);
+                        needAddList.add(dbTx);
+                        break;
+                    }
                 }
             }
         }
