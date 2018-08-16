@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+
 @Mapper
 public interface TransactionMapper {
     public void insertTransaction(@Param("database") String database, @Param("pojo") Transaction record);
@@ -14,7 +15,9 @@ public interface TransactionMapper {
 
     public List<Transaction> queryTransactionListByBlockHash(@Param("database") String database, @Param("blockHash") String blockHash);
 
+    public List<Transaction> queryTransactionListByTxid(@Param("database") String database, @Param("txidList") List<String> txidList);
+
     public void deleteTransactionByBlockHash(@Param("database") String database, @Param("blockHash") String blockHash);
 
-    public void updateTransaction(@Param("database") String database, @Param("transactionList") List<Transaction> transactionList);
+    public void updateTransactionList(@Param("database") String database, @Param("transactionList") List<Transaction> transactionList);
 }

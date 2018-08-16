@@ -2,26 +2,33 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ora.blockchain.mybatis.mapper.transaction.TransactionMapper">
     <insert id="insertTransaction">
-        INSERT INTO ${database}.transaction (`txid`, `hex`, `size`,`version`, `locktime`, `height`, `time`, `block_hash`, `block_time`,`create_ts`)
-        VALUES (#{pojo.txid}, #{pojo.hex}, #{pojo.size}, #{pojo.version}, #{pojo.locktime}, #{pojo.height},#{pojo.time}, #{pojo.blockHash}, #{pojo.blockTime}, now())
+        INSERT INTO ${database}.transaction (`txid`, `hex`, `size`,`version`, `locktime`, `height`, `time`, `block_hash`, `block_time`,`status`,`create_ts`)
+        VALUES (#{pojo.txid}, #{pojo.hex}, #{pojo.size}, #{pojo.version}, #{pojo.locktime}, #{pojo.height},#{pojo.time}, #{pojo.blockHash}, #{pojo.blockTime},#{pojo.status}, now())
      </insert>
     <insert id="insertTransactionList">
-      INSERT INTO ${database}.transaction (`txid`, `hex`, `size`,`version`, `locktime`, `height`, `time`, `block_hash`, `block_time`,`create_ts`)
+      INSERT INTO ${database}.transaction (`txid`, `hex`, `size`,`version`, `locktime`, `height`, `time`, `block_hash`, `block_time`,`status`,`create_ts`)
       VALUES
         <foreach collection="transactionList" item="pojo" index="index" separator=",">
-            (#{pojo.txid}, #{pojo.hex}, #{pojo.size}, #{pojo.version}, #{pojo.locktime}, #{pojo.height},#{pojo.time}, #{pojo.blockHash}, #{pojo.blockTime}, now())
+            (#{pojo.txid}, #{pojo.hex}, #{pojo.size}, #{pojo.version}, #{pojo.locktime}, #{pojo.height},#{pojo.time}, #{pojo.blockHash}, #{pojo.blockTime},#{pojo.status}, now())
         </foreach>
     </insert>
     <select id="queryTransactionListByBlockHash" resultType="com.ora.blockchain.mybatis.entity.transaction.Transaction">
         SELECT txid,status,block_hash AS blockHash FROM ${database}.transaction WHERE block_hash = #{blockHash}
     </select>
+    <select id="queryTransactionListByTxid" resultType="com.ora.blockchain.mybatis.entity.transaction.Transaction">
+        SELECT txid,status,block_hash AS blockHash FROM ${database}.transaction WHERE txid IN
+        <foreach item="item" index="index" collection="txidList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <delete id="deleteTransactionByBlockHash">
-        DELETE FROM ${database}.transaction WHERE block_hash = #{blockHash}
+        UPDATE ${database}.transaction SET block_hash = NULL WHERE block_hash=#{blockHash}
     </delete>
-    <update id="updateTransaction">
+    <update id="updateTransactionList">
         <foreach collection="transactionList" item="pojo" separator=";">
             UPDATE ${database}.transaction
             <set>
+                <if test="pojo.height != null">`height` = #{pojo.height},</if>
                 <if test="pojo.status != null"> `status` = #{pojo.status}, </if>
                 <if test="pojo.blockHash != null"> `block_hash` = #{pojo.blockHash} </if>
             </set>

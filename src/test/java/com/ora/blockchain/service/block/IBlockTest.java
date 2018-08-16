@@ -87,23 +87,8 @@ public class IBlockTest {
     }
 
     @Test
-    public void testDarkTask() {
-        task.task(Constants.COIN_TYPE_DARK,darkBlockService,darkRpcService);
-    }
-
-    @Test
-    public void testLitecoinTask(){
-        task.task(Constants.COIN_TYPE_LTC,ltcBlockService,ltcRpcService);
-    }
-
-    @Test
-    public void testBtcTask() {
-        task.task(Constants.COIN_TYPE_BTC,btcBlockService,btcRpcService);
-    }
-
-    @Test
     public void testBtcScanner(){
-        for(int i=0 ;i<10 ;i++){
+        for(int i=0 ;i<1 ;i++){
             try {
                 btcScanner.scanBlock(536051L-1);
             } catch (Exception e) {

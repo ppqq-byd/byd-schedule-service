@@ -1,5 +1,6 @@
 package com.ora.blockchain.mybatis.entity.transaction;
 
+import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.input.Input;
 import com.ora.blockchain.mybatis.entity.output.Output;
 import lombok.*;
@@ -13,9 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction {
-    public static final Integer STATUS_VALID = 1;
-    public static final Integer STATUS_INVALID = 0;
-
     private String txid;
     private String hex;
     private Long size;
@@ -25,11 +23,25 @@ public class Transaction {
     private Long time;
     private String blockHash;
     private Long blockTime;
-    private Integer status;
+    private Integer status = Constants.TXSTATUS_CONFIRMING;
     private Date createTs;
     private Date updateTs;
     private List<Output> outputList;
     private List<Input> inputList;
+
+    @Override
+    public int hashCode() {
+        return txid.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Transaction){
+            Transaction t = (Transaction)obj;
+            return txid.equals(t.getTxid());
+        }
+        return super.equals(obj);
+    }
 }
 
 //    {

@@ -1,5 +1,6 @@
 package com.ora.blockchain.service.block.impl;
 
+import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.block.Block;
 import com.ora.blockchain.mybatis.entity.input.Input;
 import com.ora.blockchain.mybatis.entity.output.Output;
@@ -59,31 +60,32 @@ public abstract class BlockServiceImpl implements IBlockService {
     }
 
     @Transactional
-    public void insertBlockTransaction(String database,String blockHash,List<Transaction> transactionList) {
-        if(null == transactionList || transactionList.isEmpty())
+    public void insertBlockTransaction(String database,final List<Transaction> paramTransactionList) {
+        if(null == paramTransactionList || paramTransactionList.isEmpty())
             return;
-        List<Output> outputList = new ArrayList<>();
-        List<Input> inputList = new ArrayList<>();
-        for(Transaction  t:transactionList){
-            outputList.addAll(t.getOutputList());
-            inputList.addAll(t.getInputList());
-        }
-        transMapper.insertTransactionList(database,transactionList);
-        outputMapper.insertOutputList(database,outputList);
-        inputMapper.insertInputList(database,inputList);
-        // 修改output表状态为无效
-        if(null != inputList && !inputList.isEmpty()){
-            List<Output> oList = new ArrayList<>();
-            inputList.forEach((Input input) -> {
-                if(StringUtils.isBlank(input.getCoinbase())){
-                    Output output = new Output();
-                    output.setTransactionTxid(input.getTxid());
-                    output.setN(input.getVout());
-                    oList.add(output);
-                }
+
+        List<String> txidList = paramTransactionList.stream().map((Transaction t) ->{return t.getTxid();}).collect(Collectors.toList());
+        List<Transaction> updateList = transMapper.queryTransactionListByTxid(database,txidList);
+        if(null != updateList && !updateList.isEmpty()){
+            updateList.forEach((Transaction t)->{
+                t.setHeight(paramTransactionList.get(0).getHeight());
+                t.setBlockHash(paramTransactionList.get(0).getBlockHash());
+                t.setStatus(Constants.TXSTATUS_CONFIRMING);
             });
-            if(null != oList && !oList.isEmpty())
-                outputMapper.updateOutputBatch(database,Output.STATUS_SPENT,oList);
+            transMapper.updateTransactionList(database,updateList);
+            paramTransactionList.removeAll(updateList);
+        }
+
+        if (null != paramTransactionList && !paramTransactionList.isEmpty()) {
+            List<Output> outputList = new ArrayList<>();
+            List<Input> inputList = new ArrayList<>();
+            for (Transaction t : paramTransactionList) {
+                outputList.addAll(t.getOutputList());
+                inputList.addAll(t.getInputList());
+            }
+            transMapper.insertTransactionList(database, paramTransactionList);
+            outputMapper.insertOutputList(database, outputList);
+            inputMapper.insertInputList(database, inputList);
         }
     }
 
@@ -125,7 +127,7 @@ public abstract class BlockServiceImpl implements IBlockService {
                     });
                 }
             });
-            insertBlockTransaction(database,block.getBlockHash(),oraTransactinList);
+            insertBlockTransaction(database,oraTransactinList);
         }
     }
 
@@ -135,26 +137,9 @@ public abstract class BlockServiceImpl implements IBlockService {
         Block block = blockMapper.queryByBlockHeight(database, blockHeight);
         if(null == block)
             return;
-        List<Input> iList = inputMapper.queryByBlockHash(database,block.getBlockHash());
-        if(null != iList && !iList.isEmpty()){
-            List<Output> outputList = new ArrayList<>();
-            iList.forEach((Input input) -> {
-                if(StringUtils.isBlank(input.getCoinbase())){
-                    Output output = new Output();
-                    output.setTransactionTxid(input.getTxid());
-                    output.setN(input.getVout());
-                    outputList.add(output);
-                }
-            });
-            // 修改output表状态为有效
-            if(null != outputList && !outputList.isEmpty())
-                outputMapper.updateOutputBatch(database,Output.STATUS_UNSPENT,outputList);
-        }
 
         blockMapper.deleteBlockByBlockHash(database,block.getBlockHash());
         transMapper.deleteTransactionByBlockHash(database,block.getBlockHash());
-        inputMapper.deleteInput(database,block.getBlockHash());
-        outputMapper.deleteOutput(database,block.getBlockHash());
     }
 
     @Override
