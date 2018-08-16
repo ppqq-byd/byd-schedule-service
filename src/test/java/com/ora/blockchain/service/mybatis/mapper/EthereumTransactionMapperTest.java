@@ -28,7 +28,7 @@ public class EthereumTransactionMapperTest {
 
     @Autowired
     private EthereumBlockMapper blockMapper;
-    
+
     @Test
     public void testBatchUpdate(){
         List<EthereumTransaction> list = new ArrayList<>();

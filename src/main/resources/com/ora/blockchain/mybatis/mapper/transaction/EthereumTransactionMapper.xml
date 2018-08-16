@@ -59,14 +59,16 @@
         `gas_price`,
         `gas_used`,
         `input`,
-        `nonce`
+        `nonce`,
+        `status`,
+        `is_delete`
         )
         VALUES
         <foreach collection="txList" item="pojo" index="index" separator=",">
             (
             #{pojo.txId}, #{pojo.from}, #{pojo.to},
             #{pojo.blockHeight}, #{pojo.blockHash},#{pojo.value}, #{pojo.gasPrice},
-            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce}
+            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce},#{pojo.status},#{pojo.isDelete}
             )
         </foreach>
     </insert>
@@ -116,4 +118,12 @@
         </foreach>
 
     </update>
+
+    <select id="queryTxInDb" resultMap="AllColumnMap">
+        SELECT  <include refid="all_column"/> FROM ${database}.tx_ethereum
+        WHERE tx_id IN
+        <foreach item="item" index="index" collection="txList" open="(" separator="," close=")">
+            #{item.txId}
+        </foreach>
+    </select>
 </mapper>
