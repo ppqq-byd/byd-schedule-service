@@ -28,29 +28,22 @@ public class EthereumTransactionMapperTest {
 
     @Autowired
     private EthereumBlockMapper blockMapper;
-
+    
     @Test
     public void testBatchUpdate(){
-
-
         List<EthereumTransaction> list = new ArrayList<>();
         EthereumTransaction tx = new EthereumTransaction();
         tx.setTxId("0xa93afba19da6f6ef0a858da896b7aa92161ce3a289d379a197fc31445a18ee92");
         tx.setStatus(2);
         tx.setBlockHash("xxx");
+        tx.setGasPrice(123d);
+        tx.setGasUsed(123d);
+        tx.setBlockHeight(2133112L);
         tx.setId(1L);
         tx.setUpdateTs(new Date());
         list.add(tx);
 
-        txMapper.batchUpdateStatusAndBlockHashAndUpdateTs("coin_eth",list);
-
-    }
-
-    @Test
-    public void testUpdate(){
-
-
-        txMapper.updateTransacion("coin_eth",1L,"aaa");
+        txMapper.batchUpdate("coin_eth",list);
 
     }
 
