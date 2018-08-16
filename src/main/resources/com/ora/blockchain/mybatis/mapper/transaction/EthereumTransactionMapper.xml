@@ -97,59 +97,23 @@
         </foreach>
     </delete>
 
+    <update id="batchUpdate"  parameterType="java.util.List">
 
+        <foreach collection="txList" item="item" index="index" open="" close="" separator=";">
+            update ${database}.tx_ethereum
+            <set>
+                status=#{item.status},
+                block_height = #{item.blockHeight},
+                block_hash = #{item.blockHash},
+                gas_price = #{item.gasPrice},
+                gas_used = #{item.gasUsed},
+                value = #{item.value},
+                input = #{item.input},
+                nonce = #{item.nonce},
+                update_ts = #{item.updateTs}
+            </set>
+            where tx_id = #{item.txId}
+        </foreach>
 
-    <update id="batchUpdateStatusAndBlockHashAndUpdateTs" parameterType="java.util.List">
-        update ${database}.tx_ethereum
-        set  status=
-        <foreach collection="txList" item="item" index="index"
-                 separator=" " open="case tx_id" close="end">
-            when #{item.txId} then #{item.status}
-        </foreach>,
-        block_height=
-        <foreach collection="txList" item="item" index="index"
-                 separator=" " open="case tx_id" close="end">
-            when #{item.txId} then #{item.blockHeight}
-        </foreach>,
-        block_hash=
-        <foreach collection="txList" item="item" index="index"
-                 separator=" " open="case tx_id" close="end">
-            when #{item.txId} then #{item.blockHash}
-        </foreach>,
-        gas_price=
-        <foreach collection="txList" item="item" index="index"
-                 separator=" " open="case tx_id" close="end">
-            when #{item.txId} then #{item.gasPrice}
-        </foreach>,
-        gas_used=
-        <foreach collection="txList" item="item" index="index"
-                 separator=" " open="case tx_id" close="end">
-            when #{item.txId} then #{item.gasUsed}
-        </foreach>,
-        value=
-        <foreach collection="txList" item="item" index="index"
-                 separator=" " open="case tx_id" close="end">
-            when #{item.txId} then #{item.value}
-        </foreach>,
-        input=
-        <foreach collection="txList" item="item" index="index"
-                 separator=" " open="case tx_id" close="end">
-            when #{item.txId} then #{item.input}
-        </foreach>,
-        nonce=
-        <foreach collection="txList" item="item" index="index"
-                 separator=" " open="case tx_id" close="end">
-            when #{item.txId} then #{item.nonce}
-        </foreach>,
-        update_ts=
-        <foreach collection="txList" item="item" index="index"
-                 separator=" " open="case tx_id" close="end">
-            when #{item.txId} then #{item.updateTs}
-        </foreach>
-        where tx_id in
-        <foreach collection="txList" index="index" item="item"
-                 separator="," open="(" close=")">
-            #{item.txId}
-        </foreach>
     </update>
 </mapper>

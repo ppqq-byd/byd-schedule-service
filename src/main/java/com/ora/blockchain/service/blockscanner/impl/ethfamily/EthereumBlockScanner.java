@@ -97,7 +97,7 @@ public class EthereumBlockScanner extends BlockScanner {
         System.out.println("sendTx:"+sendTx.size()+"/receiveTx:"+receiveTx.size());
         if(sendTx!=null&&sendTx.size()>0){
             //TODO sendTx 中的ERC20重新处理
-            txMapper.batchUpdateStatusAndBlockHashAndUpdateTs("coin_eth",
+            txMapper.batchUpdate("coin_eth",
                     sendTx);
         }
 
