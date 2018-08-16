@@ -2,14 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ora.blockchain.mybatis.mapper.transaction.TransactionMapper">
     <insert id="insertTransaction">
-        INSERT INTO ${database}.transaction (`txid`, `hex`, `size`,`version`, `locktime`, `height`, `time`, `block_hash`, `block_time`,`status`,`create_ts`)
-        VALUES (#{pojo.txid}, #{pojo.hex}, #{pojo.size}, #{pojo.version}, #{pojo.locktime}, #{pojo.height},#{pojo.time}, #{pojo.blockHash}, #{pojo.blockTime},#{pojo.status}, now())
+        INSERT INTO ${database}.transaction (`txid`, `hex`, `size`,`version`, `locktime`, `height`, `time`, `block_hash`, `block_time`,`trans_status`,`create_ts`)
+        VALUES (#{pojo.txid}, #{pojo.hex}, #{pojo.size}, #{pojo.version}, #{pojo.locktime}, #{pojo.height},#{pojo.time}, #{pojo.blockHash}, #{pojo.blockTime},#{pojo.transStatus}, now())
      </insert>
     <insert id="insertTransactionList">
-      INSERT INTO ${database}.transaction (`txid`, `hex`, `size`,`version`, `locktime`, `height`, `time`, `block_hash`, `block_time`,`status`,`create_ts`)
+      INSERT INTO ${database}.transaction (`txid`, `hex`, `size`,`version`, `locktime`, `height`, `time`, `block_hash`, `block_time`,`trans_status`,`create_ts`)
       VALUES
         <foreach collection="transactionList" item="pojo" index="index" separator=",">
-            (#{pojo.txid}, #{pojo.hex}, #{pojo.size}, #{pojo.version}, #{pojo.locktime}, #{pojo.height},#{pojo.time}, #{pojo.blockHash}, #{pojo.blockTime},#{pojo.status}, now())
+            (#{pojo.txid}, #{pojo.hex}, #{pojo.size}, #{pojo.version}, #{pojo.locktime}, #{pojo.height},#{pojo.time}, #{pojo.blockHash}, #{pojo.blockTime},#{pojo.transStatus}, now())
         </foreach>
     </insert>
     <select id="queryTransactionListByBlockHash" resultType="com.ora.blockchain.mybatis.entity.transaction.Transaction">
@@ -29,7 +29,7 @@
             UPDATE ${database}.transaction
             <set>
                 <if test="pojo.height != null">`height` = #{pojo.height},</if>
-                <if test="pojo.status != null"> `status` = #{pojo.status}, </if>
+                <if test="pojo.transStatus != null"> `trans_status` = #{pojo.transStatus}, </if>
                 <if test="pojo.blockHash != null"> `block_hash` = #{pojo.blockHash} </if>
             </set>
             WHERE txid = #{pojo.txid}

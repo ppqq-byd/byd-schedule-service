@@ -23,7 +23,8 @@ public class Transaction {
     private Long time;
     private String blockHash;
     private Long blockTime;
-    private Integer status = Constants.TXSTATUS_CONFIRMING;
+    private Integer status;
+    private Integer transStatus  = Constants.TXSTATUS_CONFIRMING;
     private Date createTs;
     private Date updateTs;
     private List<Output> outputList;

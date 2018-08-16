@@ -2,14 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ora.blockchain.mybatis.mapper.input.InputMapper">
     <insert id="insertInput">
-    INSERT INTO ${database}.input (`transaction_txid`, `address`,`wallet_account_id`, `txid`,`coinbase`, `vout`, `sequence`, `script_sig_hex`, `script_sig_asm`, `create_ts`)
-    VALUES (#{pojo.transactionTxid}, #{pojo.address}, #{pojo.walletAccountId}, #{pojo.txid},#{pojo.coinbase}, #{pojo.vout}, #{pojo.sequence}, #{pojo.scriptSigHex}, #{pojo.scriptSigAsm},now())
+    INSERT INTO ${database}.input (`transaction_txid`, `address`,`wallet_account_id`, `txid`,`coinbase`, `vout`, `sequence`, `create_ts`)
+    VALUES (#{pojo.transactionTxid}, #{pojo.address}, #{pojo.walletAccountId}, #{pojo.txid},#{pojo.coinbase}, #{pojo.vout}, #{pojo.sequence},now())
     </insert>
     <insert id="insertInputList">
-        INSERT INTO ${database}.input (`transaction_txid`, `address`,`wallet_account_id`, `txid`,`coinbase`, `vout`, `sequence`, `script_sig_hex`, `script_sig_asm`, `create_ts`)
+        INSERT INTO ${database}.input (`transaction_txid`, `address`,`wallet_account_id`, `txid`,`coinbase`, `vout`, `sequence`, `create_ts`)
         VALUES
         <foreach collection="inputList" item="pojo" index="index" separator=",">
-            (#{pojo.transactionTxid}, #{pojo.address}, #{pojo.walletAccountId}, #{pojo.txid},#{pojo.coinbase}, #{pojo.vout}, #{pojo.sequence}, #{pojo.scriptSigHex}, #{pojo.scriptSigAsm},now())
+            (#{pojo.transactionTxid}, #{pojo.address}, #{pojo.walletAccountId}, #{pojo.txid},#{pojo.coinbase}, #{pojo.vout}, #{pojo.sequence},now())
         </foreach>
     </insert>
 </mapper>

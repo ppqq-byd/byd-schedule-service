@@ -70,7 +70,7 @@ public abstract class BlockServiceImpl implements IBlockService {
             updateList.forEach((Transaction t)->{
                 t.setHeight(paramTransactionList.get(0).getHeight());
                 t.setBlockHash(paramTransactionList.get(0).getBlockHash());
-                t.setStatus(Constants.TXSTATUS_CONFIRMING);
+                t.setTransStatus(Constants.TXSTATUS_CONFIRMING);
             });
             transMapper.updateTransactionList(database,updateList);
             paramTransactionList.removeAll(updateList);
@@ -120,10 +120,10 @@ public abstract class BlockServiceImpl implements IBlockService {
                 }
                 if (null != t.getInputList() && !t.getInputList().isEmpty()) {
                     t.getInputList().forEach((Input input) -> {
-                        Output output = outputMapper.queryOutputByPrimary(database, input.getTransactionTxid(), input.getVout());
+                        Output output = outputMapper.queryOutputByPrimary(database, input.getTxid(), input.getVout());
                         input.setAddress(null == output ? null : output.getScriptPubKeyAddresses());
                         input.setWalletAccountId(null == output ? null : output.getWalletAccountId());
-                        outputMapper.updateOutput(database, Output.STATUS_SPENT, input.getTransactionTxid(), input.getVout());
+                        outputMapper.updateOutput(database, Output.STATUS_SPENT, input.getTxid(), input.getVout());
                     });
                 }
             });
