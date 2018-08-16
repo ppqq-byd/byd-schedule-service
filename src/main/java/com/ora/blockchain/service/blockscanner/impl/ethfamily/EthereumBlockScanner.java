@@ -84,6 +84,45 @@ public class EthereumBlockScanner extends BlockScanner {
         return false;
     }
 
+    /**
+     * 处理tx的状态 将集合分为 待update 和 待 insert
+     * @param filteredTx
+     * @param inDbTx
+     * @return
+     */
+    private  Map<String, List<EthereumTransaction> > processTxStatus(List<EthereumTransaction> filteredTx,
+                                                  List<EthereumTransaction> inDbTx){
+
+        List<EthereumTransaction> needUpdateTx = new ArrayList<>();
+
+        List<EthereumTransaction> needInsertTx = null;
+
+        Iterator<EthereumTransaction> it = filteredTx.iterator();
+        while (it.hasNext()){
+            EthereumTransaction tx = it.next();
+            tx.setStatus(Constants.TXSTATUS_CONFIRMING);
+            tx.setIsDelete(0);
+            boolean isDelete = false;
+            for(EthereumTransaction dbTx:inDbTx){
+                if(dbTx.getTxId().equals(tx.getTxId())){
+                    needUpdateTx.add(tx);
+                    isDelete = true;
+                    break;
+                }
+            }
+            if(isDelete){
+                it.remove();
+            }
+        }
+
+        needInsertTx = filteredTx;
+        Map<String, List<EthereumTransaction> > map = new HashMap<>();
+        map.put("insert",needInsertTx);
+        map.put("update",needUpdateTx);
+
+        return map;
+    }
+
     @Override
     public void syncBlockAndTx(Long blockHeight) throws Exception {
 
@@ -92,18 +131,24 @@ public class EthereumBlockScanner extends BlockScanner {
         dbBlock.trans(block);
         blockMapper.insertBlock("coin_eth",dbBlock);
 
-        List<EthereumTransaction> sendTx = filterTx(block,false);
-        List<EthereumTransaction> receiveTx = filterTx(block,true);
-        System.out.println("sendTx:"+sendTx.size()+"/receiveTx:"+receiveTx.size());
-        if(sendTx!=null&&sendTx.size()>0){
+        //过滤掉非系统账户的tx
+        List<EthereumTransaction> filteredTx = filterTx(block);
+        System.out.println("filteredTx:"+filteredTx.size());
+
+        //找出已在DB中存在的tx
+        List<EthereumTransaction> inDbTx = txMapper.queryTxInDb("coin_eth",filteredTx);
+        //根据inDBtx集合 将filteredTx处理为 待update和待insert两个集合
+        Map<String, List<EthereumTransaction> > map = processTxStatus(filteredTx,inDbTx);
+
+        if(map.get("update")!=null&&map.get("update").size()>0){
             //TODO sendTx 中的ERC20重新处理
             txMapper.batchUpdate("coin_eth",
-                    sendTx);
+                    map.get("update"));
         }
 
-        if(receiveTx!=null&&receiveTx.size()>0){
+        if(map.get("insert")!=null&&map.get("insert").size()>0){
             //TODO receiveTx 中的ERC20重新处理
-            txMapper.insertTxList("coin_eth",receiveTx);
+            txMapper.insertTxList("coin_eth",map.get("insert"));
         }
 
     }
@@ -112,20 +157,15 @@ public class EthereumBlockScanner extends BlockScanner {
     /**
      * 获取和平台相关的账户
      * @param results
-     * @param isReceive 收款还是付款
      * @return
      */
-    private List<WalletAccountBind> getEthAccounts( List<EthBlock.TransactionResult> results,
-                                                    boolean isReceive){
+    private List<WalletAccountBind> getEthAccounts( List<EthBlock.TransactionResult> results){
         HashSet<String> address = new HashSet<String>();
         for(int i=0;i<results.size();i++)
         {
             EthBlock.TransactionObject tx = (EthBlock.TransactionObject) results.get(i);
-            if(isReceive){
-                address.add(tx.getTo());
-            }else {
-                address.add(tx.getFrom());
-            }
+            address.add(tx.getTo());
+            address.add(tx.getFrom());
 
         }
         List<WalletAccountBind> ethAccounts = accountBindMapper.queryWalletByAddress(address);
@@ -137,12 +177,12 @@ public class EthereumBlockScanner extends BlockScanner {
      * @param block
      * @return
      */
-    private List<EthereumTransaction> filterTx(EthBlock block,boolean isReceive){
+    private List<EthereumTransaction> filterTx(EthBlock block){
 
         List<EthereumTransaction> needAddList = new ArrayList<>();
 
         List<EthBlock.TransactionResult> results = block.getBlock().getTransactions();
-        List<WalletAccountBind> ethAccounts = getEthAccounts(results,isReceive);
+        List<WalletAccountBind> ethAccounts = getEthAccounts(results);
 
         if(ethAccounts!=null&&ethAccounts.size()>0){
             for(EthBlock.TransactionResult r:results)

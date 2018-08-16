@@ -33,4 +33,8 @@ public interface EthereumTransactionMapper {
 
     public void batchUpdate(@Param("database") String database,
                                                          @Param("txList") List<EthereumTransaction> txList);
+
+    public List<EthereumTransaction> queryTxInDb(@Param("database") String database,
+                                                           @Param("txList") List<EthereumTransaction> txList);
+
 }
