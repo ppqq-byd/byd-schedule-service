@@ -138,6 +138,7 @@ public class EthereumBlockScanner extends BlockScanner {
      * @return
      */
     private boolean isContract(List<EthereumERC20> list,String address){
+        if(address==null)return false;
         for(EthereumERC20 erc20:list){
             if(erc20.getContractAddress().toLowerCase().equals(address.toLowerCase())){
                 return true;
@@ -224,6 +225,25 @@ public class EthereumBlockScanner extends BlockScanner {
     }
 
     /**
+     * 根据地址过滤tx
+     * @param ethAccounts
+     * @param tx
+     * @return
+     */
+    private boolean filterByAddress(List<WalletAccountBind> ethAccounts,EthBlock.TransactionObject tx){
+        for(WalletAccountBind account:ethAccounts){
+            //如果是平台账户的地址或者合约的地址
+            if(account.getAddress().equals(tx.getFrom())||
+                    account.getAddress().equals(tx.getTo())){
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+
+    /**
      * 将不属于平台账户的交易 过滤掉
      * @param block
      * @return
@@ -233,32 +253,43 @@ public class EthereumBlockScanner extends BlockScanner {
         List<EthereumTransaction> needAddList = new ArrayList<>();
 
         List<EthBlock.TransactionResult> results = block.getBlock().getTransactions();
-        List<WalletAccountBind> ethAccounts = getEthAccounts(results);
+        //非合约的账户
+        List<WalletAccountBind> notContractAccounts = getEthAccounts(results);
 
 
             for(EthBlock.TransactionResult r:results)
             {
                 EthBlock.TransactionObject tx = (EthBlock.TransactionObject) r.get();
                 EthereumTransaction dbTx = new EthereumTransaction();
-
+                if(tx.getTo()==null){
+                    log.info("is not erc20 contract:"+tx.getHash());
+                }
                 if(isContract(erc20,tx.getTo())){//如果是ERC20
                     dbTx.transEthTransaction(tx);
                     dbTx.setContractAddress(tx.getTo());
                     String result[] = this.processInput(tx.getInput().toLowerCase());
-                    dbTx.setTo(result[0]);
-                    dbTx.setValue(Double.parseDouble(result[1]));
-                    needAddList.add(dbTx);
-                }else {
-                    for(WalletAccountBind account:ethAccounts){
-                        //如果是平台账户的地址或者合约的地址
-                        if(account.getAddress().equals(tx.getFrom())||
-                                account.getAddress().equals(tx.getTo())){
-                            dbTx.transEthTransaction(tx);
-                            needAddList.add(dbTx);
-                            break;
-                        }
 
+                    //如果从inputData解析出的账户属于ERC20或from属于ERC20
+                    dbTx.transEthTransaction(tx);
+                    dbTx.setTo(result[0]);
+                    dbTx.setValue(Long.parseLong(result[1]));
+                    Set<String> address = new HashSet<>();
+                    address.add(dbTx.getFrom());
+                    address.add(dbTx.getTo());
+                    List<WalletAccountBind> accoutns = accountBindMapper.queryWalletByAddress(address);
+                    if(accoutns.size()>0){
+                        needAddList.add(dbTx);
                     }
+
+                }else {
+
+                    //如果是平台账户的地址
+                    if(filterByAddress(notContractAccounts,tx)){
+                        dbTx.transEthTransaction(tx);
+                        needAddList.add(dbTx);
+                    }
+
+
                 }
 
             }

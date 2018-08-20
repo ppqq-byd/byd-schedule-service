@@ -5,10 +5,12 @@ import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -19,8 +21,11 @@ import java.util.Date;
 @SpringBootTest
 public class IEthereumTransactionTest {
 
-    @Autowired
+
+    @Resource
+    @Qualifier("ethBlockScaner")
     private IBlockScanner ethService;
+
 
     @Test
     public void testInsertNewBlock() throws Exception {
