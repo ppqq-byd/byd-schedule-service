@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ora.blockchain.mybatis.mapper.transaction.EthereumERC20Mapper">
+    <!--auto generated Code-->
+    <resultMap id="AllColumnMap" type="com.ora.blockchain.mybatis.entity.transaction.EthereumERC20">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="short_name" property="shortName"/>
+        <result column="contract_address" property="contractAddress"/>
+        <result column="decimal" property="decimal"/>
+        <result column="officialsite" property="officialsite"/>
+    </resultMap>
+
+    <!--auto generated Code-->
+    <sql id="all_column">
+        `id`,
+        `name`,
+        `short_name`,
+        `contract_address`,
+        `decimal`,
+        `officialsite`
+    </sql>
+
+    <!--auto generated Code-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="pojo.id">
+        INSERT INTO coin_eth.erc20 (
+            `id`,
+            `name`,
+            `short_name`,
+            `contract_address`,
+            `decimal`,
+            `officialsite`
+        ) VALUES (
+            #{pojo.id},
+            #{pojo.name},
+            #{pojo.shortName},
+            #{pojo.contractAddress},
+            #{pojo.decimal},
+            #{pojo.officialsite}
+        )
+    </insert>
+
+    <!--auto generated Code-->
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="pojo.id">
+        INSERT INTO coin_eth.erc20
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pojo.id!=null"> `id`,</if>
+            <if test="pojo.name!=null"> `name`,</if>
+            <if test="pojo.shortName!=null"> `short_name`,</if>
+            <if test="pojo.contractAddress!=null"> `contract_address`,</if>
+            <if test="pojo.decimal!=null"> `decimal`,</if>
+            <if test="pojo.officialsite!=null"> `officialsite`,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pojo.id!=null">#{pojo.id},</if>
+            <if test="pojo.name!=null">#{pojo.name},</if>
+            <if test="pojo.shortName!=null">#{pojo.shortName},</if>
+            <if test="pojo.contractAddress!=null">#{pojo.contractAddress},</if>
+            <if test="pojo.decimal!=null">#{pojo.decimal},</if>
+            <if test="pojo.officialsite!=null">#{pojo.officialsite},</if>
+        </trim>
+    </insert>
+
+    <!--auto generated Code-->
+    <insert id="insertList">
+        INSERT INTO coin_eth.erc20 (
+        <include refid="all_column"/>
+        )VALUES
+        <foreach collection="pojos" item="pojo" index="index" separator=",">
+            (
+            #{pojo.id},
+            #{pojo.name},
+            #{pojo.shortName},
+            #{pojo.contractAddress},
+            #{pojo.decimal},
+            #{pojo.officialsite}
+            )
+        </foreach>
+    </insert>
+
+    <!--auto generated Code-->
+    <update id="update">
+        UPDATE coin_eth.erc20
+        <set>
+            <if test="pojo.id != null"> `id` = #{pojo.id}, </if>
+            <if test="pojo.name != null"> `name` = #{pojo.name}, </if>
+            <if test="pojo.shortName != null"> `short_name` = #{pojo.shortName}, </if>
+            <if test="pojo.contractAddress != null"> `contract_address` = #{pojo.contractAddress}, </if>
+            <if test="pojo.decimal != null"> `decimal` = #{pojo.decimal}, </if>
+            <if test="pojo.officialsite != null"> `officialsite` = #{pojo.officialsite} </if>
+        </set>
+        WHERE id = #{pojo.id}
+    </update>
+
+    <select id="queryERC20ByContractAddress" resultMap="AllColumnMap">
+        SELECT <include refid="all_column"/>
+        FROM ${database}.erc20 WHERE contract_address IN
+        <foreach item="item" index="index" collection="txList" open="(" separator="," close=")">
+            #{item.to}
+        </foreach>
+    </select>
+
+    <select id="queryERC20" resultMap="AllColumnMap">
+        SELECT <include refid="all_column"/>
+        FROM ${database}.erc20
+    </select>
+</mapper>
+

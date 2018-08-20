@@ -13,6 +13,8 @@
         <result column="gas_used" property="gasUsed"/>
         <result column="nonce" property="nonce"/>
         <result column="input" property="input"/>
+        <result column="contract_address" property="contractAddress"/>
+
     </resultMap>
     <!--auto generated Code-->
     <sql id="all_column">
@@ -27,6 +29,9 @@
         `gas_used`,
         `nonce`,
          `input`,
+         `status`,
+         `is_delete`,
+         `contract_address`,
         `create_ts`,
         `update_ts`
     </sql>
@@ -42,10 +47,14 @@
         `gas_price`,
         `gas_used`,
           `input`,
-        `nonce`)
+        `nonce`,
+         `status`,
+         `is_delete`,
+         `contract_address`)
         VALUES (#{pojo.id}, #{pojo.txId}, #{pojo.from}, #{pojo.to},
             #{pojo.blockHeight}, #{pojo.blockHash},#{pojo.value}, #{pojo.gasPrice},
-            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce})
+            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce},
+            #{pojo.status},#{pojo.isDelete},#{pojo.contractAddress})
     </insert>
 
     <insert id="insertTxList">
@@ -61,14 +70,16 @@
         `input`,
         `nonce`,
         `status`,
-        `is_delete`
+        `is_delete`,
+        `contract_address`
         )
         VALUES
         <foreach collection="txList" item="pojo" index="index" separator=",">
             (
             #{pojo.txId}, #{pojo.from}, #{pojo.to},
             #{pojo.blockHeight}, #{pojo.blockHash},#{pojo.value}, #{pojo.gasPrice},
-            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce},#{pojo.status},#{pojo.isDelete}
+            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce},#{pojo.status},#{pojo.isDelete},
+            #{pojo.contractAddress}
             )
         </foreach>
     </insert>
@@ -112,7 +123,8 @@
                 value = #{item.value},
                 input = #{item.input},
                 nonce = #{item.nonce},
-                update_ts = #{item.updateTs}
+                update_ts = #{item.updateTs},
+                contract_address=#{item.contractAddress}
             </set>
             where tx_id = #{item.txId}
         </foreach>

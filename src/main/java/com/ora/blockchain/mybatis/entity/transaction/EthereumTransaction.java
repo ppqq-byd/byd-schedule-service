@@ -44,7 +44,7 @@ public class EthereumTransaction {
 
     private Date updateTs;
 
-    private int isToken;
+    private String contractAddress;
 
     public void transEthTransaction(EthBlock.TransactionObject txObject){
         this.setTo(txObject.getTo());
