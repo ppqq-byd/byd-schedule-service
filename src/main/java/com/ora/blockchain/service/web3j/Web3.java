@@ -3,10 +3,7 @@ package com.ora.blockchain.service.web3j;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthBlock;
-import org.web3j.protocol.core.methods.response.EthGetBalance;
-import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.web3j.protocol.core.methods.response.Web3ClientVersion;
+import org.web3j.protocol.core.methods.response.*;
 import org.web3j.protocol.http.HttpService;
 import rx.Subscription;
 
@@ -83,6 +80,19 @@ public class Web3 {
                 DefaultBlockParameter.valueOf(BigInteger.valueOf(number)), true).send();
 
         return block;
+    }
+
+    /**
+     * 根据txhash 获取 TransactionReceipt
+     * @param txHash
+     * @return
+     * @throws Exception
+     */
+    public static TransactionReceipt getTransactionReceiptByTxhash(String txHash) throws Exception {
+        TransactionReceipt tr = web3.ethGetTransactionReceipt(txHash).send().getResult();
+
+        return tr;
+
     }
 
     /**

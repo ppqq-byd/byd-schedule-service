@@ -4,20 +4,25 @@ package com.ora.blockchain.service.blockscanner.impl.ethfamily;
 import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
 import com.ora.blockchain.mybatis.entity.output.Output;
+import com.ora.blockchain.mybatis.entity.transaction.EthereumERC20;
 import com.ora.blockchain.mybatis.entity.transaction.EthereumTransaction;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
+import com.ora.blockchain.mybatis.mapper.transaction.EthereumERC20Mapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumTransactionMapper;
 import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBindMapper;
 import com.ora.blockchain.service.blockscanner.impl.BlockScanner;
 import com.ora.blockchain.service.web3j.Web3;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.web3j.abi.datatypes.Int;
 import org.web3j.protocol.core.methods.response.EthBlock;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,6 +38,9 @@ public class EthereumBlockScanner extends BlockScanner {
 
     @Autowired
     private WalletAccountBindMapper accountBindMapper;
+
+    @Autowired
+    private EthereumERC20Mapper erc20Mapper;
 
     private static final int DEPTH = 12;
 
@@ -123,6 +131,24 @@ public class EthereumBlockScanner extends BlockScanner {
         return map;
     }
 
+    /**
+     * 判断是否是合约
+     * @param list
+     * @param address
+     * @return
+     */
+    private boolean isContract(List<EthereumERC20> list,String address){
+        for(EthereumERC20 erc20:list){
+            if(erc20.getContractAddress().toLowerCase().equals(address.toLowerCase())){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+
     @Override
     public void syncBlockAndTx(Long blockHeight) throws Exception {
 
@@ -131,23 +157,27 @@ public class EthereumBlockScanner extends BlockScanner {
         dbBlock.trans(block);
         blockMapper.insertBlock("coin_eth",dbBlock);
 
-        //过滤掉非系统账户的tx
-        List<EthereumTransaction> filteredTx = filterTx(block);
+        //获取erc20的定义
+        List<EthereumERC20> erc20 = erc20Mapper.queryERC20("coin_eth");
+
+        //过滤掉非系统账户的tx 以及 非支持的ERC20的tx
+        List<EthereumTransaction> filteredTx = filterTx(block,erc20);
         System.out.println("filteredTx:"+filteredTx.size());
 
+        if(filteredTx==null||filteredTx.size()==0)return;
         //找出已在DB中存在的tx
         List<EthereumTransaction> inDbTx = txMapper.queryTxInDb("coin_eth",filteredTx);
         //根据inDBtx集合 将filteredTx处理为 待update和待insert两个集合
         Map<String, List<EthereumTransaction> > map = processTxStatus(filteredTx,inDbTx);
 
         if(map.get("update")!=null&&map.get("update").size()>0){
-            //TODO sendTx 中的ERC20重新处理
+
             txMapper.batchUpdate("coin_eth",
                     map.get("update"));
         }
 
         if(map.get("insert")!=null&&map.get("insert").size()>0){
-            //TODO receiveTx 中的ERC20重新处理
+
             txMapper.insertTxList("coin_eth",map.get("insert"));
         }
 
@@ -172,33 +202,67 @@ public class EthereumBlockScanner extends BlockScanner {
         return ethAccounts;
     }
 
+    private String[] processInput(String input){
+        if(input.substring(0,10).equals("0xa9059cbb")){
+            String toAddress = input.substring(10,74);
+            String value = input.substring(74,138);
+            System.out.println(toAddress);
+            byte[] ss = new BigInteger(toAddress,16).toByteArray();
+            toAddress = Hex.toHexString(ss);
+            if(toAddress.length()==42&&toAddress.substring(0,2).equals("00")){
+                toAddress = toAddress.substring(2,42);
+            }
+
+            Long v = new BigInteger(value,16).longValue();
+
+            String result[] = new String[2];
+            result[0] = "0x"+toAddress;
+            result[1] = String.valueOf(v);
+            return result;
+        }
+        return null;
+    }
+
     /**
      * 将不属于平台账户的交易 过滤掉
      * @param block
      * @return
      */
-    private List<EthereumTransaction> filterTx(EthBlock block){
+    private List<EthereumTransaction> filterTx(EthBlock block,List<EthereumERC20> erc20) throws Exception {
 
         List<EthereumTransaction> needAddList = new ArrayList<>();
 
         List<EthBlock.TransactionResult> results = block.getBlock().getTransactions();
         List<WalletAccountBind> ethAccounts = getEthAccounts(results);
 
-        if(ethAccounts!=null&&ethAccounts.size()>0){
+
             for(EthBlock.TransactionResult r:results)
             {
                 EthBlock.TransactionObject tx = (EthBlock.TransactionObject) r.get();
-                for(WalletAccountBind account:ethAccounts){
-                    if(account.getAddress().equals(tx.getFrom())||
-                            account.getAddress().equals(tx.getTo())){
-                        EthereumTransaction dbTx = new EthereumTransaction();
-                        dbTx.transEthTransaction(tx);
-                        needAddList.add(dbTx);
-                        break;
+                EthereumTransaction dbTx = new EthereumTransaction();
+
+                if(isContract(erc20,tx.getTo())){//如果是ERC20
+                    dbTx.transEthTransaction(tx);
+                    dbTx.setContractAddress(tx.getTo());
+                    String result[] = this.processInput(tx.getInput().toLowerCase());
+                    dbTx.setTo(result[0]);
+                    dbTx.setValue(Double.parseDouble(result[1]));
+                    needAddList.add(dbTx);
+                }else {
+                    for(WalletAccountBind account:ethAccounts){
+                        //如果是平台账户的地址或者合约的地址
+                        if(account.getAddress().equals(tx.getFrom())||
+                                account.getAddress().equals(tx.getTo())){
+                            dbTx.transEthTransaction(tx);
+                            needAddList.add(dbTx);
+                            break;
+                        }
+
                     }
                 }
+
             }
-        }
+
 
         return needAddList;
     }
