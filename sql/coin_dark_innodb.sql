@@ -69,7 +69,7 @@ CREATE TABLE `output` (
   `wallet_account_id` bigint(20) DEFAULT NULL,
   `transaction_txid` char(64) NOT NULL COMMENT '当前vout所属transaction',
   `coinbase` tinyint(3) NOT NULL DEFAULT '0' COMMENT '0:false,1:true',
-  `value` double DEFAULT NULL,
+  `value` varchar(64) DEFAULT NULL,
   `value_sat` bigint(20) DEFAULT NULL,
   `n` int(11) DEFAULT NULL,
   `script_pub_key_asm` varchar(512) DEFAULT NULL,

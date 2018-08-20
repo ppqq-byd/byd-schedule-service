@@ -100,7 +100,7 @@ public class IBlockTest {
     @Test
     public void testDarkScanner(){
         try {
-            darkScanner.scanBlock(2L);
+            darkScanner.scanBlock(921662L);
         } catch (Exception e) {
             e.printStackTrace();
         }

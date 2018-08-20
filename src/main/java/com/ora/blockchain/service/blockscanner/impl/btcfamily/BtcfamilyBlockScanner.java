@@ -44,7 +44,7 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
     @Override
     public boolean isNeedScanHeightLasted(Long needScanBlock) {
         Long height = getRpcService().getBestBlockHeight();
-        return null != needScanBlock && null != height && needScanBlock.longValue() > height.longValue();
+        return null != needScanBlock && null != height && needScanBlock.longValue() >= height.longValue();
     }
 
     public abstract IBlockService getBlockService();

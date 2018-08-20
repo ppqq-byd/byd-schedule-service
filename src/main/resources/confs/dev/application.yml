@@ -27,7 +27,7 @@ spring:
 
 rpc:
     dark:
-        url: "http://127.0.0.1:18332/"
+        url: "http://ELB-TCP-Blockchain-8ce9078d9f50e341.elb.cn-northwest-1.amazonaws.com.cn:9998/"
         username: "ora"
         password: "Oradt!1234"
     ltc:

@@ -14,6 +14,7 @@ import com.ora.blockchain.mybatis.mapper.wallet.WalletMapper;
 import com.ora.blockchain.service.block.IBlockService;
 import com.ora.blockchain.service.rpc.IRpcService;
 import com.ora.blockchain.utils.BlockchainUtil;
+import com.ora.blockchain.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -115,6 +116,8 @@ public abstract class BlockServiceImpl implements IBlockService {
                 t.setHeight(block.getHeight());
                 if (null != t.getOutputList() && !t.getOutputList().isEmpty()) {
                     t.getOutputList().forEach((Output output) -> {
+                        if(null == output.getValueSat())
+                            output.setValueSat(convertToSatoshis(output.getValue()));
                         output.setWalletAccountId(walletMap.get(output.getScriptPubKeyAddresses()));
                     });
                 }
@@ -148,5 +151,8 @@ public abstract class BlockServiceImpl implements IBlockService {
         return blockMapper.queryLastBlock(database);
     }
 
+    protected long convertToSatoshis(double value) {
+        return (long) (Utils.COIN.longValue() * value);
+    }
     public abstract IRpcService getRpcService();
 }

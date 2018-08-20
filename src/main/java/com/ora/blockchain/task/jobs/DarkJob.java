@@ -2,9 +2,11 @@ package com.ora.blockchain.task.jobs;
 
 import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.service.block.IBlockService;
+import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import com.ora.blockchain.service.rpc.IRpcService;
 import com.ora.blockchain.task.ScheduledJob;
 import com.ora.blockchain.task.Task;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.bcel.Const;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -16,25 +18,28 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
+@Slf4j
 @Component
 @ScheduledJob(name = "darkJob", cronExp = "0 */1 * * * ?")
 @DisallowConcurrentExecution
 public class DarkJob implements Job {
+    private static final Long BLOCK_HEIGHT = 921663L;
+
     @Resource
-    @Qualifier("darkRpcServiceImpl")
-    private IRpcService darkRpcService;
-    @Resource
-    @Qualifier("darkBlockServiceImpl")
-    private IBlockService darkBlockService;
-    @Autowired
-    private Task task;
+    @Qualifier("darkBlockScanner")
+    private IBlockScanner scanner;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        System.out.println("********************Dark Job start......************************");
+        log.info("********************Dark Scanner Job start......************************");
         long start = System.currentTimeMillis();
-//        task.task(Constants.COIN_TYPE_DARK, darkBlockService, darkRpcService);
+        try {
+//            scanner.scanBlock(BLOCK_HEIGHT);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("Dark Scanner Job error! " + e.getMessage());
+        }
         long end = System.currentTimeMillis();
-        System.out.println(String.format("*********************Dark Job end(spent : %s)*****************************", end - start));
+        log.info(String.format("*********************Dark Scanner Job end(spent : %s)*****************************", end - start));
     }
 }

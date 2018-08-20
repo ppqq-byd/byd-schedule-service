@@ -21,7 +21,7 @@ public class BtcJob implements Job {
     private static final Long BTC_BLOCK_HEIGHT = 536052L;
 
     @Resource
-    @Qualifier
+    @Qualifier("btcBlockScanner")
     private IBlockScanner btcBlockScanner;
 
     @Override
@@ -37,4 +37,9 @@ public class BtcJob implements Job {
         long end = System.currentTimeMillis();
         log.info(String.format("*********************Btc Scanner Job end(spent : %s)*****************************", end - start));
     }
+    //TODO 查询出用户未花费的所有UTXO ，根据UTXO计算总金额和被冻结的金额，须和queryUTXOList相同
+    /*SELECT value_sat,t.block_hash,t.trans_status,o.`status` FROM `transaction` t,output o
+    WHERE o.transaction_txid = t.txid
+    AND o.`status` = 1
+    AND o.wallet_account_id = 8*/
 }
