@@ -184,6 +184,16 @@ public class EthereumBlockScanner extends BlockScanner {
 
     }
 
+    @Override
+    public List<WalletAccountBind> getWalletAccountBindByCoinType(String coinType) {
+        return null;
+    }
+
+    @Override
+    public void updateAccountBalance(List<WalletAccountBind> list) {
+
+    }
+
 
     /**
      * 获取和平台相关的账户

@@ -1,12 +1,14 @@
 package com.ora.blockchain.service.blockscanner.impl;
 
 
+import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -49,8 +51,9 @@ public abstract class BlockScanner implements IBlockScanner {
 
     @Override
     @Transactional
-    public void updateAccount() {
-
+    public void updateAccount(String coinType) {
+       List<WalletAccountBind> list = getWalletAccountBindByCoinType(coinType);
+        updateAccountBalance(list);
     }
 
     /**
@@ -88,4 +91,16 @@ public abstract class BlockScanner implements IBlockScanner {
     public abstract void syncBlockAndTx(Long blockHeight) throws Exception;
 
 
+    /**
+     * 根据币种获取账户的地址绑定
+     * @param coinType
+     * @return
+     */
+    public abstract List<WalletAccountBind> getWalletAccountBindByCoinType(String coinType);
+
+    /**
+     * 更新账户余额的数值
+     * @param list
+     */
+    public abstract void updateAccountBalance(List<WalletAccountBind> list);
 }
