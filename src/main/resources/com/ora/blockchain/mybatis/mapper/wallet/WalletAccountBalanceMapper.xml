@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBalanceMapper">
+    <!--auto generated Code-->
+    <resultMap id="AllColumnMap" type="com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance">
+        <result column="id" property="id"/>
+        <result column="account_id" property="accountId"/>
+        <result column="coin_type" property="coinType"/>
+        <result column="token_id" property="tokenId"/>
+        <result column="total_balance" property="totalBalance"/>
+        <result column="frozen_balance" property="frozenBalance"/>
+        <result column="create_ts" property="createTs"/>
+        <result column="update_ts" property="updateTs"/>
+    </resultMap>
+
+    <!--auto generated Code-->
+    <sql id="all_column">
+        `id`,
+        `account_id`,
+        `coin_type`,
+        `token_id`,
+        `total_balance`,
+        `frozen_balance`,
+        `create_ts`,
+        `update_ts`
+    </sql>
+
+    <!--auto generated Code-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="pojo.id">
+        INSERT INTO wallet_account_balance (
+            `id`,
+            `account_id`,
+            `coin_type`,
+            `token_id`,
+            `total_balance`,
+            `frozen_balance`,
+            `create_ts`,
+            `update_ts`
+        ) VALUES (
+            #{pojo.id},
+            #{pojo.accountId},
+            #{pojo.coinType},
+            #{pojo.tokenId},
+            #{pojo.totalBalance},
+            #{pojo.frozenBalance},
+            #{pojo.createTs},
+            #{pojo.updateTs}
+        )
+    </insert>
+
+    <!--auto generated Code-->
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="pojo.id">
+        INSERT INTO wallet_account_balance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pojo.id!=null"> `id`,</if>
+            <if test="pojo.accountId!=null"> `account_id`,</if>
+            <if test="pojo.coinType!=null"> `coin_type`,</if>
+            <if test="pojo.tokenId!=null"> `token_id`,</if>
+            <if test="pojo.totalBalance!=null"> `total_balance`,</if>
+            <if test="pojo.frozenBalance!=null"> `frozen_balance`,</if>
+            <if test="pojo.createTs!=null"> `create_ts`,</if>
+            <if test="pojo.updateTs!=null"> `update_ts`,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pojo.id!=null">#{pojo.id},</if>
+            <if test="pojo.accountId!=null">#{pojo.accountId},</if>
+            <if test="pojo.coinType!=null">#{pojo.coinType},</if>
+            <if test="pojo.tokenId!=null">#{pojo.tokenId},</if>
+            <if test="pojo.totalBalance!=null">#{pojo.totalBalance},</if>
+            <if test="pojo.frozenBalance!=null">#{pojo.frozenBalance},</if>
+            <if test="pojo.createTs!=null">#{pojo.createTs},</if>
+            <if test="pojo.updateTs!=null">#{pojo.updateTs},</if>
+        </trim>
+    </insert>
+
+    <!--auto generated Code-->
+    <insert id="insertList">
+        INSERT INTO wallet_account_balance (
+        <include refid="all_column"/>
+        )VALUES
+        <foreach collection="pojos" item="pojo" index="index" separator=",">
+            (
+            #{pojo.id},
+            #{pojo.accountId},
+            #{pojo.coinType},
+            #{pojo.tokenId},
+            #{pojo.totalBalance},
+            #{pojo.frozenBalance},
+            #{pojo.createTs},
+            #{pojo.updateTs}
+            )
+        </foreach>
+    </insert>
+
+    <!--auto generated Code-->
+    <update id="update">
+        UPDATE wallet_account_balance
+        <set>
+            <if test="pojo.id != null"> `id` = #{pojo.id}, </if>
+            <if test="pojo.accountId != null"> `account_id` = #{pojo.accountId}, </if>
+            <if test="pojo.coinType != null"> `coin_type` = #{pojo.coinType}, </if>
+            <if test="pojo.tokenId != null"> `token_id` = #{pojo.tokenId}, </if>
+            <if test="pojo.totalBalance != null"> `total_balance` = #{pojo.totalBalance}, </if>
+            <if test="pojo.frozenBalance != null"> `frozen_balance` = #{pojo.frozenBalance}, </if>
+            <if test="pojo.createTs != null"> `create_ts` = #{pojo.createTs}, </if>
+            <if test="pojo.updateTs != null"> `update_ts` = #{pojo.updateTs} </if>
+        </set>
+        WHERE id = #{pojo.id}
+    </update>
+</mapper>
+
