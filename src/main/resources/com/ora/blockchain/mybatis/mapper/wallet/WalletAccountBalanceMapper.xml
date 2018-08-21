@@ -115,5 +115,14 @@
         WHERE wc.address=#{address}
         AND wb.coin_type = #{coinType}
     </select>
+
+    <select id="findBalanceByContractAddressAndCoinType" resultMap="AllColumnMap">
+        SELECT wb.* FROM wallet_common.wallet_account_balance wb WHERE wb.coin_type=#{coinType} AND
+        wb.token_id = (SELECT id FROM ${database}.erc20 WHERE
+        contract_address=#{contractAddress})
+        AND wb.account_id =
+        (SELECT account_id FROM wallet_common.wallet_account_bind WHERE
+        address=#{accountAddress})
+    </select>
 </mapper>
 

@@ -53,7 +53,7 @@ public class EthereumBlockScanner extends BlockScanner {
     @Override
     public boolean isNeedScanHeightLasted(Long needScanBlock) throws IOException {
         try {
-            if(needScanBlock>=Web3.getCurrentBlockHeight().longValue())
+            if(needScanBlock>Web3.getCurrentBlockHeight().longValue())
             return true;
         } catch (IOException e) {
             log.error(e.getMessage(),e);
@@ -78,12 +78,6 @@ public class EthereumBlockScanner extends BlockScanner {
         }else {
             dbBlockHeight = dbBlockHeight + 1;
         }
-
-        EthereumScanCursor cursor = new EthereumScanCursor();
-        cursor.setCurrentBlock(dbBlockHeight);
-        cursor.setSyncStatus(0);
-        scanCursorMapper.insert(cursor);
-
         return dbBlockHeight;
     }
 
@@ -162,9 +156,17 @@ public class EthereumBlockScanner extends BlockScanner {
     }
 
 
+    private void recordCursor(Long blockHeight){
+        EthereumScanCursor cursor = new EthereumScanCursor();
+        cursor.setCurrentBlock(blockHeight);
+        cursor.setSyncStatus(0);
+        scanCursorMapper.insert(cursor);
+    }
 
     @Override
     public void syncBlockAndTx(Long blockHeight) throws Exception {
+        //记录游标
+        recordCursor(blockHeight);
 
         EthBlock block = Web3.getBlockInfoByNumber(blockHeight);
         EthereumBlock dbBlock = new EthereumBlock();
@@ -215,12 +217,13 @@ public class EthereumBlockScanner extends BlockScanner {
         if(wc!=null){
             Long value = tx.getValue()+tx.getGasUsed();
             if(isOut){
-                wc.setTotalBalance(wc.getTotalBalance()-value);
+                wc.setFrozenBalance(wc.getFrozenBalance()-value);//冻结减去值
+                wc.setTotalBalance(wc.getTotalBalance()-value);//真正的余额减去值
 
             }else{
-                wc.setTotalBalance(wc.getTotalBalance()+value);
+                wc.setTotalBalance(wc.getTotalBalance()+tx.getValue());//真正的余额加上值
             }
-            wc.setFrozenBalance(wc.getFrozenBalance()+value);
+
             balanceMapper.update(wc);
         }
 
@@ -229,34 +232,48 @@ public class EthereumBlockScanner extends BlockScanner {
     @Override
     public void updateAccountBalance(List<WalletAccountBind> list) {
         EthereumScanCursor cursor =
-                this.scanCursorMapper.getEthereumScanCursor("coin_eth");
+                this.scanCursorMapper.getEthereumNotConfirmScanCursor("coin_eth");
         if(cursor==null){
             return;
         }
+        Long lastedBlock = this.blockMapper.queryMaxBlockInDb("coin_eth");
+        if(lastedBlock - cursor.getCurrentBlock()>=DEPTH){//已经被12个块确认 需要处理
+            //处理没被处理过的交易
+            List<EthereumTransaction> txList =
+                    this.txMapper.queryTxByBlockNumber("coin_eth",cursor.getCurrentBlock());
+            for(EthereumTransaction tx:txList){
+                if(tx.getContractAddress()!=null){//处理token的逻辑
 
-        //处理没被处理过的交易
-        List<EthereumTransaction> txList =
-                this.txMapper.queryTxByBlockNumber("coin_eth",cursor.getCurrentBlock());
-        for(EthereumTransaction tx:txList){
-            if(tx.getContractAddress()!=null){//处理token的逻辑
+                    //转出token
+                    WalletAccountBalance outAccount =
+                            this.balanceMapper.findBalanceByContractAddressAndCoinType("coin_eth",
+                            Constants.COIN_TYPE_ETH,tx.getContractAddress(),tx.getFrom());
+                    Long out = tx.getValue()+tx.getGasUsed();
+                    outAccount.setTotalBalance(outAccount.getTotalBalance()-out);
+                    outAccount.setFrozenBalance(outAccount.getFrozenBalance()-out);
+                    balanceMapper.update(outAccount);
 
-            }else{//eth币的逻辑
-                //处理转出的逻辑
-                processEthCoinAccount(tx.getFrom(),true,tx);
-                //处理转入的逻辑
-                processEthCoinAccount(tx.getTo(),false,tx);
+                    //转入token
+                    WalletAccountBalance inAccount =
+                            this.balanceMapper.findBalanceByContractAddressAndCoinType("coin_eth",
+                                    Constants.COIN_TYPE_ETH,tx.getContractAddress(),tx.getTo());
+                    Long in = tx.getValue();
+                    inAccount.setTotalBalance(inAccount.getTotalBalance()+in);
+                    balanceMapper.update(inAccount);
+                }else{//eth币的逻辑
+                    //处理转出的逻辑
+                    processEthCoinAccount(tx.getFrom(),true,tx);
+                    //处理转入的逻辑
+                    processEthCoinAccount(tx.getTo(),false,tx);
 
+                }
             }
+
+            //将处理过的状态设为1
+            cursor.setSyncStatus(1);
+            scanCursorMapper.update(cursor);
         }
 
-
-        //处理没有被确认过的tx
-        List<EthereumTransaction> notConfirmList =
-                txMapper.queryNotConfirmTxByLastedBlockNumber("coin_eth");
-
-        for(EthereumTransaction tx:notConfirmList){
-
-        }
     }
 
 

@@ -16,5 +16,5 @@ public interface EthereumScanCursorMapper {
 
     int update(@Param("pojo") EthereumScanCursor pojo);
 
-    EthereumScanCursor getEthereumScanCursor(@Param("database") String database);
+    EthereumScanCursor getEthereumNotConfirmScanCursor(@Param("database") String database);
 }

@@ -71,7 +71,7 @@
         WHERE id = #{pojo.id}
     </update>
 
-    <select id="getEthereumScanCursor" resultType="AllColumnMap">
+    <select id="getEthereumNotConfirmScanCursor" resultType="AllColumnMap">
         SELECT  <include refid="all_column"/> FROM ${database}.scancursor_ethereum
         where id = (select min(id) from ${database}.scancursor_ethereum) and sync_status = 0
     </select>

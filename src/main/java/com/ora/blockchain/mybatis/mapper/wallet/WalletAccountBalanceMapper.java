@@ -18,4 +18,9 @@ public interface WalletAccountBalanceMapper {
 
     WalletAccountBalance findBalanceByAddressAndCointype(@Param("address")String address,
                                                          @Param("coinType")String coinType);
+
+    WalletAccountBalance findBalanceByContractAddressAndCoinType(
+            @Param("database")String database,@Param("coinType")String coinType,
+            @Param("contractAddress")String contractAddress,
+            @Param("accountAddress")String accountAddress);
 }
