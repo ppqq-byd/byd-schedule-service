@@ -1,5 +1,6 @@
 package com.ora.blockchain.mybatis.mapper.wallet;
 
+import com.ora.blockchain.mybatis.entity.wallet.ERC20Sum;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,8 +20,18 @@ public interface WalletAccountBalanceMapper {
     WalletAccountBalance findBalanceByAddressAndCointype(@Param("address")String address,
                                                          @Param("coinType")String coinType);
 
+    List<WalletAccountBalance> findTokenBalanceByAddressAndCointype(@Param("address")String address,
+                                                         @Param("coinType")String coinType);
+
     WalletAccountBalance findBalanceByContractAddressAndCoinType(
             @Param("database")String database,@Param("coinType")String coinType,
             @Param("contractAddress")String contractAddress,
             @Param("accountAddress")String accountAddress);
+
+    ERC20Sum findERC20OutSumByAddressAndTokenId(@Param("address")String accountAddress,
+                                                @Param("ercId") Integer ercId);
+
+
+    Long findERC20InSumByAddressAndTokenId(@Param("address")String accountAddress,
+                                           @Param("ercId") Integer ercId);
 }

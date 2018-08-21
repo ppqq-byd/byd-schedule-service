@@ -6,6 +6,7 @@ import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
 import com.ora.blockchain.mybatis.entity.eth.EthereumERC20;
 import com.ora.blockchain.mybatis.entity.eth.EthereumScanCursor;
 import com.ora.blockchain.mybatis.entity.eth.EthereumTransaction;
+import com.ora.blockchain.mybatis.entity.wallet.ERC20Sum;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
@@ -199,12 +200,6 @@ public class EthereumBlockScanner extends BlockScanner {
 
     }
 
-    @Override
-    public List<WalletAccountBind> getWalletAccountBindByCoinType(String coinType) {
-
-
-        return null;
-    }
 
     /**
      * 处理转入 转出逻辑
@@ -215,11 +210,11 @@ public class EthereumBlockScanner extends BlockScanner {
         WalletAccountBalance wc =
                 balanceMapper.findBalanceByAddressAndCointype(address,Constants.COIN_TYPE_ETH);
         if(wc!=null){
-            Long value = tx.getValue()+tx.getGasUsed();
-            if(isOut){
-                wc.setFrozenBalance(wc.getFrozenBalance()-value);//冻结减去值
-                wc.setTotalBalance(wc.getTotalBalance()-value);//真正的余额减去值
 
+            if(isOut){
+                wc.setFrozenBalance(wc.getFrozenBalance()-tx.getValue());//冻结减去值
+                wc.setTotalBalance(wc.getTotalBalance()-tx.getValue());//真正的余额减去值
+                //TODO 找到address 对应的以太坊的账户 减去 tx.gasUsed
             }else{
                 wc.setTotalBalance(wc.getTotalBalance()+tx.getValue());//真正的余额加上值
             }
@@ -229,53 +224,102 @@ public class EthereumBlockScanner extends BlockScanner {
 
     }
 
+    private void processToken(EthereumTransaction tx,boolean out){
+        WalletAccountBalance account =
+                this.balanceMapper.findBalanceByContractAddressAndCoinType("coin_eth",
+                        Constants.COIN_TYPE_ETH,tx.getContractAddress(),out==true?tx.getFrom():tx.getTo());
+
+        Long cost = 0L;
+        if(out){
+            cost = tx.getValue()+tx.getGasUsed();
+            account.setTotalBalance(account.getTotalBalance()-cost);
+            account.setFrozenBalance(account.getFrozenBalance()-cost);
+        }else {
+            cost = tx.getValue();
+        }
+
+        balanceMapper.update(account);
+    }
+
     @Override
-    public void updateAccountBalance(List<WalletAccountBind> list) {
+    public void updateAccountBalanceByConfirmTx(Long lastedBlock) {
         EthereumScanCursor cursor =
                 this.scanCursorMapper.getEthereumNotConfirmScanCursor("coin_eth");
         if(cursor==null){
             return;
         }
-        Long lastedBlock = this.blockMapper.queryMaxBlockInDb("coin_eth");
+
         if(lastedBlock - cursor.getCurrentBlock()>=DEPTH){//已经被12个块确认 需要处理
             //处理没被处理过的交易
             List<EthereumTransaction> txList =
                     this.txMapper.queryTxByBlockNumber("coin_eth",cursor.getCurrentBlock());
+
+            Set<String> accounts = new HashSet<>();
+
             for(EthereumTransaction tx:txList){
                 if(tx.getContractAddress()!=null){//处理token的逻辑
-
                     //转出token
-                    WalletAccountBalance outAccount =
-                            this.balanceMapper.findBalanceByContractAddressAndCoinType("coin_eth",
-                            Constants.COIN_TYPE_ETH,tx.getContractAddress(),tx.getFrom());
-                    Long out = tx.getValue()+tx.getGasUsed();
-                    outAccount.setTotalBalance(outAccount.getTotalBalance()-out);
-                    outAccount.setFrozenBalance(outAccount.getFrozenBalance()-out);
-                    balanceMapper.update(outAccount);
-
+                    processToken(tx,true);
                     //转入token
-                    WalletAccountBalance inAccount =
-                            this.balanceMapper.findBalanceByContractAddressAndCoinType("coin_eth",
-                                    Constants.COIN_TYPE_ETH,tx.getContractAddress(),tx.getTo());
-                    Long in = tx.getValue();
-                    inAccount.setTotalBalance(inAccount.getTotalBalance()+in);
-                    balanceMapper.update(inAccount);
+                    processToken(tx,false);
                 }else{//eth币的逻辑
                     //处理转出的逻辑
                     processEthCoinAccount(tx.getFrom(),true,tx);
                     //处理转入的逻辑
                     processEthCoinAccount(tx.getTo(),false,tx);
-
                 }
+
+                accounts.add(tx.getFrom());
+                accounts.add(tx.getTo());
             }
 
             //将处理过的状态设为1
             cursor.setSyncStatus(1);
             scanCursorMapper.update(cursor);
+
+            //TODO 这里什么时候 怎么做检查
+            checkAccountBalance(accounts);
         }
 
     }
 
+    /**
+     * 检查账户是否同步正确
+     * @param accounts
+     */
+    private void checkAccountBalance(Set<String> accounts){
+        for (String address:accounts){
+            //先检查Token 然后累计gas_used
+            List<WalletAccountBalance> list =
+                    this.balanceMapper.findTokenBalanceByAddressAndCointype(address,Constants.COIN_TYPE_ETH);
+            Long gasUsed = 0L;
+            for(WalletAccountBalance wab:list){
+                //根据地址+token id 检查tx中是否与 balance记录的一致
+                ERC20Sum result = balanceMapper.findERC20OutSumByAddressAndTokenId(address,wab.getTokenId());
+
+                Long in = balanceMapper.findERC20InSumByAddressAndTokenId(address,wab.getTokenId());
+
+                if(wab.getTotalBalance()!=in - result.getSumValue()){
+                    //TODO
+                    log.error("error;tokenBalance;coin:eth;address:"+address+";");
+                    wab.setTotalBalance(in-result.getSumValue());
+                    balanceMapper.update(wab);
+                }
+
+                gasUsed = gasUsed + result.getGasUsed();
+            }
+
+            //再检查以太坊的余额
+            WalletAccountBalance ethAccountBalance =
+                    balanceMapper.findBalanceByAddressAndCointype(address,Constants.COIN_TYPE_ETH);
+        }
+    }
+
+    @Override
+    public Long getLastedBlock(String coinType) {
+        Long lastedBlock = this.blockMapper.queryMaxBlockInDb(coinType);
+        return lastedBlock;
+    }
 
     /**
      * 获取和平台相关的账户

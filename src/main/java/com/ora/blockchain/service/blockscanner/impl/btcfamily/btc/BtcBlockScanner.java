@@ -36,12 +36,14 @@ public class BtcBlockScanner extends BtcfamilyBlockScanner {
     }
 
     @Override
-    public List<WalletAccountBind> getWalletAccountBindByCoinType(String coinType) {
-        return null;
+    public void updateAccountBalanceByConfirmTx(Long lastedBlock) {
+
     }
 
     @Override
-    public void updateAccountBalance(List<WalletAccountBind> list) {
-
+    public Long getLastedBlock(String coinType) {
+        return null;
     }
+
+
 }

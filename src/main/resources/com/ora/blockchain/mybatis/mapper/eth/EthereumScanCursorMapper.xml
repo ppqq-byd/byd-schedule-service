@@ -73,7 +73,7 @@
 
     <select id="getEthereumNotConfirmScanCursor" resultType="AllColumnMap">
         SELECT  <include refid="all_column"/> FROM ${database}.scancursor_ethereum
-        where id = (select min(id) from ${database}.scancursor_ethereum) and sync_status = 0
+        where current_block = (select min(current_block) from ${database}.scancursor_ethereum where sync_status = 0)
     </select>
 </mapper>
 
