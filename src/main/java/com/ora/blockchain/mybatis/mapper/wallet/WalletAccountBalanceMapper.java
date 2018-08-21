@@ -15,4 +15,6 @@ public interface WalletAccountBalanceMapper {
     int insertList(@Param("pojos") List<WalletAccountBalance> pojo);
 
     int update(@Param("pojo") WalletAccountBalance pojo);
+
+    int updateBatch(@Param("walletAccountBalanceList") List<WalletAccountBalance> walletAccountBalanceList);
 }

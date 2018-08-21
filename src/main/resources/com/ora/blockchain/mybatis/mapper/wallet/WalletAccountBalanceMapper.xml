@@ -108,5 +108,19 @@
         </set>
         WHERE id = #{pojo.id}
     </update>
+    <update id="updateBatch">
+        <foreach collection="walletAccountBalanceList" item="pojo" separator=";">
+            UPDATE wallet_account_balance
+            <set>
+                <if test="pojo.accountId != null"> `account_id` = #{pojo.accountId}, </if>
+                <if test="pojo.coinType != null"> `coin_type` = #{pojo.coinType}, </if>
+                <if test="pojo.tokenId != null"> `token_id` = #{pojo.tokenId}, </if>
+                <if test="pojo.totalBalance != null"> `total_balance` = #{pojo.totalBalance}, </if>
+                <if test="pojo.frozenBalance != null"> `frozen_balance` = #{pojo.frozenBalance}, </if>
+                <if test="pojo.createTs != null"> `create_ts` = #{pojo.createTs}, </if>
+                <if test="pojo.updateTs != null"> `update_ts` = #{pojo.updateTs} </if>
+            </set>
+            WHERE account_id = #{pojo.accountId} AND coin_type = #{pojo.coinType}
+        </foreach>
+    </update>
 </mapper>
-

@@ -1,5 +1,6 @@
 package com.ora.blockchain.service.block;
 
+import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.block.Block;
 import com.ora.blockchain.mybatis.entity.wallet.Wallet;
@@ -91,6 +92,7 @@ public class IBlockTest {
         for(int i=0 ;i<1 ;i++){
             try {
                 btcScanner.scanBlock(536051L-1);
+                btcScanner.updateAccount(CoinType.BTC.name());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -107,7 +109,7 @@ public class IBlockTest {
     }
     @Test
     public void deleteBlock(){
-        btcBlockService.deleteByHeight(Constants.COIN_TYPE_BTC,536051L);
+        btcBlockService.deleteByHeight(CoinType.getDatabase(CoinType.BTC.name()),536051L);
     }
 
     @Test
