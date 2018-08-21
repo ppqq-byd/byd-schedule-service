@@ -3,13 +3,16 @@ package com.ora.blockchain.service.blockscanner.impl.ethfamily;
 
 import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
-import com.ora.blockchain.mybatis.entity.output.Output;
-import com.ora.blockchain.mybatis.entity.transaction.EthereumERC20;
-import com.ora.blockchain.mybatis.entity.transaction.EthereumTransaction;
+import com.ora.blockchain.mybatis.entity.eth.EthereumERC20;
+import com.ora.blockchain.mybatis.entity.eth.EthereumScanCursor;
+import com.ora.blockchain.mybatis.entity.eth.EthereumTransaction;
+import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
+import com.ora.blockchain.mybatis.mapper.eth.EthereumScanCursorMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumERC20Mapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumTransactionMapper;
+import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBalanceMapper;
 import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBindMapper;
 import com.ora.blockchain.service.blockscanner.impl.BlockScanner;
 import com.ora.blockchain.service.web3j.Web3;
@@ -17,14 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.web3j.abi.datatypes.Int;
 import org.web3j.protocol.core.methods.response.EthBlock;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service("ethBlockScaner")
 @Slf4j
@@ -41,6 +41,12 @@ public class EthereumBlockScanner extends BlockScanner {
 
     @Autowired
     private EthereumERC20Mapper erc20Mapper;
+
+    @Autowired
+    private EthereumScanCursorMapper scanCursorMapper;
+
+    @Autowired
+    private WalletAccountBalanceMapper balanceMapper;
 
     private static final int DEPTH = 12;
 
@@ -68,10 +74,17 @@ public class EthereumBlockScanner extends BlockScanner {
     public Long getNeedScanBlockHeight(Long initBlockHeight){
         long dbBlockHeight = blockMapper.queryMaxBlockInDb("coin_eth");
         if(dbBlockHeight==0){
-            return initBlockHeight;
+            dbBlockHeight = initBlockHeight;
+        }else {
+            dbBlockHeight = dbBlockHeight + 1;
         }
 
-        return ++dbBlockHeight;
+        EthereumScanCursor cursor = new EthereumScanCursor();
+        cursor.setCurrentBlock(dbBlockHeight);
+        cursor.setSyncStatus(0);
+        scanCursorMapper.insert(cursor);
+
+        return dbBlockHeight;
     }
 
     @Override
@@ -186,12 +199,64 @@ public class EthereumBlockScanner extends BlockScanner {
 
     @Override
     public List<WalletAccountBind> getWalletAccountBindByCoinType(String coinType) {
+
+
         return null;
+    }
+
+    /**
+     * 处理转入 转出逻辑
+     * @param address
+     * @param isOut
+     */
+    private void processEthCoinAccount(String address,boolean isOut,EthereumTransaction tx){
+        WalletAccountBalance wc =
+                balanceMapper.findBalanceByAddressAndCointype(address,Constants.COIN_TYPE_ETH);
+        if(wc!=null){
+            Long value = tx.getValue()+tx.getGasUsed();
+            if(isOut){
+                wc.setTotalBalance(wc.getTotalBalance()-value);
+
+            }else{
+                wc.setTotalBalance(wc.getTotalBalance()+value);
+            }
+            wc.setFrozenBalance(wc.getFrozenBalance()+value);
+            balanceMapper.update(wc);
+        }
+
     }
 
     @Override
     public void updateAccountBalance(List<WalletAccountBind> list) {
+        EthereumScanCursor cursor =
+                this.scanCursorMapper.getEthereumScanCursor("coin_eth");
+        if(cursor==null){
+            return;
+        }
 
+        //处理没被处理过的交易
+        List<EthereumTransaction> txList =
+                this.txMapper.queryTxByBlockNumber("coin_eth",cursor.getCurrentBlock());
+        for(EthereumTransaction tx:txList){
+            if(tx.getContractAddress()!=null){//处理token的逻辑
+
+            }else{//eth币的逻辑
+                //处理转出的逻辑
+                processEthCoinAccount(tx.getFrom(),true,tx);
+                //处理转入的逻辑
+                processEthCoinAccount(tx.getTo(),false,tx);
+
+            }
+        }
+
+
+        //处理没有被确认过的tx
+        List<EthereumTransaction> notConfirmList =
+                txMapper.queryNotConfirmTxByLastedBlockNumber("coin_eth");
+
+        for(EthereumTransaction tx:notConfirmList){
+
+        }
     }
 
 

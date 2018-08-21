@@ -1,4 +1,4 @@
-package com.ora.blockchain.mybatis.entity.transaction;
+package com.ora.blockchain.mybatis.entity.eth;
 
 import lombok.*;
 

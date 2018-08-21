@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ora.blockchain.mybatis.mapper.transaction.EthereumTransactionMapper">
-    <resultMap id="AllColumnMap" type="com.ora.blockchain.mybatis.entity.transaction.EthereumTransaction">
+    <resultMap id="AllColumnMap" type="com.ora.blockchain.mybatis.entity.eth.EthereumTransaction">
         <result column="id" property="id"/>
         <result column="tx_id" property="txId"/>
         <result column="from" property="from"/>
@@ -138,4 +138,18 @@
             #{item.txId}
         </foreach>
     </select>
+
+    <select id="queryTxByBlockNumber" resultMap="AllColumnMap">
+        SELECT  <include refid="all_column"/> FROM ${database}.tx_ethereum
+        WHERE block_height = #{blockNumber}
+
+    </select>
+
+    <select id="queryNotConfirmTxByLastedBlockNumber" resultMap="AllColumnMap">
+        SELECT  <include refid="all_column"/> FROM ${database}.tx_ethereum
+        WHERE &lt;= (SELECT MAX(block_number) FROM coin_eth.block) -12
+
+    </select>
+
+
 </mapper>

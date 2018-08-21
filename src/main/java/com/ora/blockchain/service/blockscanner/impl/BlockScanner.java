@@ -53,7 +53,7 @@ public abstract class BlockScanner implements IBlockScanner {
     @Transactional
     public void updateAccount(String coinType) {
        List<WalletAccountBind> list = getWalletAccountBindByCoinType(coinType);
-        updateAccountBalance(list);
+       updateAccountBalance(list);
     }
 
     /**
