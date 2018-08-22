@@ -154,6 +154,20 @@
         tx.contract_address = (SELECT contract_address FROM coin_eth.erc20 WHERE id = #{ercId})
     </select>
 
+
+    <select id="findEthOutSumByAddress" resultMap="ERC20Sum">
+        SELECT IFNULL(SUM(tx.value),0) AS sumValue,
+        IFNULL(SUM(tx.gas_used),0) AS gasUsed FROM
+        coin_eth.tx_ethereum tx WHERE tx.from=#{address}
+        and tx.block_height&lt;= (SELECT MAX(block_number) FROM coin_eth.block) -12
+    </select>
+
+    <select id="findEthInSumByAddress" resultType="Long">
+        SELECT IFNULL(SUM(tx.value),0) AS sumValue,
+        FROM
+        coin_eth.tx_ethereum tx WHERE tx.to=#{address}
+    </select>
+
     <update id="updateBatch">
         <foreach collection="walletAccountBalanceList" item="pojo" separator=";">
             UPDATE wallet_account_balance
@@ -169,5 +183,21 @@
             WHERE account_id = #{pojo.accountId} AND coin_type = #{pojo.coinType}
         </foreach>
     </update>
+
+
+    <select id="findBlanceByEthAddressAndContractAddress" resultMap="AllColumnMap">
+          SELECT wab.* FROM wallet_common.wallet_account_balance wab
+          LEFT JOIN wallet_common.wallet_account_bind wcb ON wab.account_id = wcb.account_id
+
+          WHERE wcb.address=#{ethAddress} AND wab.token_id IN
+          (SELECT erc.id FROM coin_eth.erc20 erc WHERE erc.contract_address
+              IN
+                <foreach item="item" index="index" collection="contractAddressList" open="(" separator="," close=")">
+                  #{item}
+                </foreach>
+
+            )
+    </select>
+
 
 </mapper>
