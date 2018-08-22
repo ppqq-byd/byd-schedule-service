@@ -34,4 +34,7 @@ public interface WalletAccountBalanceMapper {
 
     Long findERC20InSumByAddressAndTokenId(@Param("address")String accountAddress,
                                            @Param("ercId") Integer ercId);
+
+    int updateBatch(@Param("walletAccountBalanceList") List<WalletAccountBalance> walletAccountBalanceList);
+
 }

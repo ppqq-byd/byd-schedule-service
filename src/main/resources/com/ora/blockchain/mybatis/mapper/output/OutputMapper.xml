@@ -33,4 +33,10 @@
     <select id="queryOutputByPrimary" resultType="com.ora.blockchain.mybatis.entity.output.Output">
         SELECT wallet_account_id AS walletAccountId,script_pub_key_addresses AS scriptPubKeyAddresses, transaction_txid AS transactionTxid,n FROM ${database}.output WHERE transaction_txid = #{transactionTxid} AND n = #{n} LIMIT 1
     </select>
+    <select id="queryUTXOList" resultType="com.ora.blockchain.mybatis.entity.output.Output">
+        SELECT 0 AS confirmations,t.height AS height, t.block_hash AS blockHash, o.script_pub_key_addresses AS address,o.transaction_txid AS txid,o.n AS outputIndex,o.script_pub_key_hex AS script ,o.`value`,o.value_sat AS valueSat, `coinbase` AS coinbase
+        FROM ${database}.`transaction` t,${database}.output o
+        WHERE o.transaction_txid = t.txid AND t.trans_status = 2 AND o.status = 1
+        AND o.wallet_account_id = #{walletAccountId} AND t.block_hash IS NOT NULL
+    </select>
 </mapper>

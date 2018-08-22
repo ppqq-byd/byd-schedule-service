@@ -21,4 +21,6 @@ public interface OutputMapper {
     public List<Output> queryOutputByWalletAccount(@Param("database") String database);
 
     public Output queryOutputByPrimary(@Param("database") String database, @Param("transactionTxid") String txid, @Param("n") Integer n);
+
+    public List<Output> queryUTXOList(@Param("database") String database,@Param("walletAccountId") Long walletAccountId);
 }
