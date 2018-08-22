@@ -66,7 +66,7 @@ public abstract class BlockScanner implements IBlockScanner {
     @Override
     @Transactional
     public void updateAccount(String coinType) {
-       updateAccountBalanceByConfirmTx(getLastedBlock(coinType));
+       updateAccountBalanceByConfirmTx(getNeedScanAccountBlanceBlock(coinType));
     }
 
     /**
@@ -115,6 +115,6 @@ public abstract class BlockScanner implements IBlockScanner {
      * coinType 币种
      * @return
      */
-    public abstract Long getLastedBlock(String coinType);
+    public abstract Long getNeedScanAccountBlanceBlock(String coinType);
 
 }

@@ -235,7 +235,7 @@ public class EthereumBlockScanner extends BlockScanner {
     @Override
     public void updateAccountBalanceByConfirmTx(Long lastedBlock) {
         ScanCursor cursor =
-                this.scanCursorMapper.getEthereumNotConfirmScanCursor(CoinType.getDatabase(CoinType.ETH.name()));
+                this.scanCursorMapper.getNotConfirmScanCursor(CoinType.getDatabase(CoinType.ETH.name()));
         if(cursor==null){
             return;
         }
@@ -307,7 +307,7 @@ public class EthereumBlockScanner extends BlockScanner {
     }
 
     @Override
-    public Long getLastedBlock(String coinType) {
+    public Long getNeedScanAccountBlanceBlock(String coinType) {
         Long lastedBlock = this.blockMapper.queryMaxBlockInDb(coinType);
         return lastedBlock;
     }

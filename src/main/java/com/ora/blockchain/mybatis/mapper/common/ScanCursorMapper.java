@@ -16,7 +16,7 @@ public interface ScanCursorMapper {
 
     int update(@Param("pojo") ScanCursor pojo,@Param("database") String database);
 
-    ScanCursor getEthereumNotConfirmScanCursor(@Param("database") String database);
+    ScanCursor getNotConfirmScanCursor(@Param("database") String database);
 
     void deleteCursorByBlockNumber(@Param("database") String database,@Param("blockNumber")Long blockNumber);
 }

@@ -74,7 +74,7 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
     }
 
     @Override
-    public Long getLastedBlock(String coinType) {
+    public Long getNeedScanAccountBlanceBlock(String coinType) {
 
         return null;
 
