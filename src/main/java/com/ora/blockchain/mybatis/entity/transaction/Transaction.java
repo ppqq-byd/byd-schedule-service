@@ -71,8 +71,8 @@ public class Transaction {
 //        "scriptPubKey": {
 //        "asm": "OP_DUP OP_HASH160 9ffa05271ba623856562b472b5ac0f626a9ac114 OP_EQUALVERIFY OP_CHECKSIG",
 //        "hex": "76a9149ffa05271ba623856562b472b5ac0f626a9ac11488ac",
-//        "reqSigs": 1,
 //        "type": "pubkeyhash",
+//        "reqSigs": 1,
 //        "addresses": [
 //        "XqGinTVQdCGxLk4ngCmdF8D9xaXP42u5qQ"
 //        ]

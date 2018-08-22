@@ -1,7 +1,6 @@
 package com.ora.blockchain.service.blockscanner.impl.btcfamily.dark;
 
 import com.ora.blockchain.constants.CoinType;
-import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.service.block.IBlockService;
 import com.ora.blockchain.service.blockscanner.impl.btcfamily.BtcfamilyBlockScanner;
 import com.ora.blockchain.service.rpc.IRpcService;
@@ -34,15 +33,4 @@ public class DarkBlockScanner extends BtcfamilyBlockScanner {
     public String getCoinType() {
         return CoinType.DARK.name();
     }
-
-    @Override
-    public void updateAccountBalanceByConfirmTx(Long lastedBlock) {
-
-    }
-
-    @Override
-    public Long getLastedBlock(String coinType) {
-        return null;
-    }
-
 }

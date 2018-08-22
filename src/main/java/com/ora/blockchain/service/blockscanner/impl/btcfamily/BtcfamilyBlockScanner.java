@@ -65,17 +65,31 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
     @Override
     public boolean isNeedScanHeightLasted(Long needScanBlock) {
         Long height = getRpcService().getBestBlockHeight();
-        return null != needScanBlock && null != height && needScanBlock.longValue() >= height.longValue();
+        return null != needScanBlock && null != height && needScanBlock.longValue() > height.longValue();
     }
 
     @Override
+    public void updateAccountBalanceByConfirmTx(Long lastedBlock) {
+
+    }
+
+    @Override
+    public Long getLastedBlock(String coinType) {
+
+        return null;
+
+    }
+/*
+    @Override
     public List<WalletAccountBind> getWalletAccountBindByCoinType(String coinType) {
-        //TODO 按block更新
+        //TODO 按block找出待更新的用户
         return bindMapper.queryWalletAccountBindByCoinType(coinType);
     }
 
     @Override
     public void updateAccountBalance(List<WalletAccountBind> list) {
+        //TODO frozenBalance 已发出的金额冻结
+        //TODO totalBalance 经过N个块确认的金额，包含已发出的金额
         if(null == list || list.isEmpty())
             return;
 
@@ -103,7 +117,7 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
         if(null != balanceList && !balanceList.isEmpty())
             balanceMapper.updateBatch(balanceList);
     }
-
+*/
     protected int getIndispensableConfirmations(){
         return 6;
     }
