@@ -1,7 +1,6 @@
 package com.ora.blockchain.mybatis.mapper.transaction;
 
-import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
-import com.ora.blockchain.mybatis.entity.transaction.EthereumTransaction;
+import com.ora.blockchain.mybatis.entity.eth.EthereumTransaction;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -37,4 +36,9 @@ public interface EthereumTransactionMapper {
     public List<EthereumTransaction> queryTxInDb(@Param("database") String database,
                                                            @Param("txList") List<EthereumTransaction> txList);
 
+
+    public List<EthereumTransaction> queryTxByBlockNumber(@Param("database") String database,
+                                                          @Param("blockNumber") Long blockNumber);
+
+    public List<EthereumTransaction> queryNotConfirmTxByLastedBlockNumber(@Param("database") String database);
 }

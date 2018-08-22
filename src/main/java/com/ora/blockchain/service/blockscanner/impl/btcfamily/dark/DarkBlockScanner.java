@@ -34,4 +34,15 @@ public class DarkBlockScanner extends BtcfamilyBlockScanner {
     public String getCoinType() {
         return CoinType.DARK.name();
     }
+
+    @Override
+    public void updateAccountBalanceByConfirmTx(Long lastedBlock) {
+
+    }
+
+    @Override
+    public Long getLastedBlock(String coinType) {
+        return null;
+    }
+
 }

@@ -31,6 +31,21 @@ public class BtcBlockScanner extends BtcfamilyBlockScanner {
 
     @Override
     public String getCoinType() {
+
         return CoinType.BTC.name();
     }
+
+    @Override
+    public void updateAccountBalanceByConfirmTx(Long lastedBlock) {
+
+    }
+
+    @Override
+    public Long getLastedBlock(String coinType) {
+
+        return null;
+
+    }
+
+
 }

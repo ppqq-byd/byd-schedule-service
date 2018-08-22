@@ -52,8 +52,7 @@ public abstract class BlockScanner implements IBlockScanner {
     @Override
     @Transactional
     public void updateAccount(String coinType) {
-       List<WalletAccountBind> list = getWalletAccountBindByCoinType(coinType);
-        updateAccountBalance(list);
+       updateAccountBalanceByConfirmTx(getLastedBlock(coinType));
     }
 
     /**
@@ -92,15 +91,16 @@ public abstract class BlockScanner implements IBlockScanner {
 
 
     /**
-     * 根据币种获取账户的地址绑定
-     * @param coinType
-     * @return
+     * 更新账户余额的数值
+     * @param lastedBlock
      */
-    public abstract List<WalletAccountBind> getWalletAccountBindByCoinType(String coinType);
+    public abstract void updateAccountBalanceByConfirmTx(Long lastedBlock);
 
     /**
-     * 更新账户余额的数值
-     * @param list
+     * 获取最新的块高度
+     * coinType 币种
+     * @return
      */
-    public abstract void updateAccountBalance(List<WalletAccountBind> list);
+    public abstract Long getLastedBlock(String coinType);
+
 }
