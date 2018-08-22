@@ -91,7 +91,7 @@ public class IBlockTest {
     public void testBtcScanner(){
         for(int i=0 ;i<1 ;i++){
             try {
-                btcScanner.scanBlock(536051L-1);
+                btcScanner.scanBlock(536051L-1,CoinType.getDatabase(CoinType.BTC.name()));
                 btcScanner.updateAccount(CoinType.BTC.name());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -102,7 +102,7 @@ public class IBlockTest {
     @Test
     public void testDarkScanner(){
         try {
-            darkScanner.scanBlock(921662L);
+            darkScanner.scanBlock(921662L,CoinType.getDatabase(CoinType.DARK.name()));
         } catch (Exception e) {
             e.printStackTrace();
         }

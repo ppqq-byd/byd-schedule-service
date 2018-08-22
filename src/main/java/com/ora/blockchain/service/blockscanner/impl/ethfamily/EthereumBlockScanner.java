@@ -1,16 +1,17 @@
 package com.ora.blockchain.service.blockscanner.impl.ethfamily;
 
 
+import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
 import com.ora.blockchain.mybatis.entity.eth.EthereumERC20;
-import com.ora.blockchain.mybatis.entity.eth.EthereumScanCursor;
+import com.ora.blockchain.mybatis.entity.common.ScanCursor;
 import com.ora.blockchain.mybatis.entity.eth.EthereumTransaction;
 import com.ora.blockchain.mybatis.entity.wallet.ERC20Sum;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
-import com.ora.blockchain.mybatis.mapper.eth.EthereumScanCursorMapper;
+import com.ora.blockchain.mybatis.mapper.common.ScanCursorMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumERC20Mapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumTransactionMapper;
 import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBalanceMapper;
@@ -44,7 +45,7 @@ public class EthereumBlockScanner extends BlockScanner {
     private EthereumERC20Mapper erc20Mapper;
 
     @Autowired
-    private EthereumScanCursorMapper scanCursorMapper;
+    private ScanCursorMapper scanCursorMapper;
 
     @Autowired
     private WalletAccountBalanceMapper balanceMapper;
@@ -66,14 +67,14 @@ public class EthereumBlockScanner extends BlockScanner {
     @Override
     public void deleteBlockAndUpdateTx(Long blockHeight) {
 
-        blockMapper.deleteBlockByBlockNumber("coin_eth",blockHeight);
+        blockMapper.deleteBlockByBlockNumber(CoinType.getDatabase(CoinType.ETH.name()),blockHeight);
 
-        txMapper.updateTransacion("coin_eth",blockHeight,null);
+        txMapper.updateTransacion(CoinType.getDatabase(CoinType.ETH.name()),blockHeight,null);
     }
 
     @Override
     public Long getNeedScanBlockHeight(Long initBlockHeight){
-        long dbBlockHeight = blockMapper.queryMaxBlockInDb("coin_eth");
+        long dbBlockHeight = blockMapper.queryMaxBlockInDb(CoinType.getDatabase(CoinType.ETH.name()));
         if(dbBlockHeight==0){
             dbBlockHeight = initBlockHeight;
         }else {
@@ -87,7 +88,7 @@ public class EthereumBlockScanner extends BlockScanner {
 
         //现有数据库中最后一个块
         EthereumBlock dbBlock = blockMapper.
-                queryEthBlockByBlockNumber("coin_eth",(needScanBlock-1));
+                queryEthBlockByBlockNumber(CoinType.getDatabase(CoinType.ETH.name()),(needScanBlock-1));
 
         //与节点中的对比
         EthBlock block = Web3.getBlockInfoByNumber(needScanBlock-2);
@@ -156,26 +157,16 @@ public class EthereumBlockScanner extends BlockScanner {
         return false;
     }
 
-
-    private void recordCursor(Long blockHeight){
-        EthereumScanCursor cursor = new EthereumScanCursor();
-        cursor.setCurrentBlock(blockHeight);
-        cursor.setSyncStatus(0);
-        scanCursorMapper.insert(cursor);
-    }
-
     @Override
     public void syncBlockAndTx(Long blockHeight) throws Exception {
-        //记录游标
-        recordCursor(blockHeight);
 
         EthBlock block = Web3.getBlockInfoByNumber(blockHeight);
         EthereumBlock dbBlock = new EthereumBlock();
         dbBlock.trans(block);
-        blockMapper.insertBlock("coin_eth",dbBlock);
+        blockMapper.insertBlock(CoinType.getDatabase(CoinType.ETH.name()),dbBlock);
 
         //获取erc20的定义
-        List<EthereumERC20> erc20 = erc20Mapper.queryERC20("coin_eth");
+        List<EthereumERC20> erc20 = erc20Mapper.queryERC20(CoinType.getDatabase(CoinType.ETH.name()));
 
         //过滤掉非系统账户的tx 以及 非支持的ERC20的tx
         List<EthereumTransaction> filteredTx = filterTx(block,erc20);
@@ -183,19 +174,19 @@ public class EthereumBlockScanner extends BlockScanner {
 
         if(filteredTx==null||filteredTx.size()==0)return;
         //找出已在DB中存在的tx
-        List<EthereumTransaction> inDbTx = txMapper.queryTxInDb("coin_eth",filteredTx);
+        List<EthereumTransaction> inDbTx = txMapper.queryTxInDb(CoinType.getDatabase(CoinType.ETH.name()),filteredTx);
         //根据inDBtx集合 将filteredTx处理为 待update和待insert两个集合
         Map<String, List<EthereumTransaction> > map = processTxStatus(filteredTx,inDbTx);
 
         if(map.get("update")!=null&&map.get("update").size()>0){
 
-            txMapper.batchUpdate("coin_eth",
+            txMapper.batchUpdate(CoinType.getDatabase(CoinType.ETH.name()),
                     map.get("update"));
         }
 
         if(map.get("insert")!=null&&map.get("insert").size()>0){
 
-            txMapper.insertTxList("coin_eth",map.get("insert"));
+            txMapper.insertTxList(CoinType.getDatabase(CoinType.ETH.name()),map.get("insert"));
         }
 
     }
@@ -208,7 +199,7 @@ public class EthereumBlockScanner extends BlockScanner {
      */
     private void processEthCoinAccount(String address,boolean isOut,EthereumTransaction tx){
         WalletAccountBalance wc =
-                balanceMapper.findBalanceByAddressAndCointype(address,Constants.COIN_TYPE_ETH);
+                balanceMapper.findBalanceByAddressAndCointype(address,CoinType.ETH.name());
         if(wc!=null){
 
             if(isOut){
@@ -226,8 +217,8 @@ public class EthereumBlockScanner extends BlockScanner {
 
     private void processToken(EthereumTransaction tx,boolean out){
         WalletAccountBalance account =
-                this.balanceMapper.findBalanceByContractAddressAndCoinType("coin_eth",
-                        Constants.COIN_TYPE_ETH,tx.getContractAddress(),out==true?tx.getFrom():tx.getTo());
+                this.balanceMapper.findBalanceByContractAddressAndCoinType(CoinType.getDatabase(CoinType.ETH.name()),
+                        CoinType.ETH.name(),tx.getContractAddress(),out==true?tx.getFrom():tx.getTo());
 
         Long cost = 0L;
         if(out){
@@ -243,8 +234,8 @@ public class EthereumBlockScanner extends BlockScanner {
 
     @Override
     public void updateAccountBalanceByConfirmTx(Long lastedBlock) {
-        EthereumScanCursor cursor =
-                this.scanCursorMapper.getEthereumNotConfirmScanCursor("coin_eth");
+        ScanCursor cursor =
+                this.scanCursorMapper.getEthereumNotConfirmScanCursor(CoinType.getDatabase(CoinType.ETH.name()));
         if(cursor==null){
             return;
         }
@@ -252,7 +243,7 @@ public class EthereumBlockScanner extends BlockScanner {
         if(lastedBlock - cursor.getCurrentBlock()>=DEPTH){//已经被12个块确认 需要处理
             //处理没被处理过的交易
             List<EthereumTransaction> txList =
-                    this.txMapper.queryTxByBlockNumber("coin_eth",cursor.getCurrentBlock());
+                    this.txMapper.queryTxByBlockNumber(CoinType.getDatabase(CoinType.ETH.name()),cursor.getCurrentBlock());
 
             Set<String> accounts = new HashSet<>();
 
@@ -275,7 +266,7 @@ public class EthereumBlockScanner extends BlockScanner {
 
             //将处理过的状态设为1
             cursor.setSyncStatus(1);
-            scanCursorMapper.update(cursor);
+            scanCursorMapper.update(cursor,CoinType.getDatabase(CoinType.ETH.name()));
 
             //TODO 这里什么时候 怎么做检查
             checkAccountBalance(accounts);
@@ -291,7 +282,7 @@ public class EthereumBlockScanner extends BlockScanner {
         for (String address:accounts){
             //先检查Token 然后累计gas_used
             List<WalletAccountBalance> list =
-                    this.balanceMapper.findTokenBalanceByAddressAndCointype(address,Constants.COIN_TYPE_ETH);
+                    this.balanceMapper.findTokenBalanceByAddressAndCointype(address, CoinType.ETH.name());
             Long gasUsed = 0L;
             for(WalletAccountBalance wab:list){
                 //根据地址+token id 检查tx中是否与 balance记录的一致
@@ -311,7 +302,7 @@ public class EthereumBlockScanner extends BlockScanner {
 
             //再检查以太坊的余额
             WalletAccountBalance ethAccountBalance =
-                    balanceMapper.findBalanceByAddressAndCointype(address,Constants.COIN_TYPE_ETH);
+                    balanceMapper.findBalanceByAddressAndCointype(address,CoinType.ETH.name());
         }
     }
 
