@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ora.blockchain.mybatis.mapper.eth.EthereumScanCursorMapper">
+<mapper namespace="com.ora.blockchain.mybatis.mapper.common.ScanCursorMapper">
     <!--auto generated Code-->
-    <resultMap id="AllColumnMap" type="com.ora.blockchain.mybatis.entity.eth.EthereumScanCursor">
+    <resultMap id="AllColumnMap" type="com.ora.blockchain.mybatis.entity.common.ScanCursor">
         <result column="id" property="id"/>
         <result column="current_block" property="currentBlock"/>
         <result column="sync_status" property="syncStatus"/>
@@ -12,12 +12,12 @@
     <sql id="all_column">
         `id`,
         `current_block`,
-`sync_status`
-</sql>
+        `sync_status`
+    </sql>
 
     <!--auto generated Code-->
     <insert id="insert" useGeneratedKeys="true" keyProperty="pojo.id">
-        INSERT INTO ethereum_scan_cursor (
+        INSERT INTO ${database}.scancursor (
             `id`,
             `current_block`,
             `sync_status`
@@ -30,7 +30,7 @@
 
     <!--auto generated Code-->
     <insert id="insertSelective" useGeneratedKeys="true" keyProperty="pojo.id">
-        INSERT INTO ethereum_scan_cursor
+        INSERT INTO ${database}.scancursor
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="pojo.id!=null"> `id`,</if>
             <if test="pojo.currentBlock!=null"> `current_block`,</if>
@@ -46,7 +46,7 @@
 
     <!--auto generated Code-->
     <insert id="insertList">
-        INSERT INTO ethereum_scan_cursor(
+        INSERT INTO ${database}.scancursor(
         <include refid="all_column"/>
         )VALUES
         <foreach collection="pojos" item="pojo" index="index" separator=",">
@@ -62,7 +62,7 @@
     <update id="update">
 
 
-        UPDATE ethereum_scan_cursor
+        UPDATE ${database}.scancursor
         <set>
             <if test="pojo.id != null"> `id` = #{pojo.id},</if>
             <if test="pojo.currentBlock != null"> `current_block` = #{pojo.currentBlock},</if>
@@ -71,9 +71,15 @@
         WHERE id = #{pojo.id}
     </update>
 
-    <select id="getEthereumNotConfirmScanCursor" resultType="AllColumnMap">
-        SELECT  <include refid="all_column"/> FROM ${database}.scancursor_ethereum
-        where current_block = (select min(current_block) from ${database}.scancursor_ethereum where sync_status = 0)
+    <select id="getEthereumNotConfirmScanCursor" resultMap="AllColumnMap">
+        SELECT  <include refid="all_column"/> FROM ${database}.scancursor
+        where current_block = (select min(current_block) from ${database}.scancursor where sync_status = 0)
     </select>
+
+
+    <delete id="deleteCursorByBlockNumber">
+        DELETE FROM ${database}.scancursor WHERE block_number = #{blockNumber}
+    </delete>
+
 </mapper>
 

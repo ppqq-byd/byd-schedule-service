@@ -113,7 +113,6 @@
         </set>
         WHERE id = #{pojo.id}
     </update>
-<<<<<<< HEAD
 
     <select id="findBalanceByAddressAndCointype" resultMap="AllColumnMap">
         SELECT wb.* FROM wallet_common.wallet_account_bind wc
@@ -155,7 +154,6 @@
         tx.contract_address = (SELECT contract_address FROM coin_eth.erc20 WHERE id = #{ercId})
     </select>
 
-=======
     <update id="updateBatch">
         <foreach collection="walletAccountBalanceList" item="pojo" separator=";">
             UPDATE wallet_account_balance
@@ -171,5 +169,5 @@
             WHERE account_id = #{pojo.accountId} AND coin_type = #{pojo.coinType}
         </foreach>
     </update>
->>>>>>> master
+
 </mapper>

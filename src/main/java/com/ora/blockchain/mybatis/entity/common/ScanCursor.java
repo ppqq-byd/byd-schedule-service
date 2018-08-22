@@ -1,4 +1,4 @@
-package com.ora.blockchain.mybatis.entity.eth;
+package com.ora.blockchain.mybatis.entity.common;
 
 import lombok.*;
 
@@ -7,7 +7,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class EthereumScanCursor {
+public class ScanCursor {
 
     private Long id;
 

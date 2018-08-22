@@ -1,37 +1,43 @@
 package com.ora.blockchain.service.blockscanner.impl;
 
 
-import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
+import com.ora.blockchain.constants.CoinType;
+import com.ora.blockchain.mybatis.entity.common.ScanCursor;
+import com.ora.blockchain.mybatis.mapper.common.ScanCursorMapper;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @Service
 public abstract class BlockScanner implements IBlockScanner {
 
+    @Autowired
+    private ScanCursorMapper scanCursorMapper;
+
     /**
      * 递归回溯 直到分叉前
      * @param needScanBlock
      */
-    private void recursionProcessErrorBlock(Long needScanBlock) throws Exception {
+    private void recursionProcessErrorBlock(Long needScanBlock,String coinType) throws Exception {
         //因为这一个块是孤立块 所以删除该块 并且更改这个块所属的tx相应的状态
         deleteBlockAndUpdateTx(needScanBlock);
+        scanCursorMapper.deleteCursorByBlockNumber(CoinType.getDatabase(coinType),needScanBlock);
 
         if(verifyIsolatedBlock(needScanBlock)){
 
-            recursionProcessErrorBlock(needScanBlock-1);
+            recursionProcessErrorBlock(needScanBlock-1,CoinType.getDatabase(coinType));
         }
     }
 
 
     @Override
     @Transactional
-    public void scanBlock(Long initBlockHeight) throws Exception {
+    public void scanBlock(Long initBlockHeight,String coinType) throws Exception {
         Long needScanBlock = getNeedScanBlockHeight(initBlockHeight);
         System.out.println("needScanBlock:"+needScanBlock);
         //如果已经是最新块了 那么这次不用扫描了
@@ -40,13 +46,21 @@ public abstract class BlockScanner implements IBlockScanner {
         }
         //如果是孤块 则设置游标 -1 从上个块重新扫描
         if(verifyIsolatedBlock(needScanBlock)){
-            recursionProcessErrorBlock(needScanBlock-1);
+            recursionProcessErrorBlock(needScanBlock-1,coinType);
             return;
         }
 
         //将块信息和tx同步到数据库
         syncBlockAndTx(needScanBlock);
+        recordCursor(needScanBlock,coinType);
 
+    }
+
+    private void recordCursor(Long blockHeight,String coinType){
+        ScanCursor cursor = new ScanCursor();
+        cursor.setCurrentBlock(blockHeight);
+        cursor.setSyncStatus(0);
+        scanCursorMapper.insert(cursor,CoinType.getDatabase(coinType));
     }
 
     @Override

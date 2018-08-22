@@ -1,5 +1,6 @@
 package com.ora.blockchain.service.transaction;
 
+import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class IEthereumTransactionTest {
     @Test
     public void testInsertNewBlock() throws Exception {
         Long start = System.currentTimeMillis();
-        ethService.scanBlock(6169721L);
+        ethService.scanBlock(6169721L, CoinType.ETH.name());
         Long end = System.currentTimeMillis();
         System.out.println("cost--------------"+(end - start));
     }
