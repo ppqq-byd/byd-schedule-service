@@ -1,14 +1,10 @@
 package com.ora.blockchain.service.block;
 
 import com.ora.blockchain.constants.CoinType;
-import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.mybatis.entity.block.Block;
-import com.ora.blockchain.mybatis.entity.wallet.Wallet;
-import com.ora.blockchain.mybatis.mapper.wallet.WalletMapper;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import com.ora.blockchain.service.rpc.IRpcService;
 import com.ora.blockchain.task.Task;
-import com.ora.blockchain.utils.BlockchainUtil;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -18,15 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
@@ -91,7 +82,7 @@ public class IBlockTest {
     public void testBtcScanner(){
         for(int i=0 ;i<1 ;i++){
             try {
-                btcScanner.scanBlock(536051L-1,CoinType.getDatabase(CoinType.BTC.name()));
+                btcScanner.scanBlock(536051L-1,CoinType.BTC.name());
                 btcScanner.updateAccount(CoinType.BTC.name());
             } catch (Exception e) {
                 e.printStackTrace();

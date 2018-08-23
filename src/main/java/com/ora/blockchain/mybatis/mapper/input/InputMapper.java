@@ -12,4 +12,6 @@ public interface InputMapper {
     public void insertInput(@Param("database") String database, @Param("pojo") Input record);
 
     public void insertInputList(@Param("database") String database, @Param("inputList") List<Input> inputList);
+
+    public List<Long> queryAccountByTransactionTxid(@Param("database") String database, @Param("txidList") List<String> txidList);
 }

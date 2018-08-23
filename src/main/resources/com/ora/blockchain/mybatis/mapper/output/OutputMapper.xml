@@ -39,4 +39,39 @@
         WHERE o.transaction_txid = t.txid AND t.trans_status = 2 AND o.status = 1
         AND o.wallet_account_id = #{walletAccountId} AND t.block_hash IS NOT NULL
     </select>
+    <select id="queryAccountByTransactionTxid" resultType="long">
+        SELECT wallet_account_id FROM ${database}.output WHERE wallet_account_id > 0 AND transaction_txid IN
+        <foreach item="item" index="index" collection="txidList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="queryTotalBalance" resultType="com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance">
+        SELECT t.wallet_account_id AS accountId,SUM(t.value_sat) AS totalBalance FROM
+        (
+        SELECT o.wallet_account_id AS wallet_account_id,o.value_sat AS value_sat FROM ${database}.`transaction` t,${database}.output o
+        WHERE o.transaction_txid = t.txid
+        AND t.trans_status = 2
+        AND o.status = 1
+        AND t.block_hash IS NOT NULL
+        AND
+        (
+        <![CDATA[(t.height <= #{nHeight} AND o.coinbase = 0) OR (t.height <= #{cHeight} AND o.coinbase = 1)]]>
+        )
+        AND o.wallet_account_id IN
+        <foreach item="item" index="index" collection="accountList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        UNION ALL
+        SELECT o.wallet_account_id AS wallet_account_id,o.value_sat AS value_sat FROM ${database}.`transaction` t,${database}.output o
+        WHERE o.transaction_txid = t.txid
+        AND t.trans_status = 1
+        AND o.status = 0
+        AND t.block_hash IS NULL
+        AND o.wallet_account_id IN
+        <foreach item="item" index="index" collection="accountList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ) t
+        GROUP BY t.wallet_account_id
+    </select>
 </mapper>

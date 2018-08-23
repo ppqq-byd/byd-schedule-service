@@ -39,7 +39,7 @@ CREATE TABLE `block` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `block_hash_UNIQUE` (`block_hash`) USING BTREE,
   KEY `idx_height` (`height`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for input
@@ -58,7 +58,7 @@ CREATE TABLE `input` (
   `create_ts` datetime DEFAULT NULL,
   `update_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=372 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for output
@@ -84,7 +84,7 @@ CREATE TABLE `output` (
   UNIQUE KEY `idx_txid_n` (`transaction_txid`,`n`) USING BTREE,
   KEY `idx_address` (`script_pub_key_addresses`) USING BTREE,
   KEY `idx_status` (`status`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=617 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for transaction
@@ -108,4 +108,12 @@ CREATE TABLE `transaction` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `txid_UNIQUE` (`txid`) USING BTREE,
   KEY `idx_block_hash` (`block_hash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=255 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `scancursor`;
+CREATE TABLE `scancursor` (
+  `id` bigint(32) NOT NULL AUTO_INCREMENT,
+  `current_block` bigint(64) DEFAULT NULL,
+  `sync_status` int(2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

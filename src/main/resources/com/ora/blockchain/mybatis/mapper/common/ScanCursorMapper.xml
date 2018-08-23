@@ -18,11 +18,9 @@
     <!--auto generated Code-->
     <insert id="insert" useGeneratedKeys="true" keyProperty="pojo.id">
         INSERT INTO ${database}.scancursor (
-            `id`,
             `current_block`,
             `sync_status`
         ) VALUES (
-            #{pojo.id},
             #{pojo.currentBlock},
             #{pojo.syncStatus}
         )
@@ -60,15 +58,11 @@
 
     <!--auto generated Code-->
     <update id="update">
-
-
         UPDATE ${database}.scancursor
         <set>
-            <if test="pojo.id != null"> `id` = #{pojo.id},</if>
-            <if test="pojo.currentBlock != null"> `current_block` = #{pojo.currentBlock},</if>
             <if test="pojo.syncStatus != null"> `sync_status` = #{pojo.syncStatus}</if>
         </set>
-        WHERE id = #{pojo.id}
+        WHERE current_block = #{pojo.currentBlock}
     </update>
 
     <select id="getNotConfirmScanCursor" resultMap="AllColumnMap">

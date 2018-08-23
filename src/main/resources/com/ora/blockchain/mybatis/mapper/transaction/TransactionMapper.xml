@@ -13,7 +13,12 @@
         </foreach>
     </insert>
     <select id="queryTransactionListByBlockHash" resultType="com.ora.blockchain.mybatis.entity.transaction.Transaction">
-        SELECT txid,status,block_hash AS blockHash FROM ${database}.transaction WHERE block_hash = #{blockHash}
+        SELECT DISTINCT t.txid FROM ${database}.`output` o,${database}.`transaction` t
+        WHERE o.transaction_txid = t.txid
+        AND t.block_hash = #{blockHash}
+        <if test="coinbase != null">
+            AND o.coinbase = #{coinbase}
+        </if>
     </select>
     <select id="queryTransactionListByTxid" resultType="com.ora.blockchain.mybatis.entity.transaction.Transaction">
         SELECT txid,status,block_hash AS blockHash FROM ${database}.transaction WHERE txid IN

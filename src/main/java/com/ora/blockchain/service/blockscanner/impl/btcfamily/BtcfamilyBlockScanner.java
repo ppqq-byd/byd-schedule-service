@@ -2,20 +2,28 @@ package com.ora.blockchain.service.blockscanner.impl.btcfamily;
 
 import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.mybatis.entity.block.Block;
+import com.ora.blockchain.mybatis.entity.common.ScanCursor;
 import com.ora.blockchain.mybatis.entity.output.Output;
+import com.ora.blockchain.mybatis.entity.transaction.Transaction;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
+import com.ora.blockchain.mybatis.mapper.block.BlockMapper;
+import com.ora.blockchain.mybatis.mapper.common.ScanCursorMapper;
+import com.ora.blockchain.mybatis.mapper.input.InputMapper;
 import com.ora.blockchain.mybatis.mapper.output.OutputMapper;
+import com.ora.blockchain.mybatis.mapper.transaction.TransactionMapper;
 import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBalanceMapper;
 import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBindMapper;
 import com.ora.blockchain.service.block.IBlockService;
 import com.ora.blockchain.service.blockscanner.impl.BlockScanner;
 import com.ora.blockchain.service.rpc.IRpcService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -27,6 +35,14 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
     private WalletAccountBalanceMapper balanceMapper;
     @Autowired
     private OutputMapper outputMapper;
+    @Autowired
+    private InputMapper inputMapper;
+    @Autowired
+    private ScanCursorMapper cursorMapper;
+    @Autowired
+    private BlockMapper blockMapper;
+    @Autowired
+    private TransactionMapper transMapper;
 
     @Override
     public void deleteBlockAndUpdateTx(Long blockHeight) {
@@ -70,54 +86,69 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
 
     @Override
     public void updateAccountBalanceByConfirmTx(Long lastedBlock) {
+        if (null == lastedBlock || lastedBlock.longValue() <= 0)
+            return;
 
+        String database = CoinType.getDatabase(getCoinType());
+        Block lastBlock = blockMapper.queryLastBlock(database);
+        if (null == lastBlock)
+            return;
+
+        List<Long> accountList = getWalletAccoutByBlock(lastedBlock);
+        if(null == accountList || accountList.isEmpty())
+            return;
+
+        accountList = accountList.stream().distinct().collect(Collectors.toList());
+        List<WalletAccountBalance> totalBalance = outputMapper.queryTotalBalance(database, accountList, lastBlock.getHeight() - getIndispensableConfirmations() + 1, lastBlock.getHeight() - getIndispensableCoinbaseConfirmations() + 1);
+        if(null != totalBalance && !totalBalance.isEmpty()){
+            totalBalance.forEach((WalletAccountBalance b)->{
+                b.setCoinType(getCoinType());
+            });
+            balanceMapper.updateBatch(totalBalance);
+        }
+    }
+
+    public List<Long> getWalletAccoutByBlock(Long blockHeight){
+        if(null == blockHeight || blockHeight.longValue() <= 0)
+            return null;
+
+        String database = CoinType.getDatabase(getCoinType());
+
+        Block block = blockMapper.queryByBlockHeight(database, blockHeight - getIndispensableConfirmations() + 1);
+        List<Transaction> transList = new ArrayList<>();
+        if(null != block){
+            //已被确认的非coinbase交易
+            transList.addAll(transMapper.queryTransactionListByBlockHash(database,block.getBlockHash(),0));
+        }
+
+        Block coinbaseBlock = blockMapper.queryByBlockHeight(database,blockHeight - getIndispensableCoinbaseConfirmations() + 1);
+        if(null != coinbaseBlock){
+            //已被确认的coinbase交易
+            transList.addAll(transMapper.queryTransactionListByBlockHash(database,coinbaseBlock.getBlockHash(),1));
+        }
+
+        if(null == transList || transList.isEmpty())
+            return null;
+
+        List<String> txidList = transList.stream().map((Transaction t)->{return t.getTxid();}).collect(Collectors.toList());
+        List<Long> accountList = new ArrayList<>();
+        List<Long> outputList = outputMapper.queryAccountByTransactionTxid(database,txidList);
+        if(null != outputList && !outputList.isEmpty())
+            accountList.addAll(outputList);
+        List<Long> inputList = inputMapper.queryAccountByTransactionTxid(database,txidList);
+        if(null != inputList && !inputList.isEmpty())
+            accountList.addAll(inputList);
+
+        return accountList;
     }
 
     @Override
     public Long getNeedScanAccountBlanceBlock(String coinType) {
-
-        return null;
+        ScanCursor cursor = cursorMapper.getNotConfirmScanCursor(CoinType.getDatabase(getCoinType()));
+        return null != cursor ? cursor.getCurrentBlock() : null;
 
     }
-/*
-    @Override
-    public List<WalletAccountBind> getWalletAccountBindByCoinType(String coinType) {
-        //TODO 按block找出待更新的用户
-        return bindMapper.queryWalletAccountBindByCoinType(coinType);
-    }
 
-    @Override
-    public void updateAccountBalance(List<WalletAccountBind> list) {
-        //TODO frozenBalance 已发出的金额冻结
-        //TODO totalBalance 经过N个块确认的金额，包含已发出的金额
-        if(null == list || list.isEmpty())
-            return;
-
-        List<WalletAccountBalance> balanceList = new ArrayList<>();
-        Block lastBlock = getBlockService().queryLastBlock(CoinType.getDatabase(getCoinType()));
-        list.forEach(t->{
-            List<Output> utxoList = outputMapper.queryUTXOList(CoinType.getDatabase(getCoinType()),t.getAccountId());
-            WalletAccountBalance balance = new WalletAccountBalance();
-            balance.setAccountId(t.getAccountId());
-            balance.setCoinType(t.getCoinType());
-            if(null != utxoList){
-                Long frozenBalance = utxoList.stream().map(output->{
-                    if (null != lastBlock)
-                        output.setConfirmations(lastBlock.getHeight().longValue() - output.getHeight().longValue() + 1);
-                    return output;
-                }).filter(output -> (output.getCoinbase() == 0 && output.getConfirmations() < getIndispensableConfirmations()) || (output.getCoinbase() == 1 && output.getConfirmations() < getIndispensableCoinbaseConfirmations()))
-                .mapToLong(Output::getValueSat).sum();
-                balance.setFrozenBalance(null == frozenBalance ? 0 : frozenBalance);
-                Long totalBalance = utxoList.stream().mapToLong(Output::getValueSat).sum();
-                balance.setTotalBalance(null == totalBalance ? 0 : totalBalance);
-            }
-            balanceList.add(balance);
-        });
-
-        if(null != balanceList && !balanceList.isEmpty())
-            balanceMapper.updateBatch(balanceList);
-    }
-*/
     protected int getIndispensableConfirmations(){
         return 6;
     }
