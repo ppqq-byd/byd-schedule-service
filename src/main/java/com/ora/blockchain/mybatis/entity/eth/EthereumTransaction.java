@@ -26,11 +26,11 @@ public class EthereumTransaction {
 
     private String blockHash;
 
-    private Long value;
+    private String value;
 
-    private Long gasPrice;
+    private String gasPrice;
 
-    private Long gasUsed;
+    private String gasUsed;
 
     private String input;
 
@@ -51,9 +51,9 @@ public class EthereumTransaction {
         this.setFrom(txObject.getFrom());
         this.setTxId(txObject.getHash());
         this.setBlockHeight(txObject.getBlockNumber().longValue());
-        this.setGasPrice(txObject.getGasPrice().longValue());
-        this.setGasUsed(txObject.getGas().longValue());
-        this.setValue(txObject.getValue().longValue());
+        this.setGasPrice(txObject.getGasPrice().toString(10));
+        this.setGasUsed(txObject.getGas().toString(10));
+        this.setValue(txObject.getValue().toString(10));
         this.setNonce(txObject.getNonce().intValue());
         this.setBlockHash(txObject.getBlockHash());
         this.setInput(txObject.getInput().length()>65535?txObject.getInput().substring(0,65535):txObject.getInput());

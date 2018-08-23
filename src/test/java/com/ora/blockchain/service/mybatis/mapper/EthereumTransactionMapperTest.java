@@ -34,8 +34,8 @@ public class EthereumTransactionMapperTest {
         tx.setTxId("0xa93afba19da6f6ef0a858da896b7aa92161ce3a289d379a197fc31445a18ee92");
         tx.setStatus(2);
         tx.setBlockHash("xxx");
-        tx.setGasPrice(123L);
-        tx.setGasUsed(123L);
+        tx.setGasPrice("2111111111111111111111121333333333333333132");
+        tx.setGasUsed("2111111111111111111111121333333333333333132");
         tx.setBlockHeight(2133112L);
         tx.setId(1L);
         tx.setUpdateTs(new Date());
@@ -81,9 +81,9 @@ public class EthereumTransactionMapperTest {
         List<EthereumTransaction> list =new ArrayList<>();
         EthereumTransaction tx = new EthereumTransaction();
                 tx.setBlockHash("aaa");
-        tx.setValue(3132L);
-        tx.setGasUsed(2L);
-        tx.setGasPrice(1L);
+        tx.setValue("2111111111111111111111121333333333333333132");
+        tx.setGasUsed("2111111111111111111111121333333333333333132");
+        tx.setGasPrice("2111111111111111111111121333333333333333132");
         tx.setTxId("dsafsd");
         tx.setFrom("a");
         tx.setTo("b");
