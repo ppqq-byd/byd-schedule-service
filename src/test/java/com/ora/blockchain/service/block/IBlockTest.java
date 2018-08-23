@@ -80,7 +80,7 @@ public class IBlockTest {
 
     @Test
     public void testBtcScanner(){
-        for(int i=0 ;i<1 ;i++){
+        for(int i=0 ;i<5 ;i++){
             try {
                 btcScanner.scanBlock(536051L-1,CoinType.BTC.name());
                 btcScanner.updateAccount(CoinType.BTC.name());

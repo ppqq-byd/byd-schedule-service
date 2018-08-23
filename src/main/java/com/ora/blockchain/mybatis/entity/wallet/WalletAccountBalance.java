@@ -14,8 +14,8 @@ public class WalletAccountBalance {
     private Long accountId;
     private String coinType;
     private Integer tokenId;
-    private Long totalBalance = 0L;
-    private Long frozenBalance = 0L;
+    private String totalBalance;
+    private String frozenBalance;
     private Date createTs;
     private Date updateTs;
 }

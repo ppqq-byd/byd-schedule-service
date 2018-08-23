@@ -203,8 +203,8 @@ public class EthereumBlockScanner extends BlockScanner {
         if(wc!=null){
 
             if(isOut){
-                wc.setFrozenBalance(wc.getFrozenBalance()-tx.getValue());//冻结减去值
-                wc.setTotalBalance(wc.getTotalBalance()-tx.getValue());//真正的余额减去值
+//                wc.setFrozenBalance(wc.getFrozenBalance()-tx.getValue());//冻结减去值
+//                wc.setTotalBalance(wc.getTotalBalance()-tx.getValue());//真正的余额减去值
                 //TODO 找到address 对应的以太坊的账户 减去 tx.gasUsed
             }else{
                 wc.setTotalBalance(wc.getTotalBalance()+tx.getValue());//真正的余额加上值
@@ -229,12 +229,12 @@ public class EthereumBlockScanner extends BlockScanner {
 
         if(account!=null){
             if(out){
-                account.setTotalBalance(account.getTotalBalance()-tx.getValue());
-                account.setFrozenBalance(account.getFrozenBalance()-tx.getValue());
+//                account.setTotalBalance(account.getTotalBalance()-tx.getValue());
+//                account.setFrozenBalance(account.getFrozenBalance()-tx.getValue());
                 //更新gas费用
                 WalletAccountBalance ethAccount = balanceMapper.findBalanceByAddressAndCointype(tx.getFrom(),
                         CoinType.ETH.name());
-                ethAccount.setTotalBalance(tx.getGasUsed());
+//                ethAccount.setTotalBalance(tx.getGasUsed());
                 balanceMapper.update(ethAccount);
             }else {
                 account.setTotalBalance(account.getTotalBalance()+tx.getValue());
@@ -337,12 +337,12 @@ public class EthereumBlockScanner extends BlockScanner {
 
                     Long in = balanceMapper.findERC20InSumByAddressAndTokenId(ethAddress,wab.getTokenId());
 
-                    if(wab.getTotalBalance()!=in - result.getSumValue()){
-                        //TODO
-                        log.error("error;tokenBalance;coin:eth;address:"+ethAddress+";");
-                        wab.setTotalBalance(in-result.getSumValue());
-                        balanceMapper.update(wab);
-                    }
+//                    if(wab.getTotalBalance()!=in - result.getSumValue()){
+//                        //TODO
+//                        log.error("error;tokenBalance;coin:eth;address:"+ethAddress+";");
+//                        wab.setTotalBalance(in-result.getSumValue());
+//                        balanceMapper.update(wab);
+//                    }
 
                     tokenGasUsed = tokenGasUsed + result.getGasUsed();
                 }
@@ -358,12 +358,12 @@ public class EthereumBlockScanner extends BlockScanner {
 
             Long checkValue = ethInSum - (ethOutSum.getSumValue()+ethOutSum.getGasUsed()+tokenGasUsed);
 
-            if(checkValue!=ethAccountBalance.getTotalBalance()){
-                //TODO
-                log.error("error;ethBalance;coin:eth;address:"+ethAddress+";");
-                ethAccountBalance.setTotalBalance(checkValue);
-                balanceMapper.update(ethAccountBalance);
-            }
+//            if(checkValue!=ethAccountBalance.getTotalBalance()){
+//                //TODO
+//                log.error("error;ethBalance;coin:eth;address:"+ethAddress+";");
+//                ethAccountBalance.setTotalBalance(checkValue);
+//                balanceMapper.update(ethAccountBalance);
+//            }
         }
 
 

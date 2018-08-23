@@ -21,10 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.math.BigInteger;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,17 +93,34 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
             return;
 
         List<Long> accountList = getWalletAccoutByBlock(lastedBlock);
-        if(null == accountList || accountList.isEmpty())
+        if (null == accountList || accountList.isEmpty())
             return;
 
         accountList = accountList.stream().distinct().collect(Collectors.toList());
         List<WalletAccountBalance> totalBalance = outputMapper.queryTotalBalance(database, accountList, lastBlock.getHeight() - getIndispensableConfirmations() + 1, lastBlock.getHeight() - getIndispensableCoinbaseConfirmations() + 1);
-        if(null != totalBalance && !totalBalance.isEmpty()){
-            totalBalance.forEach((WalletAccountBalance b)->{
-                b.setCoinType(getCoinType());
+        if (null != totalBalance && !totalBalance.isEmpty()) {
+            Map<Long, BigInteger> map = new HashMap<>();
+            totalBalance.forEach((WalletAccountBalance b) -> {
+                map.put(b.getAccountId(), null != map.get(b.getAccountId()) ? map.get(b.getAccountId()).add(new BigInteger(b.getTotalBalance())) : new BigInteger(b.getTotalBalance()));
             });
-            balanceMapper.updateBatch(totalBalance);
+            updateAccountBatch(map);
         }
+    }
+
+    public void updateAccountBatch(Map<Long, BigInteger> balanceMap) {
+        if (null == balanceMap || balanceMap.isEmpty())
+            return;
+        Set<Long> keySet = balanceMap.keySet();
+        List<WalletAccountBalance> balanceList = keySet.stream().map((Long accountId) -> {
+            WalletAccountBalance wab = new WalletAccountBalance();
+            wab.setAccountId(accountId);
+            wab.setTotalBalance(balanceMap.get(accountId).toString());
+            wab.setCoinType(getCoinType());
+            return wab;
+        }).collect(Collectors.toList());
+
+        if (null != balanceList && !balanceList.isEmpty())
+            balanceMapper.updateBatch(balanceList);
     }
 
     public List<Long> getWalletAccoutByBlock(Long blockHeight){
