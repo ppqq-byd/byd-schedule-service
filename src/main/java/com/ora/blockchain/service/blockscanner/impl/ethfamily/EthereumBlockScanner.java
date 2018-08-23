@@ -199,15 +199,22 @@ public class EthereumBlockScanner extends BlockScanner {
      */
     private WalletAccountBalance processEthCoinAccount(String address,boolean isOut,EthereumTransaction tx){
         WalletAccountBalance wc =
-                balanceMapper.findBalanceByAddressAndCointype(address,CoinType.ETH.name());
+                balanceMapper.findBalanceOfCoinByAddressAndCointype(address,CoinType.ETH.name());
         if(wc!=null){
 
             if(isOut){
-//                wc.setFrozenBalance(wc.getFrozenBalance()-tx.getValue());//冻结减去值
-//                wc.setTotalBalance(wc.getTotalBalance()-tx.getValue());//真正的余额减去值
-                //TODO 找到address 对应的以太坊的账户 减去 tx.gasUsed
+                  wc.setFrozenBalance(new BigInteger(wc.getFrozenBalance(),10).subtract(
+                          new BigInteger(tx.getValue(),10)
+                  ).toString(10));//冻结减去值
+
+                  wc.setTotalBalance(  new BigInteger(wc.getTotalBalance(),10).subtract(
+                          new BigInteger(tx.getValue(),10)
+                  ).subtract(new BigInteger(tx.getGasUsed(),10)).toString(10));//真正的余额减去值
+
             }else{
-                wc.setTotalBalance(wc.getTotalBalance()+tx.getValue());//真正的余额加上值
+
+                wc.setTotalBalance(new BigInteger(wc.getTotalBalance(),10).
+                        add(new BigInteger(tx.getValue(),10)).toString(10));//真正的余额加上值
             }
 
             balanceMapper.update(wc);
@@ -229,15 +236,22 @@ public class EthereumBlockScanner extends BlockScanner {
 
         if(account!=null){
             if(out){
-//                account.setTotalBalance(account.getTotalBalance()-tx.getValue());
-//                account.setFrozenBalance(account.getFrozenBalance()-tx.getValue());
+                account.setTotalBalance(
+                          new BigInteger(account.getTotalBalance(),10).
+                                  subtract(new BigInteger(tx.getValue(),10)).toString(10));
+
+                account.setFrozenBalance(  new BigInteger(account.getFrozenBalance(),10).
+                        subtract(new BigInteger(tx.getValue(),10)).toString(10));
                 //更新gas费用
-                WalletAccountBalance ethAccount = balanceMapper.findBalanceByAddressAndCointype(tx.getFrom(),
+                WalletAccountBalance ethAccount = balanceMapper.findBalanceOfCoinByAddressAndCointype(tx.getFrom(),
                         CoinType.ETH.name());
-//                ethAccount.setTotalBalance(tx.getGasUsed());
+
+                ethAccount.setTotalBalance(new BigInteger(ethAccount.getTotalBalance(),10).
+                        subtract(new BigInteger(tx.getGasUsed(),10)).toString(10));
                 balanceMapper.update(ethAccount);
             }else {
-                account.setTotalBalance(account.getTotalBalance()+tx.getValue());
+                account.setTotalBalance(new BigInteger(account.getTotalBalance(),10).
+                        add(new BigInteger(tx.getValue(),10)).toString(10));
             }
 
             balanceMapper.update(account);
@@ -310,7 +324,7 @@ public class EthereumBlockScanner extends BlockScanner {
             scanCursorMapper.update(cursor,CoinType.getDatabase(CoinType.ETH.name()));
 
             //TODO 这里什么时候 怎么做检查
-            checkAccountBalance(tokenAccounts);
+            //checkAccountBalance(tokenAccounts);
         }
 
     }
@@ -350,7 +364,7 @@ public class EthereumBlockScanner extends BlockScanner {
 
             //再检查以太坊的余额
             WalletAccountBalance ethAccountBalance =
-                    balanceMapper.findBalanceByAddressAndCointype(ethAddress,CoinType.ETH.name());
+                    balanceMapper.findBalanceOfCoinByAddressAndCointype(ethAddress,CoinType.ETH.name());
 
             ERC20Sum ethOutSum = balanceMapper.findEthOutSumByAddress(ethAddress);
 

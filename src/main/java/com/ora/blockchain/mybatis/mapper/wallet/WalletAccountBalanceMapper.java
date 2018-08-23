@@ -17,7 +17,7 @@ public interface WalletAccountBalanceMapper {
 
     int update(@Param("pojo") WalletAccountBalance pojo);
 
-    WalletAccountBalance findBalanceByAddressAndCointype(@Param("address")String address,
+    WalletAccountBalance findBalanceOfCoinByAddressAndCointype(@Param("address")String address,
                                                          @Param("coinType")String coinType);
 
     List<WalletAccountBalance> findTokenBalanceByAddressAndCointype(@Param("address")String address,

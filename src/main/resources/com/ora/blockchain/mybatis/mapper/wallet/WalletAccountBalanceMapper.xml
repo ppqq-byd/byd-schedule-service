@@ -114,11 +114,11 @@
         WHERE id = #{pojo.id}
     </update>
 
-    <select id="findBalanceByAddressAndCointype" resultMap="AllColumnMap">
+    <select id="findBalanceOfCoinByAddressAndCointype" resultMap="AllColumnMap">
         SELECT wb.* FROM wallet_common.wallet_account_bind wc
         LEFT JOIN wallet_common.wallet_account_balance wb ON wb.account_id = wc.account_id
         WHERE wc.address=#{address}
-        AND wb.coin_type = #{coinType}
+        AND wb.coin_type = #{coinType} and  wb.token_id   IS null
     </select>
 
 
