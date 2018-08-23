@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ora.blockchain.mybatis.mapper.transaction.EosTransactionMapper">
+    <insert id="insertTransactionList">
+        INSERT INTO ${database}.transaction (`tx_status`, `cpu_usage_us`, `net_usage_words`, `tx_id`, `account`, `name`, `authorization`, `from`, `to`, `quantity`, `memo`, `signatures`, `compression`, `packed_context_free_data`, `context_free_data`, `packed_trx`, `expiration`, `ref_block_num`, `ref_block_prefix`, `max_net_usage_words`, `max_cpu_usage_ms`, `delay_sec`, `context_free_actions`, `actions`, `transaction_extensions`, `create_ts`)
+        VALUES
+        <foreach collection="transactionList" item="pojo" index="index" separator=",">
+            (#{pojo.tx_status}, #{pojo.cpu_usage_us}, #{pojo.net_usage_words}, #{pojo.tx_id}, #{pojo.account}, #{pojo.name},#{pojo.authorization}, #{pojo.from},#{pojo.to}, #{pojo.quantity},#{pojo.memo},#{pojo.signatures},#{pojo.compression},#{pojo.packed_context_free_data},#{pojo.context_free_data},#{pojo.packed_trx},#{pojo.expiration},#{pojo.ref_block_num},#{pojo.ref_block_prefix},#{pojo.max_net_usage_words},#{pojo.max_cpu_usage_ms},#{pojo.delay_sec},#{pojo.context_free_actions},#{pojo.actions},#{pojo.transaction_extensions},now())
+        </foreach>
+    </insert>
+</mapper>
