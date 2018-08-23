@@ -404,11 +404,9 @@ public class EthereumBlockScanner extends BlockScanner {
                 toAddress = toAddress.substring(2,42);
             }
 
-            Long v = new BigInteger(value,16).longValue();
-
             String result[] = new String[2];
             result[0] = "0x"+toAddress;
-            result[1] = String.valueOf(v);
+            result[1] = new BigInteger(value,16).toString(10);
             return result;
         }
         return null;
@@ -462,7 +460,7 @@ public class EthereumBlockScanner extends BlockScanner {
                     //如果从inputData解析出的账户属于ERC20或from属于ERC20
                     dbTx.transEthTransaction(tx);
                     dbTx.setTo(result[0]);
-                    dbTx.setValue(Long.parseLong(result[1]));
+                    dbTx.setValue(result[1]);
                     Set<String> address = new HashSet<>();
                     address.add(dbTx.getFrom());
                     address.add(dbTx.getTo());
