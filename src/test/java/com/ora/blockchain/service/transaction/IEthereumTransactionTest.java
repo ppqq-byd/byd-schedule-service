@@ -37,6 +37,14 @@ public class IEthereumTransactionTest {
     }
 
     @Test
+    public void testUpdateAccount() throws Exception {
+        Long start = System.currentTimeMillis();
+        ethService.updateAccount(CoinType.ETH.name());
+        Long end = System.currentTimeMillis();
+        System.out.println("cost--------------"+(end - start));
+    }
+
+    @Test
     public void testVerifyBlock(){
         Long start = System.currentTimeMillis();
 
