@@ -92,10 +92,12 @@ public class IBlockTest {
 
     @Test
     public void testDarkScanner(){
-        try {
-            darkScanner.scanBlock(921662L,CoinType.getDatabase(CoinType.DARK.name()));
-        } catch (Exception e) {
-            e.printStackTrace();
+        for(int i=0;i<100;i++){
+            try {
+                darkScanner.scanBlock(921662L,CoinType.DARK.name());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
     @Test
