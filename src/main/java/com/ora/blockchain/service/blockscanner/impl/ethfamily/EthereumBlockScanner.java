@@ -340,7 +340,7 @@ public class EthereumBlockScanner extends BlockScanner {
                 for(WalletAccountBalance wab:balanceList){
                     //根据地址+token id 检查tx中是否与 balance记录的一致
                     ERC20Sum result = balanceMapper.findERC20OutSumByAddressAndTokenId(ethAddress,wab.getTokenId());
-
+                    tokenGasUsed = tokenGasUsed.add(result.getGasUsed());
                     BigInteger in = balanceMapper.findERC20InSumByAddressAndTokenId(ethAddress,wab.getTokenId());
 
                     if(!in.subtract(result.getSumValue()).equals(new BigInteger(wab.getTotalBalance()))){
@@ -349,7 +349,7 @@ public class EthereumBlockScanner extends BlockScanner {
                         wab.setTotalBalance(in.subtract(result.getSumValue()).toString(10));
                         balanceMapper.update(wab);
                     }
-                    tokenGasUsed.add(result.getGasUsed());
+
 
                 }
             }
@@ -362,7 +362,9 @@ public class EthereumBlockScanner extends BlockScanner {
 
             BigInteger ethInSum = balanceMapper.findEthInSumByAddress(ethAddress);
             BigInteger checkValue =
-                    ethInSum.subtract(ethOutSum.getSumValue().add(ethOutSum.getGasUsed()).add(tokenGasUsed));
+                    ethInSum.subtract(
+                            ethOutSum.getSumValue().add(ethOutSum.getGasUsed()).add(tokenGasUsed)
+                    );
 
             if(!checkValue.equals(new BigInteger(ethAccountBalance.getTotalBalance()))){
                 //TODO
