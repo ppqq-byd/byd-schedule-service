@@ -276,17 +276,13 @@ public class EthereumBlockScanner extends BlockScanner {
     }
 
     @Override
-    public void updateAccountBalanceByConfirmTx(Long lastedBlock) {
-        ScanCursor cursor =
-                this.scanCursorMapper.getNotConfirmScanCursor(CoinType.getDatabase(CoinType.ETH.name()));
-        if(cursor==null){
-            return;
-        }
+    public void updateAccountBalanceByConfirmTx(Long scanAccountBlock) {
+        Long lastedBlock = this.blockMapper.queryMaxBlockInDb(CoinType.getDatabase(CoinType.ETH.name()));
 
-        if(lastedBlock - cursor.getCurrentBlock()>=DEPTH){//已经被12个块确认 需要处理
+        if(lastedBlock - scanAccountBlock>=DEPTH){//已经被12个块确认 需要处理
             //处理没被处理过的交易
             List<EthereumTransaction> txList =
-                    this.txMapper.queryTxByBlockNumber(CoinType.getDatabase(CoinType.ETH.name()),cursor.getCurrentBlock());
+                    this.txMapper.queryTxByBlockNumber(CoinType.getDatabase(CoinType.ETH.name()),scanAccountBlock);
 
             HashMap<String,HashSet<String>> tokenAccounts = new HashMap<String,HashSet<String>>();
 
@@ -318,10 +314,6 @@ public class EthereumBlockScanner extends BlockScanner {
                 }
 
             }
-
-            //将处理过的状态设为1
-            cursor.setSyncStatus(1);
-            scanCursorMapper.update(cursor,CoinType.getDatabase(CoinType.ETH.name()));
 
             //TODO 这里什么时候 怎么做检查
             //checkAccountBalance(tokenAccounts);
@@ -385,8 +377,8 @@ public class EthereumBlockScanner extends BlockScanner {
 
     @Override
     public Long getNeedScanAccountBlanceBlock(String coinType) {
-        Long lastedBlock = this.blockMapper.queryMaxBlockInDb(coinType);
-        return lastedBlock;
+        ScanCursor cursor = this.scanCursorMapper.getNotConfirmScanCursor(CoinType.getDatabase(CoinType.ETH.name()));
+        return null != cursor ? cursor.getCurrentBlock() : null;
     }
 
     /**
