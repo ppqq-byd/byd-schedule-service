@@ -4,7 +4,6 @@ import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.mybatis.entity.block.Block;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import com.ora.blockchain.service.rpc.IRpcService;
-import com.ora.blockchain.task.Task;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -54,8 +53,7 @@ public class IBlockTest {
     @Qualifier("darkBlockScanner")
     private IBlockScanner darkScanner;
 
-    @Autowired
-    private Task task;
+
     private String database;
     private Block block;
 
