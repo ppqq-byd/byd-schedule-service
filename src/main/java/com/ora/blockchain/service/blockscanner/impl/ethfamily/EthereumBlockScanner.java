@@ -465,17 +465,22 @@ public class EthereumBlockScanner extends BlockScanner {
                     dbTx.setContractAddress(tx.getTo());
                     String result[] = this.processInput(tx.getInput().toLowerCase());
 
-                    //如果从inputData解析出的账户属于ERC20或from属于ERC20
-                    dbTx.transEthTransaction(tx);
-                    dbTx.setTo(result[0]);
-                    dbTx.setValue(result[1]);
-                    Set<String> address = new HashSet<>();
-                    address.add(dbTx.getFrom());
-                    address.add(dbTx.getTo());
-                    List<WalletAccountBind> accoutns = accountBindMapper.queryWalletByAddress(address);
-                    if(accoutns.size()>0){
-                        needAddList.add(dbTx);
+                    if(result!=null){
+                        //如果从inputData解析出的账户属于ERC20或from属于ERC20
+                        dbTx.transEthTransaction(tx);
+                        dbTx.setTo(result[0]);
+                        dbTx.setValue(result[1]);
+                        Set<String> address = new HashSet<>();
+                        address.add(dbTx.getFrom());
+                        address.add(dbTx.getTo());
+                        List<WalletAccountBind> accoutns = accountBindMapper.queryWalletByAddress(address);
+                        if(accoutns.size()>0){
+                            needAddList.add(dbTx);
+                        }
+                    }else {
+                        log.error("contract not support:"+tx.getHash());
                     }
+
 
                 }else {
 

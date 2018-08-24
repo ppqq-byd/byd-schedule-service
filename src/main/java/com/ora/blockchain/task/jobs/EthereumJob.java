@@ -30,7 +30,8 @@ public class EthereumJob implements Job {
         try {
             ethBlockScanner.scanBlock(6169721L, CoinType.ETH.name());
         } catch (Exception e) {
-           log.error("Eth job failed:"+e.getMessage());
+            e.printStackTrace();
+           log.error("Eth job failed:"+e.getMessage(),e);
         }
         long end = System.currentTimeMillis();
         System.out.println(String.format("*********************Eth Job end(spent : %s)*****************************", end - start));
