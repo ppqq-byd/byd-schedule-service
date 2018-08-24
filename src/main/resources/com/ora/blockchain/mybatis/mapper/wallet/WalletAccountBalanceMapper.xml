@@ -147,8 +147,8 @@
            and tx.block_height&lt;= (SELECT MAX(block_number) FROM coin_eth.block) -12
     </select>
 
-    <select id="findERC20InSumByAddressAndTokenId" resultType="Long">
-        SELECT IFNULL(SUM(tx.value),0) AS sumValue,
+    <select id="findERC20InSumByAddressAndTokenId" resultType="BigInteger">
+        SELECT IFNULL(SUM(tx.value),0) AS sumValue
         FROM
         coin_eth.tx_ethereum tx WHERE tx.to=#{address} AND
         tx.contract_address = (SELECT contract_address FROM coin_eth.erc20 WHERE id = #{ercId})
@@ -158,14 +158,14 @@
     <select id="findEthOutSumByAddress" resultMap="ERC20Sum">
         SELECT IFNULL(SUM(tx.value),0) AS sumValue,
         IFNULL(SUM(tx.gas_used),0) AS gasUsed FROM
-        coin_eth.tx_ethereum tx WHERE tx.from=#{address}
+        coin_eth.tx_ethereum tx WHERE tx.from=#{address} and coin_eth.contract_address is not NULL
         and tx.block_height&lt;= (SELECT MAX(block_number) FROM coin_eth.block) -12
     </select>
 
-    <select id="findEthInSumByAddress" resultType="Long">
-        SELECT IFNULL(SUM(tx.value),0) AS sumValue,
+    <select id="findEthInSumByAddress" resultType="BigInteger">
+        SELECT IFNULL(SUM(tx.value),0) AS sumValue
         FROM
-        coin_eth.tx_ethereum tx WHERE tx.to=#{address}
+        coin_eth.tx_ethereum tx WHERE tx.to=#{address} and coin_eth.contract_address is not NULL 
     </select>
 
     <update id="updateBatch">

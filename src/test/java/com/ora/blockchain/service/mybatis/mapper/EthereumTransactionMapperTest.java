@@ -2,8 +2,10 @@ package com.ora.blockchain.service.mybatis.mapper;
 
 import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
 import com.ora.blockchain.mybatis.entity.eth.EthereumTransaction;
+import com.ora.blockchain.mybatis.entity.wallet.ERC20Sum;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumTransactionMapper;
+import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBalanceMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +29,22 @@ public class EthereumTransactionMapperTest {
 
     @Autowired
     private EthereumBlockMapper blockMapper;
+
+    @Autowired
+    private WalletAccountBalanceMapper balanceMapper;
+
+    @Test
+    public void testQuerySum(){
+        ERC20Sum result = balanceMapper.
+                findERC20OutSumByAddressAndTokenId("0x5225588b486e78099bb53c162ec8993ab8e6d678",4);
+
+        System.out.println(result.getSumValue());
+
+        BigInteger a = balanceMapper.
+                findERC20InSumByAddressAndTokenId("0x61a144dc9b55d73bbe9cbef7e546441bba6468d9",1);
+
+        System.out.println(a);
+    }
 
     @Test
     public void testBatchUpdate(){

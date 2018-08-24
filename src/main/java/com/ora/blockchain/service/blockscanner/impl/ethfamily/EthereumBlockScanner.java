@@ -316,7 +316,7 @@ public class EthereumBlockScanner extends BlockScanner {
             }
 
             //TODO 这里什么时候 怎么做检查
-            //checkAccountBalance(tokenAccounts);
+            checkAccountBalance(tokenAccounts);
         }
 
     }
@@ -325,7 +325,7 @@ public class EthereumBlockScanner extends BlockScanner {
      * 检查账户是否同步正确
      * @param tokenAccounts
      */
-    private void checkAccountBalance(HashMap<String,HashSet<String>> tokenAccounts){
+    public void checkAccountBalance(HashMap<String,HashSet<String>> tokenAccounts){
 
         Set<Map.Entry<String,HashSet<String>>> set =tokenAccounts.entrySet();
         for(Map.Entry<String,HashSet<String>> entry:set){
@@ -334,23 +334,23 @@ public class EthereumBlockScanner extends BlockScanner {
             List<WalletAccountBalance> balanceList =
                     this.balanceMapper.findBlanceByEthAddressAndContractAddress(ethAddress,new ArrayList<>(tokens));
             //先处理token账户
-            Long tokenGasUsed = 0L;
+            BigInteger tokenGasUsed = new BigInteger("0");
             //如果有需要处理的token账户
             if(balanceList!=null&&balanceList.size()>0){
                 for(WalletAccountBalance wab:balanceList){
                     //根据地址+token id 检查tx中是否与 balance记录的一致
                     ERC20Sum result = balanceMapper.findERC20OutSumByAddressAndTokenId(ethAddress,wab.getTokenId());
 
-                    Long in = balanceMapper.findERC20InSumByAddressAndTokenId(ethAddress,wab.getTokenId());
+                    BigInteger in = balanceMapper.findERC20InSumByAddressAndTokenId(ethAddress,wab.getTokenId());
 
-//                    if(wab.getTotalBalance()!=in - result.getSumValue()){
-//                        //TODO
-//                        log.error("error;tokenBalance;coin:eth;address:"+ethAddress+";");
-//                        wab.setTotalBalance(in-result.getSumValue());
-//                        balanceMapper.update(wab);
-//                    }
+                    if(!in.subtract(result.getSumValue()).equals(new BigInteger(wab.getTotalBalance()))){
+                        //TODO
+                        log.error("error;tokenBalance;coin:eth;address:"+ethAddress+";");
+                        wab.setTotalBalance(in.subtract(result.getSumValue()).toString(10));
+                        balanceMapper.update(wab);
+                    }
+                    tokenGasUsed.add(result.getGasUsed());
 
-                    tokenGasUsed = tokenGasUsed + result.getGasUsed();
                 }
             }
 
@@ -360,16 +360,16 @@ public class EthereumBlockScanner extends BlockScanner {
 
             ERC20Sum ethOutSum = balanceMapper.findEthOutSumByAddress(ethAddress);
 
-            Long ethInSum = balanceMapper.findEthInSumByAddress(ethAddress);
+            BigInteger ethInSum = balanceMapper.findEthInSumByAddress(ethAddress);
+            BigInteger checkValue =
+                    ethInSum.subtract(ethOutSum.getSumValue().add(ethOutSum.getGasUsed()).add(tokenGasUsed));
 
-            Long checkValue = ethInSum - (ethOutSum.getSumValue()+ethOutSum.getGasUsed()+tokenGasUsed);
-
-//            if(checkValue!=ethAccountBalance.getTotalBalance()){
-//                //TODO
-//                log.error("error;ethBalance;coin:eth;address:"+ethAddress+";");
-//                ethAccountBalance.setTotalBalance(checkValue);
-//                balanceMapper.update(ethAccountBalance);
-//            }
+            if(!checkValue.equals(new BigInteger(ethAccountBalance.getTotalBalance()))){
+                //TODO
+                log.error("error;ethBalance;coin:eth;address:"+ethAddress+";");
+               ethAccountBalance.setTotalBalance(checkValue.toString(10));
+               balanceMapper.update(ethAccountBalance);
+            }
         }
 
 

@@ -4,6 +4,7 @@ import com.ora.blockchain.mybatis.entity.wallet.ERC20Sum;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigInteger;
 import java.util.List;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance;
 
@@ -32,12 +33,12 @@ public interface WalletAccountBalanceMapper {
                                                 @Param("ercId") Integer ercId);
 
 
-    Long findERC20InSumByAddressAndTokenId(@Param("address")String accountAddress,
-                                           @Param("ercId") Integer ercId);
+    BigInteger findERC20InSumByAddressAndTokenId(@Param("address")String accountAddress,
+                                                 @Param("ercId") Integer ercId);
 
     ERC20Sum findEthOutSumByAddress(@Param("address")String accountAddress);
 
-    Long findEthInSumByAddress(@Param("address")String accountAddress);
+    BigInteger findEthInSumByAddress(@Param("address")String accountAddress);
 
     int updateBatch(@Param("walletAccountBalanceList") List<WalletAccountBalance> walletAccountBalanceList);
 
