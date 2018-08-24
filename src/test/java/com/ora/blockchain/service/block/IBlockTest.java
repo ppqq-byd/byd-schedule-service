@@ -54,6 +54,10 @@ public class IBlockTest {
     @Qualifier("darkBlockScanner")
     private IBlockScanner darkScanner;
 
+    @Resource
+    @Qualifier("bcdBlockScanner")
+    private IBlockScanner bcdScanner;
+
     @Autowired
     private Task task;
     private String database;
@@ -98,6 +102,16 @@ public class IBlockTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testBcdScanner(){
+        try {
+            bcdScanner.scanBlock(531049L, CoinType.BCD.name());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Test
     public void deleteBlock(){
         btcBlockService.deleteByHeight(CoinType.getDatabase(CoinType.BTC.name()),536051L);

@@ -43,3 +43,7 @@ rpc:
         password: "Oradt!1234"
     web3j:
         url: "http://52.83.130.131:8545"
+    bcd:
+        url: "http://127.0.0.1:7116/"
+        username: "root"
+        password: "zhaojx123456"

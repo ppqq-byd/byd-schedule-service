@@ -1,6 +1,7 @@
 package com.ora.blockchain;
 
 
+import com.ora.blockchain.config.BcdRpcSettings;
 import com.ora.blockchain.config.BtcRpcSettings;
 import com.ora.blockchain.config.LtcRpcSettings;
 import com.ora.blockchain.config.DarkRpcSettings;
@@ -32,6 +33,14 @@ public class ApplicationConfig {
         return new RestTemplateBuilder()
                 .rootUri(btcRpcSettings.getUrl())
                 .basicAuthorization(btcRpcSettings.getUsername(), btcRpcSettings.getPassword())
+                .build();
+    }
+
+    @Bean(name="bcdRpcRestTemplate")
+    public RestTemplate bcdRpcRestTemplate(BcdRpcSettings bcdRpcSettings) {
+        return new RestTemplateBuilder()
+                .rootUri(bcdRpcSettings.getUrl())
+                .basicAuthorization(bcdRpcSettings.getUsername(), bcdRpcSettings.getPassword())
                 .build();
     }
 }
