@@ -1,18 +1,12 @@
 package com.ora.blockchain.task.jobs;
 
-import com.ora.blockchain.constants.Constants;
-import com.ora.blockchain.service.block.IBlockService;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
-import com.ora.blockchain.service.rpc.IRpcService;
 import com.ora.blockchain.task.ScheduledJob;
-import com.ora.blockchain.task.Task;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.bcel.Const;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
