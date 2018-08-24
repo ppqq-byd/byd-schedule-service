@@ -1,10 +1,8 @@
 package com.ora.blockchain.task.jobs;
 
-import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.service.block.IBlockService;
 import com.ora.blockchain.service.rpc.IRpcService;
 import com.ora.blockchain.task.ScheduledJob;
-import com.ora.blockchain.task.Task;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -25,8 +23,6 @@ public class LtcJob implements Job {
     @Resource
     @Qualifier("ltcBlockServiceImpl")
     private IBlockService ltcBlockService;
-    @Autowired
-    private Task task;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
