@@ -203,18 +203,16 @@ public class EthereumBlockScanner extends BlockScanner {
         if(wc!=null){
 
             if(isOut){
-                  wc.setFrozenBalance(new BigInteger(wc.getFrozenBalance(),10).subtract(
-                          new BigInteger(tx.getValue(),10)
-                  ).toString(10));//冻结减去值
+                  wc.setFrozenBalance(wc.getFrozenBalance().subtract(tx.getValue()));//冻结减去值
 
-                  wc.setTotalBalance(  new BigInteger(wc.getTotalBalance(),10).subtract(
-                          new BigInteger(tx.getValue(),10)
-                  ).subtract(new BigInteger(tx.getGasUsed(),10)).toString(10));//真正的余额减去值
+                  wc.setTotalBalance( wc.getTotalBalance().
+                          subtract(tx.getValue()).
+                          subtract(tx.getGasUsed()));//真正的余额减去值
 
             }else{
 
-                wc.setTotalBalance(new BigInteger(wc.getTotalBalance(),10).
-                        add(new BigInteger(tx.getValue(),10)).toString(10));//真正的余额加上值
+                wc.setTotalBalance(wc.getTotalBalance().
+                        add(tx.getValue()));//真正的余额加上值
             }
 
             balanceMapper.update(wc);
@@ -236,22 +234,17 @@ public class EthereumBlockScanner extends BlockScanner {
 
         if(account!=null){
             if(out){
-                account.setTotalBalance(
-                          new BigInteger(account.getTotalBalance(),10).
-                                  subtract(new BigInteger(tx.getValue(),10)).toString(10));
+                account.setTotalBalance(account.getTotalBalance().subtract(tx.getValue()));
 
-                account.setFrozenBalance(  new BigInteger(account.getFrozenBalance(),10).
-                        subtract(new BigInteger(tx.getValue(),10)).toString(10));
+                account.setFrozenBalance(account.getFrozenBalance().subtract(tx.getValue()));
                 //更新gas费用
                 WalletAccountBalance ethAccount = balanceMapper.findBalanceOfCoinByAddressAndCointype(tx.getFrom(),
                         CoinType.ETH.name());
 
-                ethAccount.setTotalBalance(new BigInteger(ethAccount.getTotalBalance(),10).
-                        subtract(new BigInteger(tx.getGasUsed(),10)).toString(10));
+                ethAccount.setTotalBalance(ethAccount.getTotalBalance().subtract(tx.getGasUsed()));
                 balanceMapper.update(ethAccount);
             }else {
-                account.setTotalBalance(new BigInteger(account.getTotalBalance(),10).
-                        add(new BigInteger(tx.getValue(),10)).toString(10));
+                account.setTotalBalance(account.getTotalBalance().add(tx.getValue()));
             }
 
             balanceMapper.update(account);
@@ -343,10 +336,10 @@ public class EthereumBlockScanner extends BlockScanner {
                     tokenGasUsed = tokenGasUsed.add(result.getGasUsed());
                     BigInteger in = balanceMapper.findERC20InSumByAddressAndTokenId(ethAddress,wab.getTokenId());
 
-                    if(!in.subtract(result.getSumValue()).equals(new BigInteger(wab.getTotalBalance()))){
+                    if(!in.subtract(result.getSumValue()).equals(wab.getTotalBalance())){
                         //TODO
                         log.error("error;tokenBalance;coin:eth;address:"+ethAddress+";");
-                        wab.setTotalBalance(in.subtract(result.getSumValue()).toString(10));
+                        wab.setTotalBalance(in.subtract(result.getSumValue()));
                         balanceMapper.update(wab);
                     }
 
@@ -366,10 +359,10 @@ public class EthereumBlockScanner extends BlockScanner {
                             ethOutSum.getSumValue().add(ethOutSum.getGasUsed()).add(tokenGasUsed)
                     );
 
-            if(!checkValue.equals(new BigInteger(ethAccountBalance.getTotalBalance()))){
+            if(!checkValue.equals(ethAccountBalance.getTotalBalance())){
                 //TODO
                 log.error("error;ethBalance;coin:eth;address:"+ethAddress+";");
-               ethAccountBalance.setTotalBalance(checkValue.toString(10));
+               ethAccountBalance.setTotalBalance(checkValue);
                balanceMapper.update(ethAccountBalance);
             }
         }
@@ -469,7 +462,7 @@ public class EthereumBlockScanner extends BlockScanner {
                         //如果从inputData解析出的账户属于ERC20或from属于ERC20
                         dbTx.transEthTransaction(tx);
                         dbTx.setTo(result[0]);
-                        dbTx.setValue(result[1]);
+                        dbTx.setValue( new BigInteger(result[1],10));
                         Set<String> address = new HashSet<>();
                         address.add(dbTx.getFrom());
                         address.add(dbTx.getTo());

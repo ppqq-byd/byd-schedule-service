@@ -4,6 +4,7 @@ import com.ora.blockchain.constants.Constants;
 import lombok.*;
 import org.web3j.protocol.core.methods.response.EthBlock;
 
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -26,11 +27,11 @@ public class EthereumTransaction {
 
     private String blockHash;
 
-    private String value;
+    private BigInteger value;
 
-    private String gasPrice;
+    private BigInteger gasPrice;
 
-    private String gasUsed;
+    private BigInteger gasUsed;
 
     private String input;
 
@@ -51,9 +52,9 @@ public class EthereumTransaction {
         this.setFrom(txObject.getFrom());
         this.setTxId(txObject.getHash());
         this.setBlockHeight(txObject.getBlockNumber().longValue());
-        this.setGasPrice(txObject.getGasPrice().toString(10));
-        this.setGasUsed(txObject.getGas().toString(10));
-        this.setValue(txObject.getValue().toString(10));
+        this.setGasPrice(txObject.getGasPrice());
+        this.setGasUsed(txObject.getGas());
+        this.setValue(txObject.getValue());
         this.setNonce(txObject.getNonce().intValue());
         this.setBlockHash(txObject.getBlockHash());
         this.setInput(txObject.getInput().length()>65535?txObject.getInput().substring(0,65535):txObject.getInput());
