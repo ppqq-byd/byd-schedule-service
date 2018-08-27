@@ -2,6 +2,7 @@ package com.ora.blockchain.mybatis.entity.output;
 
 import lombok.*;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 @Setter
@@ -20,7 +21,7 @@ public class Output {
     private String transactionTxid;
     private Integer coinbase;
     private Double value;
-    private Long valueSat;
+    private BigInteger valueSat;
     private Integer n;
     private String scriptPubKeyAsm;
     private String scriptPubKeyHex;

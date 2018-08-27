@@ -4,13 +4,13 @@ Navicat MySQL Data Transfer
 Source Server         : localhost
 Source Server Version : 50722
 Source Host           : localhost:3306
-Source Database       : coin_dark
+Source Database       : coin_btc
 
 Target Server Type    : MYSQL
 Target Server Version : 50722
 File Encoding         : 65001
 
-Date: 2018-08-17 08:49:28
+Date: 2018-08-24 15:56:51
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -70,7 +70,7 @@ CREATE TABLE `output` (
   `transaction_txid` char(64) NOT NULL COMMENT '当前vout所属transaction',
   `coinbase` tinyint(3) NOT NULL DEFAULT '0' COMMENT '0:false,1:true',
   `value` varchar(64) DEFAULT NULL,
-  `value_sat` bigint(20) DEFAULT NULL,
+  `value_sat` varchar(64) DEFAULT NULL,
   `n` int(11) DEFAULT NULL,
   `script_pub_key_asm` varchar(512) DEFAULT NULL,
   `script_pub_key_hex` mediumtext,
@@ -83,7 +83,20 @@ CREATE TABLE `output` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_txid_n` (`transaction_txid`,`n`) USING BTREE,
   KEY `idx_address` (`script_pub_key_addresses`) USING BTREE,
+  KEY `idx_wallet_account_id` (`wallet_account_id`) USING BTREE,
+  KEY `idx_transaction_txid` (`transaction_txid`) USING BTREE,
   KEY `idx_status` (`status`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for scancursor
+-- ----------------------------
+DROP TABLE IF EXISTS `scancursor`;
+CREATE TABLE `scancursor` (
+  `id` bigint(32) NOT NULL AUTO_INCREMENT,
+  `current_block` bigint(64) DEFAULT NULL,
+  `sync_status` int(2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -107,13 +120,7 @@ CREATE TABLE `transaction` (
   `update_ts` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `txid_UNIQUE` (`txid`) USING BTREE,
-  KEY `idx_block_hash` (`block_hash`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `scancursor`;
-CREATE TABLE `scancursor` (
-  `id` bigint(32) NOT NULL AUTO_INCREMENT,
-  `current_block` bigint(64) DEFAULT NULL,
-  `sync_status` int(2) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  KEY `idx_block_hash` (`block_hash`) USING BTREE,
+  KEY `idx_trans_status` (`trans_status`) USING BTREE,
+  KEY `idx_txid` (`txid`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
