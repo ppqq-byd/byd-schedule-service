@@ -2,6 +2,7 @@ package com.ora.blockchain.mybatis.entity.wallet;
 
 import lombok.*;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 @Setter
@@ -14,8 +15,8 @@ public class WalletAccountBalance {
     private Long accountId;
     private String coinType;
     private Integer tokenId;
-    private String totalBalance;
-    private String frozenBalance;
+    private BigInteger totalBalance;
+    private BigInteger frozenBalance;
     private Date createTs;
     private Date updateTs;
 }
