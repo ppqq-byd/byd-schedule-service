@@ -1,15 +1,6 @@
 package com.ora.blockchain.service.blockscanner.impl.ethfamily;
 
-
 import com.ora.blockchain.constants.CoinType;
-import com.ora.blockchain.constants.Constants;
-import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
-import com.ora.blockchain.mybatis.entity.eth.EthereumERC20;
-import com.ora.blockchain.mybatis.entity.common.ScanCursor;
-import com.ora.blockchain.mybatis.entity.eth.EthereumTransaction;
-import com.ora.blockchain.mybatis.entity.wallet.ERC20Sum;
-import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance;
-import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
 import com.ora.blockchain.mybatis.mapper.common.ScanCursorMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumERC20Mapper;
@@ -19,22 +10,20 @@ import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBindMapper;
 import com.ora.blockchain.service.blockscanner.impl.BlockScanner;
 import com.ora.blockchain.service.web3j.Web3;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.web3j.protocol.core.methods.response.EthBlock;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.*;
 
-@Service("ethBlockScaner")
+@Service("etcBlockScaner")
 @Slf4j
-public class EthereumBlockScanner extends EthereumFamilyBlockScanner {
-
-
+public class EtcBlockScanner extends EthereumFamilyBlockScanner {
     @Override
     protected String getCoinType() {
-        return CoinType.ETH.name();
+        return CoinType.ETC.name();
     }
+    //./geth  --fast --cache 2048 --datadir /data/blockchain/ethereumclassic/ --rpc --rpcaddr 10.10.3.226  --rpcport 8545
+    // ./geth --data-dir=/data/blockchain/ethereumclassic/ --chain mainnet attach
+
+
 }
