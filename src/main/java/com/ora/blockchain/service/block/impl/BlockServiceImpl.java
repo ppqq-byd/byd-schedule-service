@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -151,8 +153,8 @@ public abstract class BlockServiceImpl implements IBlockService {
         return blockMapper.queryLastBlock(database);
     }
 
-    protected long convertToSatoshis(double value) {
-        return (long) (Utils.COIN.longValue() * value);
+    protected BigInteger convertToSatoshis(double value) {
+        return new BigDecimal(value).multiply(new BigDecimal(Utils.COIN.longValue())).toBigInteger();
     }
     public abstract IRpcService getRpcService();
 }

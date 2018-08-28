@@ -101,7 +101,7 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
         if (null != totalBalance && !totalBalance.isEmpty()) {
             Map<Long, BigInteger> map = new HashMap<>();
             totalBalance.forEach((WalletAccountBalance b) -> {
-                map.put(b.getAccountId(), null != map.get(b.getAccountId()) ? map.get(b.getAccountId()).add(new BigInteger(b.getTotalBalance())) : new BigInteger(b.getTotalBalance()));
+                map.put(b.getAccountId(), null != map.get(b.getAccountId()) ? map.get(b.getAccountId()).add(b.getTotalBalance()) : b.getTotalBalance());
             });
             updateAccountBatch(map);
         }
@@ -114,7 +114,7 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
         List<WalletAccountBalance> balanceList = keySet.stream().map((Long accountId) -> {
             WalletAccountBalance wab = new WalletAccountBalance();
             wab.setAccountId(accountId);
-            wab.setTotalBalance(balanceMap.get(accountId).toString());
+            wab.setTotalBalance(balanceMap.get(accountId));
             wab.setCoinType(getCoinType());
             return wab;
         }).collect(Collectors.toList());

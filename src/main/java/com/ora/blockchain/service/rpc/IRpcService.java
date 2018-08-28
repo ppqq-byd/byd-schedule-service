@@ -15,6 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -91,7 +92,7 @@ public interface IRpcService {
                     if (vout.has("value"))
                         output.setValue(vout.get("value").doubleValue());
                     if (vout.has("valueSat"))
-                        output.setValueSat(vout.get("valueSat").longValue());
+                        output.setValueSat(new BigInteger(vout.get("valueSat").textValue()));
                     if (vout.has("n"))
                         output.setN(vout.get("n").intValue());
                     if (vout.has("scriptPubKey")) {

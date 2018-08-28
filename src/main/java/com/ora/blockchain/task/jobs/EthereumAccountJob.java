@@ -1,6 +1,5 @@
 package com.ora.blockchain.task.jobs;
 
-
 import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import com.ora.blockchain.task.ScheduledJob;
@@ -14,28 +13,28 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-@Slf4j
 @Component
-@ScheduledJob(name = "btcJob", cronExp = "0 */2 * * * ?")
 @DisallowConcurrentExecution
-public class BtcJob implements Job {
-    private static final Long BTC_BLOCK_HEIGHT = 538098L;
+@ScheduledJob(name = "ethAccountJob", cronExp = "0/5 * * * * ?")
+@Slf4j
+public class EthereumAccountJob implements Job {
 
     @Resource
-    @Qualifier("btcBlockScanner")
-    private IBlockScanner scanner;
+    @Qualifier("ethBlockScaner")
+    private IBlockScanner ethBlockScanner;
 
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
-        log.info("********************Btc Scanner Job start......************************");
+    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+        System.out.println("********************Eth Account Job start......************************");
         long start = System.currentTimeMillis();
         try {
-            scanner.scanBlock(BTC_BLOCK_HEIGHT,CoinType.BTC.name());
+            ethBlockScanner.updateAccount(CoinType.ETH.name());
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("Btc Scanner JOb error! " + e.getMessage());
+           log.error("Eth Account job failed:"+e.getMessage(),e);
         }
         long end = System.currentTimeMillis();
-        log.info(String.format("*********************Btc Scanner Job end(spent : %s)*****************************", end - start));
+        System.out.println(String.format("*********************Eth Account Job end(spent : %s)*****************************", end - start));
+
     }
 }

@@ -4,7 +4,6 @@ import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.mybatis.entity.block.Block;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import com.ora.blockchain.service.rpc.IRpcService;
-import com.ora.blockchain.task.Task;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -58,8 +57,6 @@ public class IBlockTest {
     @Qualifier("bcdBlockScanner")
     private IBlockScanner bcdScanner;
 
-    @Autowired
-    private Task task;
     private String database;
     private Block block;
 
@@ -96,10 +93,12 @@ public class IBlockTest {
 
     @Test
     public void testDarkScanner(){
-        try {
-            darkScanner.scanBlock(921662L,CoinType.getDatabase(CoinType.DARK.name()));
-        } catch (Exception e) {
-            e.printStackTrace();
+        for(int i=0;i<100;i++){
+            try {
+                darkScanner.scanBlock(921662L,CoinType.DARK.name());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
