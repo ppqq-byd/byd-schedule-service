@@ -26,7 +26,7 @@ public interface EthereumBlockMapper {
                                                     @Param("number")Long number);
 
 
-    public void updateByBlockNumber(@Param("pojo") EthereumBlock pojo);
+    public void updateByBlockNumber(@Param("database") String database,@Param("pojo") EthereumBlock pojo);
 
     public void deleteBlockByBlockNumber(@Param("database") String database,
                                        @Param("blockNumber") Long blockNumber);
