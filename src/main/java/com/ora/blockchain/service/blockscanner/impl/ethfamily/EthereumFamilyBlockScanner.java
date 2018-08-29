@@ -123,9 +123,11 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             EthereumTransaction tx = it.next();
             tx.setStatus(Constants.TXSTATUS_CONFIRMING);
             tx.setIsDelete(0);
+            tx.setIsSender(0);
             boolean isDelete = false;
             for(EthereumTransaction dbTx:inDbTx){
                 if(dbTx.getTxId().equals(tx.getTxId())){
+                    tx.setIsSender(1);//如果是需要更新的tx 说明数据库已记录 则是提币的tx
                     needUpdateTx.add(tx);
                     isDelete = true;
                     break;
@@ -198,56 +200,84 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
     /**
      * 处理转入 转出逻辑
-     * @param address
-     * @param isOut
+     * @param tx
      */
-    private WalletAccountBalance processEthCoinAccount(String address,boolean isOut,EthereumTransaction tx){
-        WalletAccountBalance wc =
-                balanceMapper.findBalanceOfCoinByAddressAndCointype(address,getCoinType());
-        if(wc!=null){
+    private void processEthCoinAccount(EthereumTransaction tx){
+        //如果是提币
+        if(tx.getIsSender()==1){
+            WalletAccountBalance out =
+                    balanceMapper.findBalanceOfCoinByAddressAndCointype(tx.getFrom(),getCoinType());
 
-            if(isOut){
-                //TODO 内转内 内转外
-                  wc.setFrozenBalance(wc.getFrozenBalance().subtract(tx.getValue()));//冻结减去值
-
-                  wc.setTotalBalance( wc.getTotalBalance().
-                          subtract(tx.getValue()).
-                          subtract(tx.getGasUsed()));//真正的余额减去值
-
-            }else{
-
-                wc.setTotalBalance(wc.getTotalBalance().
-                        add(tx.getValue()));//真正的余额加上值
+            //内转内
+            WalletAccountBalance in =
+                    balanceMapper.findBalanceOfCoinByAddressAndCointype(tx.getTo(),getCoinType());
+            if(in!=null){
+                in.setTotalBalance(in.getTotalBalance().add(tx.getValue()));
+                balanceMapper.update(in);
             }
 
-            balanceMapper.update(wc);
+            //冻结减去gasLimit*gasPrice
+            out.setFrozenBalance(out.getFrozenBalance().
+                    subtract(tx.getGasPrice().multiply(tx.getGasLimit())));
+
+            //账户减去交易的amount再减去gasUsed
+            out.setTotalBalance(out.getTotalBalance().subtract(tx.getValue()).subtract(
+                    tx.getGasUsed()
+            ));
+
+            balanceMapper.update(out);
+        }else{//如果是收币
+
+            WalletAccountBalance in =
+                    balanceMapper.findBalanceOfCoinByAddressAndCointype(tx.getFrom(),getCoinType());
+
+            in.setTotalBalance(in.getTotalBalance().add(tx.getValue()));
+
+            balanceMapper.update(in);
         }
 
-        return wc;
     }
 
     /**
      * 处理ERC20代币
      * @param tx
-     * @param out
      * @return
      */
-    private WalletAccountBalance processToken(EthereumTransaction tx,boolean out){
+    private void processToken(EthereumTransaction tx){
+        boolean out = true;
+        if(tx.getIsSender()==0){
+            out = false;
+        }
         WalletAccountBalance account =
                 this.balanceMapper.findBalanceByContractAddressAndCoinType(CoinType.getDatabase(getCoinType()),
                         getCoinType(),tx.getContractAddress(),out==true?tx.getFrom():tx.getTo());
 
-        if(account!=null){
-            if(out){
-                //TODO 内转内 内转外
-                //TODO gasprice*gaslimit 冻结
+        //转出分为内转外和内转内
+        if(out){
+                WalletAccountBalance receiveAccount =
+                        this.balanceMapper.findBalanceByContractAddressAndCoinType(CoinType.getDatabase(getCoinType()),
+                                getCoinType(),tx.getContractAddress(),tx.getTo());
+
+                //内转内
+                if(receiveAccount!=null){
+                    //内部收款账户收钱
+                    receiveAccount.setTotalBalance(
+                            receiveAccount.getTotalBalance().add(tx.getValue()));
+                    balanceMapper.update(receiveAccount);
+                }
+
+                //这里处理代币的账户减钱
                 account.setTotalBalance(account.getTotalBalance().subtract(tx.getValue()));
-
                 account.setFrozenBalance(account.getFrozenBalance().subtract(tx.getValue()));
-                //更新gas费用
-                WalletAccountBalance ethAccount = balanceMapper.findBalanceOfCoinByAddressAndCointype(tx.getFrom(),
-                        getCoinType());
 
+                //这里处理代币所属账户的ETH账户更新gas费用
+                WalletAccountBalance ethAccount = balanceMapper.findBalanceOfCoinByAddressAndCointype(tx.getFrom(),
+                            getCoinType());
+
+                //冻结的手续费为gasLimit*gasPrice
+                ethAccount.setFrozenBalance(ethAccount.getFrozenBalance().
+                        subtract(tx.getGasLimit().multiply(tx.getGasPrice())));
+                //账户的手续费为gasUsed
                 ethAccount.setTotalBalance(ethAccount.getTotalBalance().subtract(tx.getGasUsed()));
                 balanceMapper.update(ethAccount);
             }else {
@@ -255,9 +285,6 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             }
 
             balanceMapper.update(account);
-        }
-
-        return account;
     }
 
     private void setAccountsMap(HashMap<String,HashSet<String>> tokenAccounts,
@@ -288,36 +315,24 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
             for(EthereumTransaction tx:txList){
                 //StringUtils.isEmpty()
-                if(tx.getContractAddress()!=null){//处理token的逻辑
-                    //转出token
-                    WalletAccountBalance outTokenAccount =processToken(tx,true);
-                    //转入token
-                    WalletAccountBalance inTokenAccount = processToken(tx,false);
-                    if(outTokenAccount!=null){
-                        setAccountsMap(tokenAccounts,tx,tx.getFrom(),true);
-                    }
-                    if(inTokenAccount!=null){
-                        setAccountsMap(tokenAccounts,tx,tx.getTo(),true);
-                    }
+                if(StringUtils.isEmpty(tx.getContractAddress())){//处理token的逻辑
+                    //token账户
+                    processToken(tx);
+                    setAccountsMap(tokenAccounts,
+                            tx, tx.getIsSender()==1?tx.getFrom():tx.getTo(),
+                            true);
 
-                }else{//eth币的逻辑
-                    //处理转出的逻辑
-                    WalletAccountBalance outAccount = processEthCoinAccount(tx.getFrom(),true,tx);
-                    //处理转入的逻辑
-                    WalletAccountBalance inAccount = processEthCoinAccount(tx.getTo(),false,tx);
-                    if(outAccount!=null){
-                        setAccountsMap(tokenAccounts,tx,tx.getFrom(),false);
-                    }
-                    if(inAccount!=null){
-                        setAccountsMap(tokenAccounts,tx,tx.getTo(),false);
-                    }
+                }else{//eth币的处理逻辑
+                    processEthCoinAccount(tx);
 
+                    setAccountsMap(tokenAccounts,tx,tx.getIsSender()==1?tx.getFrom():tx.getTo(),
+                            false);
                 }
 
             }
 
-            //TODO 这里什么时候 怎么做检查
-            checkAccountBalance(tokenAccounts);
+            //对有变动的账户做检查检查
+            //checkAccountBalance(tokenAccounts);
         }
 
     }

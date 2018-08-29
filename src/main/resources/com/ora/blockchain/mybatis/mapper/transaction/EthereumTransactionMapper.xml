@@ -10,7 +10,9 @@
         <result column="block_hash" property="blockHash"/>
         <result column="value" property="value"/>
         <result column="gas_price" property="gasPrice"/>
+        <result column="gas_limit" property="gasLimit"/>
         <result column="gas_used" property="gasUsed"/>
+        <result column="is_sender" property="isSender"/>
         <result column="nonce" property="nonce"/>
         <result column="input" property="input"/>
         <result column="contract_address" property="contractAddress"/>
@@ -26,12 +28,14 @@
         `block_hash`,
         `value`,
         `gas_price`,
+        `gas_limit`,
         `gas_used`,
         `nonce`,
          `input`,
          `status`,
          `is_delete`,
          `contract_address`,
+        `is_sender`,
         `create_ts`,
         `update_ts`
     </sql>
@@ -45,16 +49,19 @@
         `block_hash`,
         `value`,
         `gas_price`,
+        `gas_limit`,
         `gas_used`,
           `input`,
         `nonce`,
          `status`,
          `is_delete`,
+        `is_sender``,
          `contract_address`)
         VALUES (#{pojo.id}, #{pojo.txId}, #{pojo.from}, #{pojo.to},
             #{pojo.blockHeight}, #{pojo.blockHash},#{pojo.value}, #{pojo.gasPrice},
-            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce},
-            #{pojo.status},#{pojo.isDelete},#{pojo.contractAddress})
+        #{pojo.gasLimit},
+        #{pojo.gasUsed},#{pojo.input},#{pojo.nonce},
+            #{pojo.status},#{pojo.isDelete},#{pojo.isSender},#{pojo.contractAddress})
     </insert>
 
     <insert id="insertTxList">
@@ -66,19 +73,21 @@
         `block_hash`,
         `value`,
         `gas_price`,
+        `gas_limit`,
         `gas_used`,
         `input`,
         `nonce`,
         `status`,
         `is_delete`,
+        `is_sender`,
         `contract_address`
         )
         VALUES
         <foreach collection="txList" item="pojo" index="index" separator=",">
             (
             #{pojo.txId}, #{pojo.from}, #{pojo.to},
-            #{pojo.blockHeight}, #{pojo.blockHash},#{pojo.value}, #{pojo.gasPrice},
-            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce},#{pojo.status},#{pojo.isDelete},
+            #{pojo.blockHeight}, #{pojo.blockHash},#{pojo.value}, #{pojo.gasPrice},#{pojo.gasLimit},
+            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce},#{pojo.status},#{pojo.isDelete},#{pojo.isSender},
             #{pojo.contractAddress}
             )
         </foreach>
@@ -119,10 +128,12 @@
                 block_height = #{item.blockHeight},
                 block_hash = #{item.blockHash},
                 gas_price = #{item.gasPrice},
+                gas_limit = #{item.gasLimit},
                 gas_used = #{item.gasUsed},
                 value = #{item.value},
                 input = #{item.input},
                 nonce = #{item.nonce},
+                is_sender=#{item.isSender},
                 update_ts = #{item.updateTs},
                 contract_address=#{item.contractAddress}
             </set>

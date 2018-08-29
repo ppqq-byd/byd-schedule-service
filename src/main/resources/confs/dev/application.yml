@@ -7,7 +7,7 @@ spring:
         name: oracloud
         url: jdbc:mysql://127.0.0.1:3306/wallet_common?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
         username: root
-        password: 123456
+        password: darkwave30133
         # 使用druid数据源
         type: com.alibaba.druid.pool.DruidDataSource
         driver-class-name: com.mysql.jdbc.Driver
@@ -38,5 +38,5 @@ rpc:
         url: "http://192.168.12.39:8332"
         username: "bitcoinrpc"
         password: "2XA4DuKNCbtZXsBQRRNDEwEY2nM6M4H9Tx5dFjoAVVbK"
-    web3j:
-        url: "http://52.83.130.131:8545"
+    #web3j:
+        #url: "http://52.83.130.131:8545"

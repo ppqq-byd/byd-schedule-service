@@ -41,6 +41,10 @@ public class EthereumTransaction {
 
     private int isDelete;
 
+    private Integer isSender;
+
+    private BigInteger gasLimit;
+
     private Date createTs;
 
     private Date updateTs;
@@ -53,6 +57,7 @@ public class EthereumTransaction {
         this.setTxId(txObject.getHash());
         this.setBlockHeight(txObject.getBlockNumber().longValue());
         this.setGasPrice(txObject.getGasPrice());
+
         this.setGasUsed(txObject.getGas());
         this.setValue(txObject.getValue());
         this.setNonce(txObject.getNonce().intValue());
