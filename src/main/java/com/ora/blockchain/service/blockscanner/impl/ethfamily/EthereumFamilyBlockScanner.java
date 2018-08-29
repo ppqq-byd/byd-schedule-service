@@ -19,6 +19,8 @@ import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBindMapper;
 import com.ora.blockchain.service.blockscanner.impl.BlockScanner;
 import com.ora.blockchain.service.web3j.Web3;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -205,6 +207,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
         if(wc!=null){
 
             if(isOut){
+                //TODO 内转内 内转外
                   wc.setFrozenBalance(wc.getFrozenBalance().subtract(tx.getValue()));//冻结减去值
 
                   wc.setTotalBalance( wc.getTotalBalance().
@@ -236,6 +239,8 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
         if(account!=null){
             if(out){
+                //TODO 内转内 内转外
+                //TODO gasprice*gaslimit 冻结
                 account.setTotalBalance(account.getTotalBalance().subtract(tx.getValue()));
 
                 account.setFrozenBalance(account.getFrozenBalance().subtract(tx.getValue()));
@@ -282,6 +287,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             HashMap<String,HashSet<String>> tokenAccounts = new HashMap<String,HashSet<String>>();
 
             for(EthereumTransaction tx:txList){
+                //StringUtils.isEmpty()
                 if(tx.getContractAddress()!=null){//处理token的逻辑
                     //转出token
                     WalletAccountBalance outTokenAccount =processToken(tx,true);
@@ -445,8 +451,13 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
         List<EthBlock.TransactionResult> results = block.getBlock().getTransactions();
         //非合约的账户
-        List<WalletAccountBind> notContractAccounts = getEthAccounts(results);
 
+
+        List<EthereumTransaction> list=new ArrayList<>();
+        List<WalletAccountBind> notContractAccounts = getEthAccounts(results);
+        if(!CollectionUtils.isEmpty(list)){
+            needAddList.addAll(list);
+        }
 
             for(EthBlock.TransactionResult r:results)
             {
