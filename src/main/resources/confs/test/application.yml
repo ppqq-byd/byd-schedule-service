@@ -1,6 +1,7 @@
 server:
   tomcat:
     uri-encoding: UTF-8
+  port: 9998
 
 spring:
     datasource:
