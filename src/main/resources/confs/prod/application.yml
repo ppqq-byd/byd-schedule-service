@@ -1,6 +1,7 @@
 server:
   tomcat:
     uri-encoding: UTF-8
+  port: 9998
 
 spring:
     datasource:
@@ -26,6 +27,18 @@ spring:
         maxOpenPreparedStatements: 20
 
 rpc:
+    bch:
+        url: "http://ELB-TCP-Blockchain-8ce9078d9f50e341.elb.cn-northwest-1.amazonaws.com.cn:8432/"
+        username: "ora"
+        password: "Oradt!1234"
+    doge:
+        url: "http://ELB-TCP-Blockchain-8ce9078d9f50e341.elb.cn-northwest-1.amazonaws.com.cn:22555/"
+        username: "ora"
+        password: "Oradt!1234"
+    btg:
+        url: "http://ELB-TCP-Blockchain-8ce9078d9f50e341.elb.cn-northwest-1.amazonaws.com.cn:9050/"
+        username: "ora"
+        password: "Oradt!1234"
     dark:
         url: "http://ELB-TCP-Blockchain-8ce9078d9f50e341.elb.cn-northwest-1.amazonaws.com.cn:9998/"
         username: "ora"

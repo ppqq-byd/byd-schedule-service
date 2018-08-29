@@ -1,0 +1,397 @@
+2018-08-29 14:55:11,507 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-29 14:55:23,353 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - Starting IBlockTest on bogon with PID 1587 (started by root in /root/Documents/workspace/blockchain/byd-schedule-service)
+2018-08-29 14:55:23,356 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - No active profile set, falling back to default profiles: default
+2018-08-29 14:55:24,653 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-29 14:55:36,684 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-29 14:55:36,684 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-29 14:55:36,713 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-29 14:55:37,356 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler meta-data: Quartz Scheduler (v2.3.0) 'schedulerFactoryBean' with instanceId 'bogon1535525736668'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 5 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2018-08-29 14:55:37,357 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler 'schedulerFactoryBean' initialized from an externally provided properties instance.
+2018-08-29 14:55:37,357 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler version: 2.3.0
+2018-08-29 14:55:37,358 [main] [INFO ] org.quartz.core.QuartzScheduler - JobFactory set to: com.ora.blockchain.task.QuartzConfig$AutowiringSpringBeanJobFactory@8d8f754
+2018-08-29 14:55:39,670 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535525736668 started.
+2018-08-29 14:55:39,678 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2018-08-29 14:55:39,690 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found {0} custom documentation plugin(s)
+2018-08-29 14:55:39,695 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2018-08-29 14:55:39,706 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - Started IBlockTest in 52.586 seconds (JVM running for 53.122)
+2018-08-29 14:55:42,849 [schedulerFactoryBean_Worker-4] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 14:55:42,964 [schedulerFactoryBean_Worker-4] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 115)*****************************
+2018-08-29 14:55:47,191 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 201
+2018-08-29 14:55:47,824 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 167
+2018-08-29 14:55:48,447 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 161
+2018-08-29 14:55:48,987 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 167
+2018-08-29 14:55:49,584 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 169
+2018-08-29 14:55:50,201 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 154
+2018-08-29 14:55:50,749 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 172
+2018-08-29 14:55:51,372 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 188
+2018-08-29 14:55:51,970 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 167
+2018-08-29 14:55:52,570 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 174
+2018-08-29 14:55:53,154 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 154
+2018-08-29 14:55:53,772 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 187
+2018-08-29 14:55:54,372 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 170
+2018-08-29 14:55:54,981 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 182
+2018-08-29 14:55:55,553 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 169
+2018-08-29 14:55:56,190 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 177
+2018-08-29 14:55:56,756 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 162
+2018-08-29 14:55:57,316 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 168
+2018-08-29 14:55:57,910 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 173
+2018-08-29 14:55:58,428 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 140
+2018-08-29 14:55:58,982 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 165
+2018-08-29 14:55:59,517 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 147
+2018-08-29 14:56:00,040 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 150
+2018-08-29 14:56:00,610 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 173
+2018-08-29 14:56:00,936 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 14:56:01,049 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 113)*****************************
+2018-08-29 14:56:01,238 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 173
+2018-08-29 14:56:01,816 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 174
+2018-08-29 14:56:02,390 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 158
+2018-08-29 14:56:02,986 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 179
+2018-08-29 14:56:03,564 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 168
+2018-08-29 14:56:04,133 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 158
+2018-08-29 14:56:04,682 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 138
+2018-08-29 14:56:05,262 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 176
+2018-08-29 14:56:05,854 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 151
+2018-08-29 14:56:06,462 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 193
+2018-08-29 14:56:07,045 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 161
+2018-08-29 14:56:07,616 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 188
+2018-08-29 14:56:08,187 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 186
+2018-08-29 14:56:08,838 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 169
+2018-08-29 14:56:09,414 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 180
+2018-08-29 14:56:09,958 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 168
+2018-08-29 14:56:10,582 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 182
+2018-08-29 14:56:11,166 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 172
+2018-08-29 14:56:11,734 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 180
+2018-08-29 14:56:12,291 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 174
+2018-08-29 14:56:12,814 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 142
+2018-08-29 14:56:13,368 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 155
+2018-08-29 14:56:13,952 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 171
+2018-08-29 15:07:05,932 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-29 15:07:17,876 [main] [INFO ] com.ora.blockchain.Application - Starting Application on bogon with PID 2521 (/root/Documents/workspace/blockchain/byd-schedule-service/target/classes started by root in /root/Documents/workspace/blockchain/byd-schedule-service)
+2018-08-29 15:07:17,878 [main] [INFO ] com.ora.blockchain.Application - No active profile set, falling back to default profiles: default
+2018-08-29 15:07:18,784 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-29 15:07:30,812 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-29 15:07:30,812 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-29 15:07:30,852 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-29 15:09:39,539 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-29 15:09:51,466 [main] [INFO ] com.ora.blockchain.Application - Starting Application on bogon with PID 2849 (/root/Documents/workspace/blockchain/byd-schedule-service/target/classes started by root in /root/Documents/workspace/blockchain/byd-schedule-service)
+2018-08-29 15:09:51,469 [main] [INFO ] com.ora.blockchain.Application - No active profile set, falling back to default profiles: default
+2018-08-29 15:09:52,400 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-29 15:10:04,429 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-29 15:10:04,430 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-29 15:10:04,469 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-29 15:10:04,776 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler meta-data: Quartz Scheduler (v2.3.0) 'schedulerFactoryBean' with instanceId 'bogon1535526604414'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 5 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2018-08-29 15:10:04,776 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler 'schedulerFactoryBean' initialized from an externally provided properties instance.
+2018-08-29 15:10:04,776 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler version: 2.3.0
+2018-08-29 15:10:04,777 [main] [INFO ] org.quartz.core.QuartzScheduler - JobFactory set to: com.ora.blockchain.task.QuartzConfig$AutowiringSpringBeanJobFactory@37864b77
+2018-08-29 15:10:06,300 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535526604414 started.
+2018-08-29 15:10:06,307 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2018-08-29 15:10:06,314 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found {0} custom documentation plugin(s)
+2018-08-29 15:10:06,318 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2018-08-29 15:10:06,345 [main] [INFO ] com.ora.blockchain.Application - Started Application in 51.083 seconds (JVM running for 75.483)
+2018-08-29 15:10:06,345 [main] [INFO ] com.ora.blockchain.Application - server started......
+2018-08-29 15:10:06,426 [schedulerFactoryBean_Worker-3] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:10:06,447 [schedulerFactoryBean_Worker-3] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 21)*****************************
+2018-08-29 15:12:00,044 [schedulerFactoryBean_Worker-2] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:12:00,047 [schedulerFactoryBean_Worker-2] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 3)*****************************
+2018-08-29 15:14:00,043 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:14:00,048 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 5)*****************************
+2018-08-29 15:16:00,042 [schedulerFactoryBean_Worker-4] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:16:00,046 [schedulerFactoryBean_Worker-4] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 4)*****************************
+2018-08-29 15:18:00,043 [schedulerFactoryBean_Worker-5] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:18:00,047 [schedulerFactoryBean_Worker-5] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 4)*****************************
+2018-08-29 15:18:11,387 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535526604414 paused.
+2018-08-29 15:18:11,389 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535526604414 shutting down.
+2018-08-29 15:18:11,389 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535526604414 paused.
+2018-08-29 15:18:11,389 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535526604414 shutdown complete.
+2018-08-29 15:18:11,391 [Thread-5] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} closed
+2018-08-29 15:19:09,858 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-29 15:19:21,812 [main] [INFO ] com.ora.blockchain.Application - Starting Application on bogon with PID 3749 (/root/Documents/workspace/blockchain/byd-schedule-service/target/classes started by root in /root/Documents/workspace/blockchain/byd-schedule-service)
+2018-08-29 15:19:21,814 [main] [INFO ] com.ora.blockchain.Application - No active profile set, falling back to default profiles: default
+2018-08-29 15:19:22,725 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-29 15:19:34,748 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-29 15:19:34,748 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-29 15:19:34,787 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-29 15:19:35,069 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler meta-data: Quartz Scheduler (v2.3.0) 'schedulerFactoryBean' with instanceId 'bogon1535527174735'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 5 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2018-08-29 15:19:35,069 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler 'schedulerFactoryBean' initialized from an externally provided properties instance.
+2018-08-29 15:19:35,069 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler version: 2.3.0
+2018-08-29 15:19:35,069 [main] [INFO ] org.quartz.core.QuartzScheduler - JobFactory set to: com.ora.blockchain.task.QuartzConfig$AutowiringSpringBeanJobFactory@3b95d13c
+2018-08-29 15:19:36,655 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527174735 started.
+2018-08-29 15:19:36,661 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2018-08-29 15:19:36,669 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found {0} custom documentation plugin(s)
+2018-08-29 15:19:36,674 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2018-08-29 15:19:36,702 [main] [INFO ] com.ora.blockchain.Application - Started Application in 51.095 seconds (JVM running for 75.453)
+2018-08-29 15:19:36,702 [main] [INFO ] com.ora.blockchain.Application - server started......
+2018-08-29 15:20:00,037 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:20:00,044 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 7)*****************************
+2018-08-29 15:21:36,204 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527174735 paused.
+2018-08-29 15:21:36,207 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527174735 shutting down.
+2018-08-29 15:21:36,207 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527174735 paused.
+2018-08-29 15:21:36,207 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527174735 shutdown complete.
+2018-08-29 15:21:36,209 [Thread-5] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} closed
+2018-08-29 15:22:26,907 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-29 15:22:38,857 [main] [INFO ] com.ora.blockchain.Application - Starting Application on bogon with PID 4123 (/root/Documents/workspace/blockchain/byd-schedule-service/target/classes started by root in /root/Documents/workspace/blockchain/byd-schedule-service)
+2018-08-29 15:22:38,858 [main] [INFO ] com.ora.blockchain.Application - No active profile set, falling back to default profiles: default
+2018-08-29 15:22:39,869 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-29 15:22:51,892 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-29 15:22:51,892 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-29 15:22:51,911 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-29 15:22:52,186 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler meta-data: Quartz Scheduler (v2.3.0) 'schedulerFactoryBean' with instanceId 'bogon1535527371881'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 5 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2018-08-29 15:22:52,186 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler 'schedulerFactoryBean' initialized from an externally provided properties instance.
+2018-08-29 15:22:52,186 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler version: 2.3.0
+2018-08-29 15:22:52,186 [main] [INFO ] org.quartz.core.QuartzScheduler - JobFactory set to: com.ora.blockchain.task.QuartzConfig$AutowiringSpringBeanJobFactory@537c8c7e
+2018-08-29 15:22:53,679 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527371881 started.
+2018-08-29 15:22:53,688 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2018-08-29 15:22:53,698 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found {0} custom documentation plugin(s)
+2018-08-29 15:22:53,704 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2018-08-29 15:22:53,746 [main] [INFO ] com.ora.blockchain.Application - Started Application in 51.121 seconds (JVM running for 75.528)
+2018-08-29 15:22:53,746 [main] [INFO ] com.ora.blockchain.Application - server started......
+2018-08-29 15:22:53,750 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:22:53,789 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 39)*****************************
+2018-08-29 15:23:59,469 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527371881 paused.
+2018-08-29 15:23:59,472 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527371881 shutting down.
+2018-08-29 15:23:59,472 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527371881 paused.
+2018-08-29 15:23:59,473 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527371881 shutdown complete.
+2018-08-29 15:23:59,476 [Thread-5] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} closed
+2018-08-29 15:25:07,462 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-29 15:25:19,405 [main] [INFO ] com.ora.blockchain.Application - Starting Application on bogon with PID 4373 (/root/Documents/workspace/blockchain/byd-schedule-service/target/classes started by root in /root/Documents/workspace/blockchain/byd-schedule-service)
+2018-08-29 15:25:19,406 [main] [INFO ] com.ora.blockchain.Application - No active profile set, falling back to default profiles: default
+2018-08-29 15:25:20,296 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-29 15:25:32,323 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-29 15:25:32,323 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-29 15:25:32,362 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-29 15:25:32,641 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler meta-data: Quartz Scheduler (v2.3.0) 'schedulerFactoryBean' with instanceId 'bogon1535527532307'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 5 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2018-08-29 15:25:32,641 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler 'schedulerFactoryBean' initialized from an externally provided properties instance.
+2018-08-29 15:25:32,641 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler version: 2.3.0
+2018-08-29 15:25:32,641 [main] [INFO ] org.quartz.core.QuartzScheduler - JobFactory set to: com.ora.blockchain.task.QuartzConfig$AutowiringSpringBeanJobFactory@6601cc93
+2018-08-29 15:25:34,056 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527532307 started.
+2018-08-29 15:25:34,062 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2018-08-29 15:25:34,070 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found {0} custom documentation plugin(s)
+2018-08-29 15:25:34,074 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2018-08-29 15:25:34,100 [main] [INFO ] com.ora.blockchain.Application - Started Application in 50.91 seconds (JVM running for 75.33)
+2018-08-29 15:25:34,100 [main] [INFO ] com.ora.blockchain.Application - server started......
+2018-08-29 15:25:34,152 [schedulerFactoryBean_Worker-2] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:25:34,168 [schedulerFactoryBean_Worker-2] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 16)*****************************
+2018-08-29 15:26:00,047 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:26:00,052 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 4)*****************************
+2018-08-29 15:28:00,044 [schedulerFactoryBean_Worker-4] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:28:00,047 [schedulerFactoryBean_Worker-4] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 3)*****************************
+2018-08-29 15:30:00,042 [schedulerFactoryBean_Worker-5] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:30:00,045 [schedulerFactoryBean_Worker-5] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 3)*****************************
+2018-08-29 15:32:00,042 [schedulerFactoryBean_Worker-3] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:32:00,046 [schedulerFactoryBean_Worker-3] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 4)*****************************
+2018-08-29 15:32:34,237 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527532307 paused.
+2018-08-29 15:32:34,239 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527532307 shutting down.
+2018-08-29 15:32:34,239 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527532307 paused.
+2018-08-29 15:32:34,240 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535527532307 shutdown complete.
+2018-08-29 15:32:34,242 [Thread-5] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} closed
+2018-08-29 15:35:33,468 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-29 15:35:45,413 [main] [INFO ] com.ora.blockchain.Application - Starting Application on bogon with PID 5209 (/root/Documents/workspace/blockchain/byd-schedule-service/target/classes started by root in /root/Documents/workspace/blockchain/byd-schedule-service)
+2018-08-29 15:35:45,415 [main] [INFO ] com.ora.blockchain.Application - No active profile set, falling back to default profiles: default
+2018-08-29 15:35:46,346 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-29 15:35:58,362 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-29 15:35:58,362 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-29 15:35:58,382 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-29 15:35:58,683 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler meta-data: Quartz Scheduler (v2.3.0) 'schedulerFactoryBean' with instanceId 'bogon1535528158355'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 5 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2018-08-29 15:35:58,684 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler 'schedulerFactoryBean' initialized from an externally provided properties instance.
+2018-08-29 15:35:58,684 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler version: 2.3.0
+2018-08-29 15:35:58,684 [main] [INFO ] org.quartz.core.QuartzScheduler - JobFactory set to: com.ora.blockchain.task.QuartzConfig$AutowiringSpringBeanJobFactory@15e0fe05
+2018-08-29 15:36:00,177 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528158355 started.
+2018-08-29 15:36:00,183 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2018-08-29 15:36:00,191 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found {0} custom documentation plugin(s)
+2018-08-29 15:36:00,195 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2018-08-29 15:36:00,198 [main] [INFO ] springfox.documentation.swagger.web.ClassOrApiAnnotationResourceGrouping - Group for method helloWorld was hello-world-controller
+2018-08-29 15:36:00,199 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Request mapping: helloWorld belongs to groups: [[ResourceGroup{groupName='hello-world-controller', position=0, controller=com.ora.blockchain.controller.HelloWorldController}]] 
+2018-08-29 15:36:00,202 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Created resource listing Path: /default/hello-world-controller Description: hello-world-controller Position: 0
+2018-08-29 15:36:00,212 [main] [INFO ] springfox.documentation.schema.ModelContextKeyGenerator - Cache Key Generated: java.lang.String(true)
+2018-08-29 15:36:00,212 [main] [INFO ] springfox.documentation.spring.web.caching.CachingAspect - Caching aspect applied for cache models with key java.lang.String(true)
+2018-08-29 15:36:00,216 [main] [INFO ] springfox.documentation.schema.ModelContextKeyGenerator - Cache Key Generated: java.lang.String(true)
+2018-08-29 15:36:00,217 [main] [INFO ] springfox.documentation.spring.web.caching.CachingAspect - Caching aspect applied for cache modelDependencies with key java.lang.String(true)
+2018-08-29 15:36:00,219 [main] [INFO ] springfox.documentation.spring.web.OperationsKeyGenerator - Cache key generated: /hello/world.com.ora.blockchain.controller.HelloWorldController.helloWorld.DefaultGenericTypeNamingStrategy
+2018-08-29 15:36:00,219 [main] [INFO ] springfox.documentation.spring.web.caching.CachingAspect - Caching aspect applied for cache operations with key /hello/world.com.ora.blockchain.controller.HelloWorldController.helloWorld.DefaultGenericTypeNamingStrategy
+2018-08-29 15:36:00,225 [main] [INFO ] springfox.documentation.swagger.web.ClassOrApiAnnotationResourceGrouping - Group for method helloWorld was hello-world-controller
+2018-08-29 15:36:00,230 [main] [INFO ] springfox.documentation.swagger.web.ClassOrApiAnnotationResourceGrouping - Group for method helloWorld was hello-world-controller
+2018-08-29 15:36:00,266 [main] [INFO ] com.ora.blockchain.Application - Started Application in 51.046 seconds (JVM running for 75.443)
+2018-08-29 15:36:00,266 [main] [INFO ] com.ora.blockchain.Application - server started......
+2018-08-29 15:36:00,313 [schedulerFactoryBean_Worker-3] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:36:00,330 [schedulerFactoryBean_Worker-3] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 16)*****************************
+2018-08-29 15:37:32,991 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528158355 paused.
+2018-08-29 15:37:32,996 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528158355 shutting down.
+2018-08-29 15:37:32,996 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528158355 paused.
+2018-08-29 15:37:32,997 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528158355 shutdown complete.
+2018-08-29 15:37:32,999 [Thread-5] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} closed
+2018-08-29 15:38:25,293 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-29 15:38:37,219 [main] [INFO ] com.ora.blockchain.Application - Starting Application on bogon with PID 5477 (/root/Documents/workspace/blockchain/byd-schedule-service/target/classes started by root in /root/Documents/workspace/blockchain/byd-schedule-service)
+2018-08-29 15:38:37,220 [main] [INFO ] com.ora.blockchain.Application - No active profile set, falling back to default profiles: default
+2018-08-29 15:38:38,131 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-29 15:38:50,157 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-29 15:38:50,157 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-29 15:38:50,200 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-29 15:38:50,475 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler meta-data: Quartz Scheduler (v2.3.0) 'schedulerFactoryBean' with instanceId 'bogon1535528330142'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 5 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2018-08-29 15:38:50,475 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler 'schedulerFactoryBean' initialized from an externally provided properties instance.
+2018-08-29 15:38:50,475 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler version: 2.3.0
+2018-08-29 15:38:50,475 [main] [INFO ] org.quartz.core.QuartzScheduler - JobFactory set to: com.ora.blockchain.task.QuartzConfig$AutowiringSpringBeanJobFactory@15e0fe05
+2018-08-29 15:38:51,869 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528330142 started.
+2018-08-29 15:38:51,881 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2018-08-29 15:38:51,892 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found {0} custom documentation plugin(s)
+2018-08-29 15:38:51,897 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2018-08-29 15:38:51,899 [main] [INFO ] springfox.documentation.swagger.web.ClassOrApiAnnotationResourceGrouping - Group for method helloWorld was hello-world-controller
+2018-08-29 15:38:51,900 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Request mapping: helloWorld belongs to groups: [[ResourceGroup{groupName='hello-world-controller', position=0, controller=com.ora.blockchain.controller.HelloWorldController}]] 
+2018-08-29 15:38:51,902 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Created resource listing Path: /default/hello-world-controller Description: hello-world-controller Position: 0
+2018-08-29 15:38:51,909 [main] [INFO ] springfox.documentation.schema.ModelContextKeyGenerator - Cache Key Generated: java.lang.String(true)
+2018-08-29 15:38:51,909 [main] [INFO ] springfox.documentation.spring.web.caching.CachingAspect - Caching aspect applied for cache models with key java.lang.String(true)
+2018-08-29 15:38:51,912 [main] [INFO ] springfox.documentation.schema.ModelContextKeyGenerator - Cache Key Generated: java.lang.String(true)
+2018-08-29 15:38:51,912 [main] [INFO ] springfox.documentation.spring.web.caching.CachingAspect - Caching aspect applied for cache modelDependencies with key java.lang.String(true)
+2018-08-29 15:38:51,915 [main] [INFO ] springfox.documentation.spring.web.OperationsKeyGenerator - Cache key generated: /hello/world.com.ora.blockchain.controller.HelloWorldController.helloWorld.DefaultGenericTypeNamingStrategy
+2018-08-29 15:38:51,915 [main] [INFO ] springfox.documentation.spring.web.caching.CachingAspect - Caching aspect applied for cache operations with key /hello/world.com.ora.blockchain.controller.HelloWorldController.helloWorld.DefaultGenericTypeNamingStrategy
+2018-08-29 15:38:51,920 [main] [INFO ] springfox.documentation.swagger.web.ClassOrApiAnnotationResourceGrouping - Group for method helloWorld was hello-world-controller
+2018-08-29 15:38:51,925 [main] [INFO ] springfox.documentation.swagger.web.ClassOrApiAnnotationResourceGrouping - Group for method helloWorld was hello-world-controller
+2018-08-29 15:38:51,947 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:38:51,955 [main] [INFO ] com.ora.blockchain.Application - Started Application in 50.923 seconds (JVM running for 75.323)
+2018-08-29 15:38:51,955 [main] [INFO ] com.ora.blockchain.Application - server started......
+2018-08-29 15:38:51,969 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 21)*****************************
+2018-08-29 15:40:00,037 [schedulerFactoryBean_Worker-2] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:40:00,042 [schedulerFactoryBean_Worker-2] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 4)*****************************
+2018-08-29 15:42:00,045 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:42:00,049 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 4)*****************************
+2018-08-29 15:44:00,043 [schedulerFactoryBean_Worker-4] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:44:00,047 [schedulerFactoryBean_Worker-4] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 3)*****************************
+2018-08-29 15:44:31,303 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528330142 paused.
+2018-08-29 15:44:31,305 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528330142 shutting down.
+2018-08-29 15:44:31,305 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528330142 paused.
+2018-08-29 15:44:31,306 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528330142 shutdown complete.
+2018-08-29 15:44:31,308 [Thread-5] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} closed
+2018-08-29 15:45:27,960 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-29 15:45:39,908 [main] [INFO ] com.ora.blockchain.Application - Starting Application on bogon with PID 6013 (/root/Documents/workspace/blockchain/byd-schedule-service/target/classes started by root in /root/Documents/workspace/blockchain/byd-schedule-service)
+2018-08-29 15:45:39,910 [main] [INFO ] com.ora.blockchain.Application - No active profile set, falling back to default profiles: default
+2018-08-29 15:45:40,831 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-29 15:45:52,860 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-29 15:45:52,860 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-29 15:45:52,902 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-29 15:45:53,203 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler meta-data: Quartz Scheduler (v2.3.0) 'schedulerFactoryBean' with instanceId 'bogon1535528752845'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 5 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2018-08-29 15:45:53,203 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler 'schedulerFactoryBean' initialized from an externally provided properties instance.
+2018-08-29 15:45:53,203 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler version: 2.3.0
+2018-08-29 15:45:53,203 [main] [INFO ] org.quartz.core.QuartzScheduler - JobFactory set to: com.ora.blockchain.task.QuartzConfig$AutowiringSpringBeanJobFactory@15e0fe05
+2018-08-29 15:45:54,640 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528752845 started.
+2018-08-29 15:45:54,647 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2018-08-29 15:45:54,655 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found {0} custom documentation plugin(s)
+2018-08-29 15:45:54,659 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2018-08-29 15:45:54,660 [main] [INFO ] springfox.documentation.swagger.web.ClassOrApiAnnotationResourceGrouping - Group for method helloWorld was hello-world-controller
+2018-08-29 15:45:54,661 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Request mapping: helloWorld belongs to groups: [[ResourceGroup{groupName='hello-world-controller', position=0, controller=com.ora.blockchain.controller.HelloWorldController}]] 
+2018-08-29 15:45:54,663 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Created resource listing Path: /default/hello-world-controller Description: hello-world-controller Position: 0
+2018-08-29 15:45:54,671 [main] [INFO ] springfox.documentation.schema.ModelContextKeyGenerator - Cache Key Generated: java.lang.String(true)
+2018-08-29 15:45:54,671 [main] [INFO ] springfox.documentation.spring.web.caching.CachingAspect - Caching aspect applied for cache models with key java.lang.String(true)
+2018-08-29 15:45:54,674 [main] [INFO ] springfox.documentation.schema.ModelContextKeyGenerator - Cache Key Generated: java.lang.String(true)
+2018-08-29 15:45:54,674 [main] [INFO ] springfox.documentation.spring.web.caching.CachingAspect - Caching aspect applied for cache modelDependencies with key java.lang.String(true)
+2018-08-29 15:45:54,676 [main] [INFO ] springfox.documentation.spring.web.OperationsKeyGenerator - Cache key generated: /hello/world.com.ora.blockchain.controller.HelloWorldController.helloWorld.DefaultGenericTypeNamingStrategy
+2018-08-29 15:45:54,677 [main] [INFO ] springfox.documentation.spring.web.caching.CachingAspect - Caching aspect applied for cache operations with key /hello/world.com.ora.blockchain.controller.HelloWorldController.helloWorld.DefaultGenericTypeNamingStrategy
+2018-08-29 15:45:54,682 [main] [INFO ] springfox.documentation.swagger.web.ClassOrApiAnnotationResourceGrouping - Group for method helloWorld was hello-world-controller
+2018-08-29 15:45:54,686 [main] [INFO ] springfox.documentation.swagger.web.ClassOrApiAnnotationResourceGrouping - Group for method helloWorld was hello-world-controller
+2018-08-29 15:45:54,720 [main] [INFO ] com.ora.blockchain.Application - Started Application in 51.004 seconds (JVM running for 75.404)
+2018-08-29 15:45:54,720 [main] [INFO ] com.ora.blockchain.Application - server started......
+2018-08-29 15:46:00,063 [schedulerFactoryBean_Worker-2] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:46:00,076 [schedulerFactoryBean_Worker-2] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 12)*****************************
+2018-08-29 15:47:14,059 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528752845 paused.
+2018-08-29 15:47:14,062 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528752845 shutting down.
+2018-08-29 15:47:14,062 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528752845 paused.
+2018-08-29 15:47:14,063 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528752845 shutdown complete.
+2018-08-29 15:47:14,065 [Thread-5] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} closed
+2018-08-29 15:48:05,438 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-29 15:48:17,390 [main] [INFO ] com.ora.blockchain.Application - Starting Application on bogon with PID 6221 (/root/Documents/workspace/blockchain/byd-schedule-service/target/classes started by root in /root/Documents/workspace/blockchain/byd-schedule-service)
+2018-08-29 15:48:17,392 [main] [INFO ] com.ora.blockchain.Application - No active profile set, falling back to default profiles: default
+2018-08-29 15:48:18,299 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-29 15:48:30,324 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-29 15:48:30,325 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-29 15:48:30,348 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-29 15:48:30,622 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler meta-data: Quartz Scheduler (v2.3.0) 'schedulerFactoryBean' with instanceId 'bogon1535528910308'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 5 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2018-08-29 15:48:30,622 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler 'schedulerFactoryBean' initialized from an externally provided properties instance.
+2018-08-29 15:48:30,622 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler version: 2.3.0
+2018-08-29 15:48:30,622 [main] [INFO ] org.quartz.core.QuartzScheduler - JobFactory set to: com.ora.blockchain.task.QuartzConfig$AutowiringSpringBeanJobFactory@f446158
+2018-08-29 15:48:32,158 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528910308 started.
+2018-08-29 15:48:32,165 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2018-08-29 15:48:32,173 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found {0} custom documentation plugin(s)
+2018-08-29 15:48:32,177 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2018-08-29 15:48:32,179 [main] [INFO ] springfox.documentation.swagger.web.ClassOrApiAnnotationResourceGrouping - Group for method helloWorld was hello-world-controller
+2018-08-29 15:48:32,180 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Request mapping: helloWorld belongs to groups: [[ResourceGroup{groupName='hello-world-controller', position=0, controller=com.ora.blockchain.controller.HelloWorldController}]] 
+2018-08-29 15:48:32,183 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Created resource listing Path: /default/hello-world-controller Description: hello-world-controller Position: 0
+2018-08-29 15:48:32,194 [main] [INFO ] springfox.documentation.schema.ModelContextKeyGenerator - Cache Key Generated: java.lang.String(true)
+2018-08-29 15:48:32,194 [main] [INFO ] springfox.documentation.spring.web.caching.CachingAspect - Caching aspect applied for cache models with key java.lang.String(true)
+2018-08-29 15:48:32,198 [main] [INFO ] springfox.documentation.schema.ModelContextKeyGenerator - Cache Key Generated: java.lang.String(true)
+2018-08-29 15:48:32,198 [main] [INFO ] springfox.documentation.spring.web.caching.CachingAspect - Caching aspect applied for cache modelDependencies with key java.lang.String(true)
+2018-08-29 15:48:32,202 [main] [INFO ] springfox.documentation.spring.web.OperationsKeyGenerator - Cache key generated: /hello/world.com.ora.blockchain.controller.HelloWorldController.helloWorld.DefaultGenericTypeNamingStrategy
+2018-08-29 15:48:32,202 [main] [INFO ] springfox.documentation.spring.web.caching.CachingAspect - Caching aspect applied for cache operations with key /hello/world.com.ora.blockchain.controller.HelloWorldController.helloWorld.DefaultGenericTypeNamingStrategy
+2018-08-29 15:48:32,209 [main] [INFO ] springfox.documentation.swagger.web.ClassOrApiAnnotationResourceGrouping - Group for method helloWorld was hello-world-controller
+2018-08-29 15:48:32,215 [main] [INFO ] springfox.documentation.swagger.web.ClassOrApiAnnotationResourceGrouping - Group for method helloWorld was hello-world-controller
+2018-08-29 15:48:32,224 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:48:32,257 [main] [INFO ] com.ora.blockchain.Application - Started Application in 51.069 seconds (JVM running for 75.48)
+2018-08-29 15:48:32,258 [main] [INFO ] com.ora.blockchain.Application - server started......
+2018-08-29 15:48:32,271 [schedulerFactoryBean_Worker-1] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 47)*****************************
+2018-08-29 15:50:00,046 [schedulerFactoryBean_Worker-3] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - ********************Btc Account Job start......************************
+2018-08-29 15:50:00,050 [schedulerFactoryBean_Worker-3] [INFO ] com.ora.blockchain.task.jobs.BtcAccountJob - *********************Btc Account Job end(spent : 4)*****************************
+2018-08-29 15:51:17,394 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528910308 paused.
+2018-08-29 15:51:17,396 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528910308 shutting down.
+2018-08-29 15:51:17,396 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528910308 paused.
+2018-08-29 15:51:17,397 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_bogon1535528910308 shutdown complete.
+2018-08-29 15:51:17,399 [Thread-5] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} closed
