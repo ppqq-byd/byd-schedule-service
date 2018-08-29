@@ -1,9 +1,7 @@
 package com.ora.blockchain;
 
 
-import com.ora.blockchain.config.BtcRpcSettings;
-import com.ora.blockchain.config.LtcRpcSettings;
-import com.ora.blockchain.config.DarkRpcSettings;
+import com.ora.blockchain.config.*;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +30,30 @@ public class ApplicationConfig {
         return new RestTemplateBuilder()
                 .rootUri(btcRpcSettings.getUrl())
                 .basicAuthorization(btcRpcSettings.getUsername(), btcRpcSettings.getPassword())
+                .build();
+    }
+
+    @Bean(name="dogeRpcRestTemplate")
+    public RestTemplate dogeRpcRestTemplate(DogeRpcSettings rpcSettings) {
+        return new RestTemplateBuilder()
+                .rootUri(rpcSettings.getUrl())
+                .basicAuthorization(rpcSettings.getUsername(), rpcSettings.getPassword())
+                .build();
+    }
+
+    @Bean(name="btgRpcRestTemplate")
+    public RestTemplate btgRpcRestTemplate(BtgRpcSettings rpcSettings) {
+        return new RestTemplateBuilder()
+                .rootUri(rpcSettings.getUrl())
+                .basicAuthorization(rpcSettings.getUsername(), rpcSettings.getPassword())
+                .build();
+    }
+
+    @Bean(name="bchRpcRestTemplate")
+    public RestTemplate bchRpcRestTemplate(BchRpcSettings rpcSettings) {
+        return new RestTemplateBuilder()
+                .rootUri(rpcSettings.getUrl())
+                .basicAuthorization(rpcSettings.getUsername(), rpcSettings.getPassword())
                 .build();
     }
 }
