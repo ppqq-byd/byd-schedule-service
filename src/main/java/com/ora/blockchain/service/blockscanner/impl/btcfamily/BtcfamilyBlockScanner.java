@@ -82,6 +82,7 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
         return null != needScanBlock && null != height && needScanBlock.longValue() > height.longValue();
     }
 
+    //TODO 从链和取数据
     @Override
     public void updateAccountBalanceByConfirmTx(Long lastedBlock) {
         if (null == lastedBlock || lastedBlock.longValue() <= 0)

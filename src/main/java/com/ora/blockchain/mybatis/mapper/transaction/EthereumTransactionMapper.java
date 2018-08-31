@@ -13,9 +13,10 @@ public interface EthereumTransactionMapper {
                                   @Param("pojo") EthereumTransaction record);
 
 
-    public void updateTransacion(@Param("database") String database,
-                                 @Param("blockHeight") Long blockNumber,
-                                 @Param("blockHash") String blockHash
+    public void updateTransacionIsolate(@Param("database") String database,
+                                        @Param("blockHeight") Long blockNumber,
+                                        @Param("blockHash") String blockHash,
+                                        @Param("txStatus") Integer txStatus
                                  );
 
     public Long queryMaxBlockOfTxInDb(@Param("database") String database);
@@ -41,4 +42,8 @@ public interface EthereumTransactionMapper {
                                                           @Param("blockNumber") Long blockNumber);
 
     public List<EthereumTransaction> queryNotConfirmTxByLastedBlockNumber(@Param("database") String database);
+
+
+    public List<EthereumTransaction> queryTxByStatus(@Param("database") String database,
+                                                     @Param("status") Integer status);
 }

@@ -2,13 +2,21 @@ package com.ora.blockchain.constants;
 
 public interface Constants {
 
+    public static final long SECONDTIME = 1000L;
+
+    public static final long ETHTXTIMEOUT = Constants.SECONDTIME*60*10;//10 min
+
     public static final int TXSTATUS_SENDING = 0;
 
     public static final int TXSTATUS_SENDED = 1;
 
     public static final int TXSTATUS_CONFIRMING = 2;
 
-    public static final int TXSTATUS_CONFIRMED = 3;
+    public static final int TXSTATUS_COMPLETE= 3;
+
+    public static final int TXSTATUS_ISOLATED = 4;
+
+    public static final int TXSTATUS_ISOLATEDCONRIMING = 5;
 
     String INTERNAL_ERROR = "500";
     String SUCCESS = "10000";
