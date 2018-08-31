@@ -9,8 +9,8 @@ public enum TxStatus {
     CONFIRMING("CONFIRMING", 2),
     COMPLETE("COMPLETE", 3),
     ISOLATED("ISOLATED", 4),
-    ISOLATEDCONRIMING("ISOLATEDCONRIMING", 5);
-
+    ISOLATEDCONRIMING("ISOLATEDCONRIMING", 5),
+    CHAINFAILED("CHAINFAILED", 6);
 
     private int value;
     private String txStatus;

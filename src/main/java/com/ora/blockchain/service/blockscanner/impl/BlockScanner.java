@@ -16,8 +16,6 @@ import java.io.IOException;
 @Service
 public abstract class BlockScanner implements IBlockScanner {
 
-    @Autowired
-    private ScanCursorMapper scanCursorMapper;
 
     /**
      * 递归回溯 直到分叉前
@@ -26,7 +24,6 @@ public abstract class BlockScanner implements IBlockScanner {
     private void recursionProcessErrorBlock(Long needScanBlock,String coinType) throws Exception {
         //因为这一个块是孤立块 所以删除该块 并且更改这个块所属的tx相应的状态
         deleteBlockAndUpdateTx(needScanBlock);
-        scanCursorMapper.deleteCursorByBlockNumber(CoinType.getDatabase(coinType),needScanBlock);
 
         if(verifyIsolatedBlock(needScanBlock)){
 
@@ -52,27 +49,17 @@ public abstract class BlockScanner implements IBlockScanner {
 
         //将块信息和tx同步到数据库
         syncBlockAndTx(needScanBlock);
-        recordCursor(needScanBlock,coinType);
-
     }
 
-    private void recordCursor(Long blockHeight,String coinType){
-        ScanCursor cursor = new ScanCursor();
-        cursor.setCurrentBlock(blockHeight);
-        cursor.setSyncStatus(0);
-        scanCursorMapper.insert(cursor,CoinType.getDatabase(coinType));
-    }
+
 
     @Override
     @Transactional
     public void updateAccount(String coinType) {
-        Long blockHeight = getNeedScanAccountBlanceBlock(CoinType.getDatabase(coinType));
-        if(blockHeight==null)return;
-        updateAccountBalanceByConfirmTx(blockHeight);
-        ScanCursor scanCursor = new ScanCursor();
-        scanCursor.setSyncStatus(1);
-        scanCursor.setCurrentBlock(blockHeight);
-        scanCursorMapper.update(scanCursor,CoinType.getDatabase(coinType));
+
+        updateAccountBalanceByConfirmTx(0L);
+
+
     }
 
     /**
