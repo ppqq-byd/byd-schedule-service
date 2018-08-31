@@ -56,9 +56,8 @@ public abstract class BlockScanner implements IBlockScanner {
     @Override
     @Transactional
     public void updateAccount(String coinType) {
-        Long blockHeight = getNeedScanAccountBlanceBlock(CoinType.getDatabase(coinType));
-        if(blockHeight==null)return;
-        updateAccountBalanceByConfirmTx(blockHeight);
+
+        updateAccountBalanceByConfirmTx(0L);
 
 
     }

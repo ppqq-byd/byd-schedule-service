@@ -293,6 +293,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             }
 
             balanceMapper.update(account);
+
     }
 
     private void setAccountsMap(HashMap<String,HashSet<String>> tokenAccounts,
@@ -320,11 +321,11 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                 if(StringUtils.isEmpty(tx.getContractAddress())){//处理token的逻辑
                     //token账户
                     processToken(tx);
-
                 }else{//eth币的处理逻辑
                     processEthCoinAccount(tx);
-
                 }
+                tx.setStatus(TxStatus.COMPLETE.ordinal());
+                this.txMapper.update(CoinType.getDatabase(getCoinType()),tx);
             }
 
         }
@@ -356,6 +357,8 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                         account.setFrozenBalance(account.getFrozenBalance().subtract(tx.getValue()).subtract(
                                 tx.getGasPrice().multiply(tx.getGasLimit())
                         ));
+                        tx.setStatus(TxStatus.CHAINFAILED.ordinal());
+                        txMapper.update(CoinType.getDatabase(getCoinType()),tx);
                     }
                 } catch (Exception e) {
                     log.error("process ethfamily timeout tx:"+tx.getTxId(),e);
@@ -401,6 +404,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     }
 
     private String[] processInput(String input){
+
         if(input.substring(0,10).equals("0xa9059cbb")){
             String toAddress = input.substring(10,74);
             String value = input.substring(74,138);
@@ -465,25 +469,31 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                     log.info("is not erc20 contract:"+tx.getHash());
                 }
                 if(isContract(erc20,tx.getTo())){//如果是ERC20
-                    dbTx.transEthTransaction(tx);
-                    dbTx.setContractAddress(tx.getTo());
-                    String result[] = this.processInput(tx.getInput().toLowerCase());
 
-                    if(result!=null){
-                        //如果从inputData解析出的账户属于ERC20或from属于ERC20
-                        dbTx.transEthTransaction(tx);
-                        dbTx.setTo(result[0]);
-                        dbTx.setValue( new BigInteger(result[1],10));
-                        Set<String> address = new HashSet<>();
-                        address.add(dbTx.getFrom());
-                        address.add(dbTx.getTo());
-                        List<WalletAccountBind> accoutns = accountBindMapper.queryWalletByAddress(address);
-                        if(accoutns.size()>0){
-                            needAddList.add(dbTx);
-                        }
+                    //链上处理失败 扫块逻辑不用处理 账户处理job会处理此种情况
+                    //https://etherscan.io/tx/0xc00e08d2df4dcceee72ab54b1bb5f7ad2c1d5e051a6004157d1da9355ba1e860
+                    if("0x".equals(tx.getInput())){
+                        continue;
                     }else {
-                        log.error("contract not support:"+tx.getHash());
+                        String result[] = this.processInput(tx.getInput().toLowerCase());
+
+                        if(result!=null){
+                            //如果从inputData解析出的账户属于ERC20或from属于ERC20
+                            dbTx.transEthTransaction(tx);
+                            dbTx.setTo(result[0]);
+                            dbTx.setValue( new BigInteger(result[1],10));
+                            Set<String> address = new HashSet<>();
+                            address.add(dbTx.getFrom());
+                            address.add(dbTx.getTo());
+                            List<WalletAccountBind> accoutns = accountBindMapper.queryWalletByAddress(address);
+                            if(accoutns.size()>0){
+                                needAddList.add(dbTx);
+                            }
+                        }else {
+                            log.error("contract not support:"+tx.getHash());
+                        }
                     }
+
 
 
                 }else {

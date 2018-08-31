@@ -107,7 +107,27 @@
         </set>
         WHERE block_height = #{blockHeight}
     </update>
+    <update id="update">
 
+            update ${database}.tx_ethereum
+            <set>
+                status=#{item.status},
+                block_height = #{item.blockHeight},
+                block_hash = #{item.blockHash},
+                gas_price = #{item.gasPrice},
+                gas_limit = #{item.gasLimit},
+                gas_used = #{item.gasUsed},
+                value = #{item.value},
+                input = #{item.input},
+                nonce = #{item.nonce},
+                is_sender=#{item.isSender},
+                update_ts = #{item.updateTs},
+                contract_address=#{item.contractAddress},
+                status=#{item.status}
+            </set>
+            where tx_id = #{item.txId}
+
+    </update>
     <select id="queryIsolatedBlockTx" resultMap="AllColumnMap">
         SELECT  <include refid="all_column"/> FROM ${database}.tx_ethereum
         WHERE block_hash is NULL
@@ -136,7 +156,8 @@
                 nonce = #{item.nonce},
                 is_sender=#{item.isSender},
                 update_ts = #{item.updateTs},
-                contract_address=#{item.contractAddress}
+                contract_address=#{item.contractAddress},
+                status=#{item.status}
             </set>
             where tx_id = #{item.txId}
         </foreach>
