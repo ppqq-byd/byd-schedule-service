@@ -100,6 +100,7 @@ public abstract class BlockServiceImpl implements IBlockService {
         blockMapper.insertBlock(database,block);
 
         List<Transaction> paramTransactionList = getRpcService().getTransactionList(block.getBlockHash());
+        //TODO add input addr
         List<String> addressList = BlockchainUtil.getAddress(paramTransactionList);
         if(null == addressList || addressList.isEmpty()){
             return;

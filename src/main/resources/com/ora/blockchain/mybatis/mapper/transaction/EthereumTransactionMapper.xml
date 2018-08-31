@@ -98,10 +98,11 @@
         SELECT  IFNULL(MAX(block_height),0 ) FROM ${database}.tx_ethereum
     </select>
 
-    <update id="updateTransacion">
+    <update id="updateTransacionIsolate">
         UPDATE ${database}.tx_ethereum
         <set>
-            `block_hash` = #{blockHash}
+            `block_hash` = #{blockHash},
+            `status`=#{txStatus}
 
         </set>
         WHERE block_height = #{blockHeight}
@@ -161,6 +162,10 @@
         WHERE block_height&lt;= (SELECT MAX(block_number) FROM coin_eth.block) -12
 
     </select>
+    <select id="queryTxByStatus" resultMap="AllColumnMap">
+        SELECT  <include refid="all_column"/> FROM ${database}.tx_ethereum
+        WHERE status=#{status}
 
+    </select>
 
 </mapper>
