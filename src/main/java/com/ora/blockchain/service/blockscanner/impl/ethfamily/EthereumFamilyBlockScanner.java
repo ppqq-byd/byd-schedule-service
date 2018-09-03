@@ -1,15 +1,12 @@
 package com.ora.blockchain.service.blockscanner.impl.ethfamily;
 
 
-import com.alibaba.druid.util.FnvHash;
 import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.constants.TxStatus;
 import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
-import com.ora.blockchain.mybatis.entity.common.ScanCursor;
 import com.ora.blockchain.mybatis.entity.eth.EthereumERC20;
 import com.ora.blockchain.mybatis.entity.eth.EthereumTransaction;
-import com.ora.blockchain.mybatis.entity.wallet.ERC20Sum;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
@@ -333,7 +330,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
     private void processSendedAndTimeoutTx(){
         List<EthereumTransaction> txList = this.txMapper.
-                queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.SENDED.ordinal());
+                queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.SENT.ordinal());
 
         for(EthereumTransaction tx:txList){
             //如果有发送完后未被确认的交易超过10分钟 则超时了 要查看链上是否已经执行过并且执行失败
