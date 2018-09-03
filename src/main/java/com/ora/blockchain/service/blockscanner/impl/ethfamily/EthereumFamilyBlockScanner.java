@@ -10,7 +10,6 @@ import com.ora.blockchain.mybatis.entity.eth.EthereumTransaction;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
-import com.ora.blockchain.mybatis.mapper.common.ScanCursorMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumERC20Mapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumTransactionMapper;
 import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBalanceMapper;
@@ -47,12 +46,9 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     private EthereumERC20Mapper erc20Mapper;
 
     @Autowired
-    private ScanCursorMapper scanCursorMapper;
-
-    @Autowired
     private WalletAccountBalanceMapper balanceMapper;
 
-    private static final int DEPTH = 12;
+    private static final int DEPTH = 5;
 
     protected abstract String getCoinType();
 
@@ -315,7 +311,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
         for(EthereumTransaction tx:txList){
             if(lastedBlock - tx.getBlockHeight()>=DEPTH){
-                if(StringUtils.isEmpty(tx.getContractAddress())){//处理token的逻辑
+                if(!StringUtils.isEmpty(tx.getContractAddress())){//处理token的逻辑
                     //token账户
                     processToken(tx);
                 }else{//eth币的处理逻辑
