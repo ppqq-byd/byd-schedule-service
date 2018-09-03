@@ -1,5 +1,6 @@
 package com.ora.blockchain.mybatis.mapper.transaction;
 
+import com.ora.blockchain.mybatis.entity.eth.EthereumERC20;
 import com.ora.blockchain.mybatis.entity.eth.EthereumTransaction;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -13,10 +14,13 @@ public interface EthereumTransactionMapper {
                                   @Param("pojo") EthereumTransaction record);
 
 
-    public void updateTransacion(@Param("database") String database,
-                                 @Param("blockHeight") Long blockNumber,
-                                 @Param("blockHash") String blockHash
+    public void updateTransacionIsolate(@Param("database") String database,
+                                        @Param("blockHeight") Long blockNumber,
+                                        @Param("blockHash") String blockHash,
+                                        @Param("txStatus") Integer txStatus
                                  );
+
+    public void update(@Param("database") String database,@Param("item") EthereumTransaction item);
 
     public Long queryMaxBlockOfTxInDb(@Param("database") String database);
 
@@ -41,4 +45,8 @@ public interface EthereumTransactionMapper {
                                                           @Param("blockNumber") Long blockNumber);
 
     public List<EthereumTransaction> queryNotConfirmTxByLastedBlockNumber(@Param("database") String database);
+
+
+    public List<EthereumTransaction> queryTxByStatus(@Param("database") String database,
+                                                     @Param("status") Integer status);
 }
