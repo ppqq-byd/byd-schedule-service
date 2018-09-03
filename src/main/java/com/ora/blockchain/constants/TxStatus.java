@@ -5,7 +5,7 @@ import static com.ora.blockchain.constants.CoinTypeFamily.*;
 
 public enum TxStatus {
     SENDING("SENDING", 0),
-    SENDED("SENDED", 1),
+    SENT("SENT", 1),
     CONFIRMING("CONFIRMING", 2),
     COMPLETE("COMPLETE", 3),
     ISOLATED("ISOLATED", 4),
