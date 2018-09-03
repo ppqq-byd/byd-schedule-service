@@ -219,18 +219,18 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
             //冻结减去gasLimit*gasPrice
             out.setFrozenBalance(out.getFrozenBalance().
-                    subtract(tx.getGasPrice().multiply(tx.getGasLimit())));
+                    subtract(tx.getGasPrice().multiply(tx.getGasLimit()==null?BigInteger.valueOf(0L):tx.getGasLimit())));
 
             //账户减去交易的amount再减去gasUsed
             out.setTotalBalance(out.getTotalBalance().subtract(tx.getValue()).subtract(
-                    tx.getGasUsed()
+                    tx.getGasPrice().multiply(tx.getGasUsed())
             ));
 
             balanceMapper.update(out);
         }else{//如果是收币
 
             WalletAccountBalance in =
-                    balanceMapper.findBalanceOfCoinByAddressAndCointype(tx.getFrom(),getCoinType());
+                    balanceMapper.findBalanceOfCoinByAddressAndCointype(tx.getTo(),getCoinType());
 
             in.setTotalBalance(in.getTotalBalance().add(tx.getValue()));
 
@@ -277,9 +277,9 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
                 //冻结的手续费为gasLimit*gasPrice
                 ethAccount.setFrozenBalance(ethAccount.getFrozenBalance().
-                        subtract(tx.getGasLimit().multiply(tx.getGasPrice())));
+                        subtract((tx.getGasLimit()==null?BigInteger.valueOf(0L):tx.getGasLimit()).multiply(tx.getGasPrice())));
                 //账户的手续费为gasUsed
-                ethAccount.setTotalBalance(ethAccount.getTotalBalance().subtract(tx.getGasUsed()));
+                ethAccount.setTotalBalance(ethAccount.getTotalBalance().subtract(tx.getGasUsed().multiply(tx.getGasPrice())));
                 balanceMapper.update(ethAccount);
             }else {
                 account.setTotalBalance(account.getTotalBalance().add(tx.getValue()));
@@ -348,7 +348,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                         account.setTotalBalance(account.getTotalBalance().subtract(gasCost).add(tx.getValue()));
 
                         account.setFrozenBalance(account.getFrozenBalance().subtract(tx.getValue()).subtract(
-                                tx.getGasPrice().multiply(tx.getGasLimit())
+                                tx.getGasPrice().multiply(tx.getGasLimit()==null?BigInteger.valueOf(0L):tx.getGasLimit())
                         ));
                         tx.setStatus(TxStatus.CHAINFAILED.ordinal());
                         txMapper.update(CoinType.getDatabase(getCoinType()),tx);
@@ -481,7 +481,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                         }
                     }
 
-
+                    dbTx.setContractAddress(tx.getTo());
 
                 }else {
 
