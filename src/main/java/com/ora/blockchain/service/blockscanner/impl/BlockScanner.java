@@ -57,7 +57,7 @@ public abstract class BlockScanner implements IBlockScanner {
     @Transactional
     public void updateAccount(String coinType) {
 
-        updateAccountBalanceByConfirmTx(0L);
+        updateAccountBalanceByConfirmTx();
 
 
     }
@@ -99,15 +99,9 @@ public abstract class BlockScanner implements IBlockScanner {
 
     /**
      * 更新账户余额的数值
-     * @param lastedBlock
      */
-    public abstract void updateAccountBalanceByConfirmTx(Long lastedBlock);
+    public abstract void updateAccountBalanceByConfirmTx();
 
-    /**
-     * 获取最新的块高度
-     * coinType 币种
-     * @return
-     */
-    public abstract Long getNeedScanAccountBlanceBlock(String coinType);
+
 
 }

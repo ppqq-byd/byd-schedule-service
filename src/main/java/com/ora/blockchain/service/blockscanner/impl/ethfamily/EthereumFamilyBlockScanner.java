@@ -369,7 +369,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     }
 
     @Override
-    public void updateAccountBalanceByConfirmTx(Long scanAccountBlock) {
+    public void updateAccountBalanceByConfirmTx() {
         Long lastedBlock = this.blockMapper.queryMaxBlockInDb(CoinType.getDatabase(getCoinType()));
 
         //先处理 确认中和孤立再确认中这两个状态的tx
@@ -377,12 +377,6 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
         processSendedAndTimeoutTx();
 
-    }
-    
-    @Override
-    public Long getNeedScanAccountBlanceBlock(String coinType) {
-        ScanCursor cursor = this.scanCursorMapper.getNotConfirmScanCursor(CoinType.getDatabase(getCoinType()));
-        return null != cursor ? cursor.getCurrentBlock() : null;
     }
 
     /**
