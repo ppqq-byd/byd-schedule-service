@@ -22,7 +22,7 @@
         </foreach>
     </select>
     <select id="queryTransactionListByTransStatus" resultType="com.ora.blockchain.mybatis.entity.transaction.Transaction">
-        SELECT height,trans_status AS transStatus,txid,status,block_hash AS blockHash FROM ${database}.transaction WHERE trans_status IN
+        SELECT coinbase,height,trans_status AS transStatus,txid,status,block_hash AS blockHash FROM ${database}.transaction WHERE trans_status IN
         <foreach item="item" index="index" collection="transStatusList" open="(" separator="," close=")">
             #{item}
         </foreach>
