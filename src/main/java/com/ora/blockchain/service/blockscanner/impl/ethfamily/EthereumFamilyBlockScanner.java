@@ -121,7 +121,6 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             EthereumTransaction tx = it.next();
             tx.setStatus(TxStatus.CONFIRMING.ordinal());
             tx.setIsDelete(0);
-            tx.setIsSender(0);
             boolean isDelete = false;
             for(EthereumTransaction dbTx:inDbTx){
                 if(dbTx.getTxId().equals(tx.getTxId())){
@@ -416,17 +415,18 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
      * @param tx
      * @return
      */
-    private boolean filterByAddress(List<WalletAccountBind> ethAccounts,EthBlock.TransactionObject tx){
+    private int filterByAddress(List<WalletAccountBind> ethAccounts,EthBlock.TransactionObject tx){
         for(WalletAccountBind account:ethAccounts){
             //如果是平台账户的地址或者合约的地址
-            if(account.getAddress().equals(tx.getFrom())||
-                    account.getAddress().equals(tx.getTo())){
-                return true;
+            if(account.getAddress().equals(tx.getFrom())){
+                return 1;
+            }else if(account.getAddress().equals(tx.getTo())){
+                return 0;
             }
 
         }
 
-        return false;
+        return -1;
     }
 
     /**
@@ -486,8 +486,13 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                 }else {
 
                     //如果是平台账户的地址
-                    if(filterByAddress(notContractAccounts,tx)){
+                    if(filterByAddress(notContractAccounts,tx)==0){
                         dbTx.transEthTransaction(tx);
+                        dbTx.setIsSender(0);
+                        needAddList.add(dbTx);
+                    }else if(filterByAddress(notContractAccounts,tx)==1){
+                        dbTx.transEthTransaction(tx);
+                        dbTx.setIsSender(1);
                         needAddList.add(dbTx);
                     }
 
