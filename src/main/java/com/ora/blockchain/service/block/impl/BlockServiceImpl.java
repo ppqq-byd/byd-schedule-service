@@ -147,15 +147,15 @@ public abstract class BlockServiceImpl implements IBlockService {
                 //删除找零地址
                 outputAddrList.removeAll(inputAddrList);
 
-                //vin和vout同时包含平台地址，trans_dire为“内转内”
-                if(CollectionUtils.containsAny(addressSet,inputAddrList) && CollectionUtils.containsAny(addressSet,outputAddrList)){
-                    t.setTransDire(TxDireStatus.INTERNAL.ordinal());
-                    //vin包含平台地址且vout不包含平台址，trans_dire为“内转外”
-                }else if(CollectionUtils.containsAny(addressSet,inputAddrList) && !CollectionUtils.containsAny(addressSet,outputAddrList)){
+                //vin包含平台地址且vout不包含平台址，trans_dire为“内转外”
+                if(CollectionUtils.containsAny(addressSet,inputAddrList) && !CollectionUtils.containsAny(addressSet,outputAddrList)){
                     t.setTransDire(TxDireStatus.OUTPUT.ordinal());
-                }else{
-                    //vin不包含平台地址且vout包含平台地址，trans_dire为“外转内”，不存在vin和vout同时不包含的情况
+                    //vin不包含平台地址且vout包含平台地址，trans_dire为“外转内”
+                }else if(!CollectionUtils.containsAny(addressSet,inputAddrList)&&CollectionUtils.containsAny(addressSet,outputAddrList)){
                     t.setTransDire(TxDireStatus.INPUT.ordinal());
+                    //vin和vout同时包含平台地址，trans_dire为“内转内”，不存在vin和vout同时不包含的情况
+                }else{
+                    t.setTransDire(TxDireStatus.INTERNAL.ordinal());
                 }
             });
             insertBlockTransaction(database,oraTransactinList);
