@@ -2,13 +2,13 @@ package com.ora.blockchain.service.blockscanner.impl.btcfamily;
 
 import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.mybatis.entity.block.Block;
-import com.ora.blockchain.mybatis.entity.common.ScanCursor;
+
 import com.ora.blockchain.mybatis.entity.output.Output;
 import com.ora.blockchain.mybatis.entity.transaction.Transaction;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 import com.ora.blockchain.mybatis.mapper.block.BlockMapper;
-import com.ora.blockchain.mybatis.mapper.common.ScanCursorMapper;
+
 import com.ora.blockchain.mybatis.mapper.input.InputMapper;
 import com.ora.blockchain.mybatis.mapper.output.OutputMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.TransactionMapper;
@@ -35,8 +35,7 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
     private OutputMapper outputMapper;
     @Autowired
     private InputMapper inputMapper;
-    @Autowired
-    private ScanCursorMapper cursorMapper;
+
     @Autowired
     private BlockMapper blockMapper;
     @Autowired

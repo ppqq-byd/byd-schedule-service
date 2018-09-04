@@ -2,7 +2,6 @@ package com.ora.blockchain.service.blockscanner.impl.ethfamily;
 
 import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
-import com.ora.blockchain.mybatis.mapper.common.ScanCursorMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumERC20Mapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumTransactionMapper;
 import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBalanceMapper;

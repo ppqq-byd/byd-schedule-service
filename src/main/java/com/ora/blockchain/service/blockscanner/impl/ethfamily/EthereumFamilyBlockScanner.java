@@ -1,19 +1,15 @@
 package com.ora.blockchain.service.blockscanner.impl.ethfamily;
 
 
-import com.alibaba.druid.util.FnvHash;
 import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.constants.Constants;
 import com.ora.blockchain.constants.TxStatus;
 import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
-import com.ora.blockchain.mybatis.entity.common.ScanCursor;
 import com.ora.blockchain.mybatis.entity.eth.EthereumERC20;
 import com.ora.blockchain.mybatis.entity.eth.EthereumTransaction;
-import com.ora.blockchain.mybatis.entity.wallet.ERC20Sum;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance;
 import com.ora.blockchain.mybatis.entity.wallet.WalletAccountBind;
 import com.ora.blockchain.mybatis.mapper.block.EthereumBlockMapper;
-import com.ora.blockchain.mybatis.mapper.common.ScanCursorMapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumERC20Mapper;
 import com.ora.blockchain.mybatis.mapper.transaction.EthereumTransactionMapper;
 import com.ora.blockchain.mybatis.mapper.wallet.WalletAccountBalanceMapper;
@@ -50,12 +46,9 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     private EthereumERC20Mapper erc20Mapper;
 
     @Autowired
-    private ScanCursorMapper scanCursorMapper;
-
-    @Autowired
     private WalletAccountBalanceMapper balanceMapper;
 
-    private static final int DEPTH = 12;
+    private static final int DEPTH = 5;
 
     protected abstract String getCoinType();
 
@@ -226,18 +219,18 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
             //冻结减去gasLimit*gasPrice
             out.setFrozenBalance(out.getFrozenBalance().
-                    subtract(tx.getGasPrice().multiply(tx.getGasLimit())));
+                    subtract(tx.getGasPrice().multiply(tx.getGasLimit()==null?BigInteger.valueOf(0L):tx.getGasLimit())));
 
             //账户减去交易的amount再减去gasUsed
             out.setTotalBalance(out.getTotalBalance().subtract(tx.getValue()).subtract(
-                    tx.getGasUsed()
+                    tx.getGasPrice().multiply(tx.getGasUsed())
             ));
 
             balanceMapper.update(out);
         }else{//如果是收币
 
             WalletAccountBalance in =
-                    balanceMapper.findBalanceOfCoinByAddressAndCointype(tx.getFrom(),getCoinType());
+                    balanceMapper.findBalanceOfCoinByAddressAndCointype(tx.getTo(),getCoinType());
 
             in.setTotalBalance(in.getTotalBalance().add(tx.getValue()));
 
@@ -284,9 +277,9 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
                 //冻结的手续费为gasLimit*gasPrice
                 ethAccount.setFrozenBalance(ethAccount.getFrozenBalance().
-                        subtract(tx.getGasLimit().multiply(tx.getGasPrice())));
+                        subtract((tx.getGasLimit()==null?BigInteger.valueOf(0L):tx.getGasLimit()).multiply(tx.getGasPrice())));
                 //账户的手续费为gasUsed
-                ethAccount.setTotalBalance(ethAccount.getTotalBalance().subtract(tx.getGasUsed()));
+                ethAccount.setTotalBalance(ethAccount.getTotalBalance().subtract(tx.getGasUsed().multiply(tx.getGasPrice())));
                 balanceMapper.update(ethAccount);
             }else {
                 account.setTotalBalance(account.getTotalBalance().add(tx.getValue()));
@@ -318,7 +311,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
         for(EthereumTransaction tx:txList){
             if(lastedBlock - tx.getBlockHeight()>=DEPTH){
-                if(StringUtils.isEmpty(tx.getContractAddress())){//处理token的逻辑
+                if(!StringUtils.isEmpty(tx.getContractAddress())){//处理token的逻辑
                     //token账户
                     processToken(tx);
                 }else{//eth币的处理逻辑
@@ -333,7 +326,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
     private void processSendedAndTimeoutTx(){
         List<EthereumTransaction> txList = this.txMapper.
-                queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.SENDED.ordinal());
+                queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.SENT.ordinal());
 
         for(EthereumTransaction tx:txList){
             //如果有发送完后未被确认的交易超过10分钟 则超时了 要查看链上是否已经执行过并且执行失败
@@ -355,7 +348,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                         account.setTotalBalance(account.getTotalBalance().subtract(gasCost).add(tx.getValue()));
 
                         account.setFrozenBalance(account.getFrozenBalance().subtract(tx.getValue()).subtract(
-                                tx.getGasPrice().multiply(tx.getGasLimit())
+                                tx.getGasPrice().multiply(tx.getGasLimit()==null?BigInteger.valueOf(0L):tx.getGasLimit())
                         ));
                         tx.setStatus(TxStatus.CHAINFAILED.ordinal());
                         txMapper.update(CoinType.getDatabase(getCoinType()),tx);
@@ -488,7 +481,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                         }
                     }
 
-
+                    dbTx.setContractAddress(tx.getTo());
 
                 }else {
 

@@ -2,8 +2,6 @@ package com.ora.blockchain.service.blockscanner.impl;
 
 
 import com.ora.blockchain.constants.CoinType;
-import com.ora.blockchain.mybatis.entity.common.ScanCursor;
-import com.ora.blockchain.mybatis.mapper.common.ScanCursorMapper;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
