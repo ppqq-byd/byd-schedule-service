@@ -116,6 +116,7 @@ public interface IRpcService {
                     }
                     outputList.add(output);
                 }
+                transaction.setCoinbase(coinbaseTransaction ? 1 : 0);
                 transaction.setOutputList(outputList);
             }
             return transaction;

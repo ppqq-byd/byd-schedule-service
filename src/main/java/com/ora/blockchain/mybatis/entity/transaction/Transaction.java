@@ -1,6 +1,8 @@
 package com.ora.blockchain.mybatis.entity.transaction;
 
+import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.constants.Constants;
+import com.ora.blockchain.constants.TxStatus;
 import com.ora.blockchain.mybatis.entity.input.Input;
 import com.ora.blockchain.mybatis.entity.output.Output;
 import lombok.*;
@@ -14,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction {
+    public static final int TRANSACTION_COINBASE = 1;
     private String txid;
     private String hex;
     private Long size;
@@ -24,7 +27,8 @@ public class Transaction {
     private String blockHash;
     private Long blockTime;
     private Integer status;
-    private Integer transStatus  = Constants.TXSTATUS_CONFIRMING;
+    private Integer coinbase;
+    private Integer transStatus  = TxStatus.CONFIRMING.ordinal();
     private Date createTs;
     private Date updateTs;
     private List<Output> outputList;

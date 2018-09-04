@@ -1,6 +1,7 @@
 package com.ora.blockchain.service.block.impl;
 
-import com.ora.blockchain.constants.Constants;
+import com.ora.blockchain.constants.OutputStatus;
+import com.ora.blockchain.constants.TxStatus;
 import com.ora.blockchain.mybatis.entity.block.Block;
 import com.ora.blockchain.mybatis.entity.input.Input;
 import com.ora.blockchain.mybatis.entity.output.Output;
@@ -73,7 +74,11 @@ public abstract class BlockServiceImpl implements IBlockService {
             updateList.forEach((Transaction t)->{
                 t.setHeight(paramTransactionList.get(0).getHeight());
                 t.setBlockHash(paramTransactionList.get(0).getBlockHash());
-                t.setTransStatus(Constants.TXSTATUS_CONFIRMING);
+                if(t.getTransStatus()==TxStatus.ISOLATED.ordinal()){
+                    t.setTransStatus(TxStatus.ISOLATEDCONRIMING.ordinal());
+                }else{
+                    t.setTransStatus(TxStatus.CONFIRMING.ordinal());
+                }
             });
             transMapper.updateTransactionList(database,updateList);
             paramTransactionList.removeAll(updateList);
@@ -86,6 +91,7 @@ public abstract class BlockServiceImpl implements IBlockService {
                 outputList.addAll(t.getOutputList());
                 inputList.addAll(t.getInputList());
             }
+            //Transaction默认状态为CONFIRMING
             transMapper.insertTransactionList(database, paramTransactionList);
             outputMapper.insertOutputList(database, outputList);
             inputMapper.insertInputList(database, inputList);
@@ -100,7 +106,7 @@ public abstract class BlockServiceImpl implements IBlockService {
         blockMapper.insertBlock(database,block);
 
         List<Transaction> paramTransactionList = getRpcService().getTransactionList(block.getBlockHash());
-        //TODO add input addr
+
         List<String> addressList = BlockchainUtil.getAddress(paramTransactionList);
         if(null == addressList || addressList.isEmpty()){
             return;
@@ -122,14 +128,18 @@ public abstract class BlockServiceImpl implements IBlockService {
                         if(null == output.getValueSat())
                             output.setValueSat(convertToSatoshis(output.getValue()));
                         output.setWalletAccountId(walletMap.get(output.getScriptPubKeyAddresses()));
+                        //当前交易产生的UTXO状态为“不可使用”
+                        output.setStatus(OutputStatus.INVALID.ordinal());
                     });
                 }
                 if (null != t.getInputList() && !t.getInputList().isEmpty()) {
+                    List<Output> outputList = new ArrayList<>();
                     t.getInputList().forEach((Input input) -> {
                         Output output = outputMapper.queryOutputByPrimary(database, input.getTxid(), input.getVout());
                         input.setAddress(null == output ? null : output.getScriptPubKeyAddresses());
                         input.setWalletAccountId(null == output ? null : output.getWalletAccountId());
-                        outputMapper.updateOutput(database, Output.STATUS_SPENT, input.getTxid(), input.getVout());
+                        //当前交易使用的UTXO状态为“使用中”
+                        outputMapper.updateOutput(database, OutputStatus.USING.ordinal(), input.getTxid(), input.getVout());
                     });
                 }
             });
@@ -144,7 +154,32 @@ public abstract class BlockServiceImpl implements IBlockService {
         if(null == block)
             return;
 
+        //修改vin & vout的状态
+        List<Transaction> transList = transMapper.queryTransactionListByBlockHash(database,block.getBlockHash());
+        if(null != transList && !transList.isEmpty()){
+            List<String> txidList = transList.stream().map(Transaction::getTxid).collect(Collectors.toList());
+            // 修改所有input为“使用中”
+            List<Input> inputList = inputMapper.queryInputByTxid(database,txidList);
+            List<Output> outputList = new ArrayList<>();
+            if(null != inputList && !inputList.isEmpty()){
+                inputList.forEach((Input input)->{
+                    Output output = new Output();
+                    output.setN(input.getVout());
+                    output.setTransactionTxid(input.getTxid());
+                    outputList.add(output);
+                });
+                outputMapper.updateOutputBatch(database,OutputStatus.USING.ordinal(),outputList);
+            }
+
+            // 修改所有output为“不可用”
+            if(null != txidList && !txidList.isEmpty()){
+                outputMapper.updateOutputByTxid(database,OutputStatus.INVALID.ordinal(),txidList);
+            }
+        }
+
+        //物理删除block表记录
         blockMapper.deleteBlockByBlockHash(database,block.getBlockHash());
+        //逻辑删除Transaction，修改Transaction记录block_hash 为NULL,height为NULL,trans_tatus为4（孤立状态）
         transMapper.deleteTransactionByBlockHash(database,block.getBlockHash());
     }
 
@@ -154,8 +189,8 @@ public abstract class BlockServiceImpl implements IBlockService {
         return blockMapper.queryLastBlock(database);
     }
 
-    protected BigInteger convertToSatoshis(double value) {
-        return new BigDecimal(value).multiply(new BigDecimal(Utils.COIN.longValue())).toBigInteger();
+    protected BigInteger convertToSatoshis(Double value) {
+        return new BigDecimal(value.toString()).multiply(new BigDecimal(Utils.COIN.longValue())).toBigInteger();
     }
     public abstract IRpcService getRpcService();
 }

@@ -66,13 +66,13 @@ public class IBlockTest {
     private IBlockScanner btgScanner;
 
     @Test
-    public void testScanner(){
-        for(int i=0;i<5;i++){
-            try {
-                btgScanner.scanBlock(5L,CoinType.BTG.name());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    public void testScanner() throws Exception{
+        long start = System.currentTimeMillis();
+        for(int i=0;i<1;i++){
+            btcScanner.scanBlock(539022L,CoinType.BTC.name());
+            btcScanner.updateAccount(CoinType.BTC.name());
         }
+        long end = System.currentTimeMillis();
+        System.out.println("---------------------------"+(end-start)+"----------------------------------------------");
     }
 }
