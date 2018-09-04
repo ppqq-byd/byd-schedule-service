@@ -19,8 +19,6 @@ import javax.annotation.Resource;
 @ScheduledJob(name = "btcAccountJob", cronExp = "*/30 * * * * ?")
 @DisallowConcurrentExecution
 public class BtcAccountJob implements Job {
-    private static final Long BTC_BLOCK_HEIGHT = 1L;
-
     @Resource
     @Qualifier("btcBlockScanner")
     private IBlockScanner scanner;
