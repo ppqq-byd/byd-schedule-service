@@ -1,6 +1,7 @@
 package com.ora.blockchain.service.block.impl;
 
 import com.ora.blockchain.constants.OutputStatus;
+import com.ora.blockchain.constants.TxDireStatus;
 import com.ora.blockchain.constants.TxStatus;
 import com.ora.blockchain.mybatis.entity.block.Block;
 import com.ora.blockchain.mybatis.entity.input.Input;
@@ -53,8 +54,7 @@ public abstract class BlockServiceImpl implements IBlockService {
             List<String> outputAddrList = t.getOutputList().stream().map(Output::getScriptPubKeyAddresses).collect(Collectors.toList());
             List<String> inputAddrList = t.getInputList().stream().map(input -> {
                 Output output = outputMapper.queryOutputByPrimary(database, input.getTxid(), input.getVout());
-                input.setAddress(null == output ? null : output.getScriptPubKeyAddresses());
-                return input.getAddress();
+                return null == output ? null : output.getScriptPubKeyAddresses();
             }).collect(Collectors.toList());
             if (CollectionUtils.containsAny(addressSet, outputAddrList) || CollectionUtils.containsAny(addressSet, inputAddrList)) {
                 transList.add(t);
@@ -112,35 +112,50 @@ public abstract class BlockServiceImpl implements IBlockService {
             return;
         }
 
+        //当前块包含的平台用户
         List<Wallet> walletList = walletMapper.queryWalletByAddress(addressList);
         if(null == walletList || walletList.isEmpty()){
             return;
         }
 
         Map<String,Long> walletMap = walletList.stream().collect(Collectors.toMap(Wallet::getAddress,Wallet::getWalletAccountId));
-        List<Transaction> oraTransactinList = filterTransaction(database,paramTransactionList,walletMap.keySet());
+        Set<String> addressSet = walletMap.keySet();
+        List<Transaction> oraTransactinList = filterTransaction(database,paramTransactionList,addressSet);
 
         if (null != oraTransactinList && !oraTransactinList.isEmpty()) {
             oraTransactinList.forEach((Transaction t) -> {
                 t.setHeight(block.getHeight());
-                if (null != t.getOutputList() && !t.getOutputList().isEmpty()) {
-                    t.getOutputList().forEach((Output output) -> {
-                        if(null == output.getValueSat())
-                            output.setValueSat(convertToSatoshis(output.getValue()));
-                        output.setWalletAccountId(walletMap.get(output.getScriptPubKeyAddresses()));
-                        //当前交易产生的UTXO状态为“不可使用”
-                        output.setStatus(OutputStatus.INVALID.ordinal());
-                    });
-                }
-                if (null != t.getInputList() && !t.getInputList().isEmpty()) {
-                    List<Output> outputList = new ArrayList<>();
-                    t.getInputList().forEach((Input input) -> {
-                        Output output = outputMapper.queryOutputByPrimary(database, input.getTxid(), input.getVout());
-                        input.setAddress(null == output ? null : output.getScriptPubKeyAddresses());
-                        input.setWalletAccountId(null == output ? null : output.getWalletAccountId());
-                        //当前交易使用的UTXO状态为“使用中”
-                        outputMapper.updateOutput(database, OutputStatus.USING.ordinal(), input.getTxid(), input.getVout());
-                    });
+                t.getOutputList().forEach((Output output) -> {
+                    if(null == output.getValueSat())
+                        output.setValueSat(convertToSatoshis(output.getValue()));
+                    output.setWalletAccountId(walletMap.get(output.getScriptPubKeyAddresses()));
+                    //当前交易产生的UTXO状态为“不可使用”
+                    output.setStatus(OutputStatus.INVALID.ordinal());
+                });
+                List<String> outputAddrList = t.getOutputList().stream().map(Output::getScriptPubKeyAddresses).collect(Collectors.toList());
+                List<String> inputAddrList = new ArrayList<>();
+                t.getInputList().forEach((Input input) -> {
+                    Output output = outputMapper.queryOutputByPrimary(database, input.getTxid(), input.getVout());
+                    if(null != output){
+                        inputAddrList.add(output.getScriptPubKeyAddresses());
+                        input.setAddress(output.getScriptPubKeyAddresses());
+                    }
+                    input.setWalletAccountId(null == output ? null : output.getWalletAccountId());
+                    //当前交易使用的UTXO状态为“使用中”
+                    outputMapper.updateOutput(database, OutputStatus.USING.ordinal(), input.getTxid(), input.getVout());
+                });
+                //删除找零地址
+                outputAddrList.removeAll(inputAddrList);
+
+                //vin和vout同时包含平台地址，trans_dire为“内转内”
+                if(CollectionUtils.containsAny(addressSet,inputAddrList) && CollectionUtils.containsAny(addressSet,outputAddrList)){
+                    t.setTransDire(TxDireStatus.INTERNAL.ordinal());
+                    //vin包含平台地址且vout不包含平台址，trans_dire为“内转外”
+                }else if(CollectionUtils.containsAny(addressSet,inputAddrList) && !CollectionUtils.containsAny(addressSet,outputAddrList)){
+                    t.setTransDire(TxDireStatus.OUTPUT.ordinal());
+                }else{
+                    //vin不包含平台地址且vout包含平台地址，trans_dire为“外转内”，不存在vin和vout同时不包含的情况
+                    t.setTransDire(TxDireStatus.INPUT.ordinal());
                 }
             });
             insertBlockTransaction(database,oraTransactinList);
