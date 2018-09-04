@@ -29,6 +29,7 @@ public class Transaction {
     private Integer status;
     private Integer coinbase;
     private Integer transStatus  = TxStatus.CONFIRMING.ordinal();
+    private Integer transDire;
     private Date createTs;
     private Date updateTs;
     private List<Output> outputList;
