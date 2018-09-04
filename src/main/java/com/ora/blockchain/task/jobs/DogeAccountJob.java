@@ -1,5 +1,6 @@
 package com.ora.blockchain.task.jobs;
 
+
 import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import com.ora.blockchain.task.ScheduledJob;
@@ -13,28 +14,27 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-@Component
-@DisallowConcurrentExecution
-@ScheduledJob(name = "ethJob", cronExp = "0/8 * * * * ?")
 @Slf4j
-public class EthereumJob implements Job {
+@Component
+@ScheduledJob(name = "dogeAccountJob", cronExp = "*/30 * * * * ?")
+@DisallowConcurrentExecution
+public class DogeAccountJob implements Job {
 
     @Resource
-    @Qualifier("ethBlockScaner")
-    private IBlockScanner ethBlockScanner;
+    @Qualifier("dogeBlockScanner")
+    private IBlockScanner scanner;
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        System.out.println("********************Eth Job start......************************");
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+        log.info("********************Doge Account Job start......************************");
         long start = System.currentTimeMillis();
-
-        try {//6169721L
-            ethBlockScanner.scanBlock(6269649L, CoinType.ETH.name());
+        try {
+//            scanner.updateAccount(CoinType.DOGE.name());
         } catch (Exception e) {
             e.printStackTrace();
-           log.error("Eth job failed:"+e.getMessage(),e);
+            log.error("Doge Account JOb error! " + e.getMessage());
         }
         long end = System.currentTimeMillis();
-        System.out.println(String.format("*********************Eth Job end(spent : %s)*****************************", end - start));
+        log.info(String.format("*********************Doge Account Job end(spent : %s)*****************************", end - start));
     }
 }

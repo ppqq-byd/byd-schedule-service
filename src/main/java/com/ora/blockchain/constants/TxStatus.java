@@ -1,8 +1,6 @@
 package com.ora.blockchain.constants;
 
 
-import static com.ora.blockchain.constants.CoinTypeFamily.*;
-
 public enum TxStatus {
     SENDING("SENDING", 0),
     SENT("SENT", 1),
