@@ -171,6 +171,12 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
         dbBlock.trans(block);
         blockMapper.insertBlock(CoinType.getDatabase(getCoinType()),dbBlock);
 
+        if(block.getBlock().getTransactions()==null
+        ||block.getBlock().getTransactions().size()==0){
+            log.info("empty block:"+blockHeight);
+            return;
+        }
+
         //获取erc20的定义
         List<EthereumERC20> erc20 = erc20Mapper.queryERC20(CoinType.getDatabase(getCoinType()));
 
