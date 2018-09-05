@@ -165,7 +165,7 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
             transMapper.updateTransactionList(database, completeTransList);
 
             List<String> txidList = completeTransList.stream().map(Transaction::getTxid).collect(Collectors.toList());
-            // 修改所有input为“使用中”
+            // 修改所有input（原来的UTXO）为“使用中”
             List<Input> inputList = inputMapper.queryInputByTxid(database,txidList);
             List<Output> outputList = new ArrayList<>();
             if(null != inputList && !inputList.isEmpty()){
@@ -181,7 +181,7 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
                     outputMapper.updateOutputBatch(database,OutputStatus.SPENT.ordinal(),outputList);
             }
 
-            // 修改所有output为“不可用”
+            // 修改所有新产生的output为“不可用”
             if(null != txidList && !txidList.isEmpty()){
                 outputMapper.updateOutputByTxid(database,OutputStatus.VALID.ordinal(),txidList);
             }

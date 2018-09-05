@@ -1,5 +1,6 @@
 package com.ora.blockchain.task.jobs;
 
+import com.ora.blockchain.constants.CoinType;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import com.ora.blockchain.task.ScheduledJob;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,7 @@ import javax.annotation.Resource;
 
 @Slf4j
 @Component
-@ScheduledJob(name = "darkJob", cronExp = "0 */1 * * * ?")
+@ScheduledJob(name = "darkJob", cronExp = "*/30 * * * * ?")//2.5 minutes
 @DisallowConcurrentExecution
 public class DarkJob implements Job {
     private static final Long BLOCK_HEIGHT = 921663L;
@@ -28,7 +29,7 @@ public class DarkJob implements Job {
         log.info("********************Dark Scanner Job start......************************");
         long start = System.currentTimeMillis();
         try {
-//            scanner.scanBlock(BLOCK_HEIGHT);
+//            scanner.scanBlock(BLOCK_HEIGHT,CoinType.DARK.name());
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Dark Scanner Job error! " + e.getMessage());

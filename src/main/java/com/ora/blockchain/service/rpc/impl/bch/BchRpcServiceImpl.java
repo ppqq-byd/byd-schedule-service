@@ -24,7 +24,6 @@ public class BchRpcServiceImpl extends RpcServiceImpl {
 
     @Override
     public JsonNode getTransaction(String blockHash, String transactionId) {
-        log.error("--------------------------------------blockHash= "+blockHash + " ==============================transId = "+transactionId);
         return rpcRequest("getrawtransaction",transactionId,1);
     }
 }
