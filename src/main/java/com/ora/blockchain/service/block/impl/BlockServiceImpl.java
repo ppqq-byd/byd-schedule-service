@@ -97,6 +97,30 @@ public abstract class BlockServiceImpl implements IBlockService {
             inputMapper.insertInputList(database, inputList);
         }
     }
+    private List<String> getAddress(String database,List<Transaction> transactionList){
+        if(null == transactionList || transactionList.isEmpty())
+            return null;
+
+        List<Output> outputList = new ArrayList<>();
+        List<Input> inputList = new ArrayList<>();
+        for(Transaction t : transactionList){
+            if(null != t && null != t.getOutputList() && !t.getOutputList().isEmpty()){
+                outputList.addAll(t.getOutputList());
+            }
+            if(null != t && null != t.getInputList() && !t.getInputList().isEmpty()){
+                inputList.addAll(t.getInputList());
+            }
+        }
+        List<String> resList = new ArrayList<>();
+        List<String> outputAddrList = outputList.stream().map(Output :: getScriptPubKeyAddresses).collect(Collectors.toList());
+        if(null != outputAddrList)
+            resList.addAll(outputAddrList);
+        List<String> inputAddrList = outputMapper.queryAddressByTransactionTxid(database,inputList.stream().map(Input::getTxid).collect(Collectors.toList()));
+        if(null != inputAddrList)
+            resList.addAll(inputAddrList);
+
+        return resList;
+    }
 
     @Override
     @Transactional
@@ -107,7 +131,7 @@ public abstract class BlockServiceImpl implements IBlockService {
 
         List<Transaction> paramTransactionList = getRpcService().getTransactionList(block.getBlockHash());
 
-        List<String> addressList = BlockchainUtil.getAddress(paramTransactionList);
+        List<String> addressList = getAddress(database,paramTransactionList);
         if(null == addressList || addressList.isEmpty()){
             return;
         }
@@ -145,13 +169,13 @@ public abstract class BlockServiceImpl implements IBlockService {
                     outputMapper.updateOutput(database, OutputStatus.USING.ordinal(), input.getTxid(), input.getVout());
                 });
                 //删除找零地址
-                outputAddrList.removeAll(inputAddrList);
+                outputAddrList = (List<String>) CollectionUtils.removeAll(outputAddrList,inputAddrList);
 
                 //vin包含平台地址且vout不包含平台址，trans_dire为“内转外”
-                if(CollectionUtils.containsAny(addressSet,inputAddrList) && !CollectionUtils.containsAny(addressSet,outputAddrList)){
+                if(null != outputAddrList && !outputAddrList.isEmpty() && CollectionUtils.containsAny(addressSet,inputAddrList) && !CollectionUtils.containsAny(addressSet,outputAddrList)){
                     t.setTransDire(TxDireStatus.OUTPUT.ordinal());
                     //vin不包含平台地址且vout包含平台地址，trans_dire为“外转内”
-                }else if(!CollectionUtils.containsAny(addressSet,inputAddrList)&&CollectionUtils.containsAny(addressSet,outputAddrList)){
+                }else if(null != outputAddrList && !outputAddrList.isEmpty() && !CollectionUtils.containsAny(addressSet,inputAddrList) && CollectionUtils.containsAny(addressSet,outputAddrList)){
                     t.setTransDire(TxDireStatus.INPUT.ordinal());
                     //vin和vout同时包含平台地址，trans_dire为“内转内”，不存在vin和vout同时不包含的情况
                 }else{

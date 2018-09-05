@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 
 @Slf4j
 @Component
-@ScheduledJob(name = "btcJob", cronExp = "*/30 * * * * ?")
+@ScheduledJob(name = "btcJob", cronExp = "*/30 * * * * ?")//10 minutes
 @DisallowConcurrentExecution
 public class BtcJob implements Job {
     private static final Long BTC_BLOCK_HEIGHT = 8970L;

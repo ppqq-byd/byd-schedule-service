@@ -92,7 +92,7 @@ public interface IRpcService {
                     if (vout.has("value"))
                         output.setValue(vout.get("value").doubleValue());
                     if (vout.has("valueSat"))
-                        output.setValueSat(new BigInteger(vout.get("valueSat").textValue()));
+                        output.setValueSat(new BigInteger(vout.get("valueSat").longValue()+""));//for dark
                     if (vout.has("n"))
                         output.setN(vout.get("n").intValue());
                     if (vout.has("scriptPubKey")) {
@@ -109,7 +109,7 @@ public interface IRpcService {
                             ArrayNode recipientAddressNodes = (ArrayNode) scriptPubKey.get("addresses");
                             String addresses = "";
                             for (JsonNode addr : recipientAddressNodes) {
-                                addresses = addresses + addr.textValue() + ",";
+                                addresses = addresses + addr.textValue().replace("bitcoincash:","") + ",";
                             }
                             output.setScriptPubKeyAddresses(addresses.substring(0, addresses.length() - 1));
                         }
