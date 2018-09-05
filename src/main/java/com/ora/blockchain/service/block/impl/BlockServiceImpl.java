@@ -15,7 +15,6 @@ import com.ora.blockchain.mybatis.mapper.transaction.TransactionMapper;
 import com.ora.blockchain.mybatis.mapper.wallet.WalletMapper;
 import com.ora.blockchain.service.block.IBlockService;
 import com.ora.blockchain.service.rpc.IRpcService;
-import com.ora.blockchain.utils.BlockchainUtil;
 import com.ora.blockchain.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
