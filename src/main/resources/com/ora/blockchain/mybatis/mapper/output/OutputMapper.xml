@@ -50,7 +50,7 @@
         SELECT o.wallet_account_id AS accountId,o.value_sat AS totalBalance FROM ${database}.`transaction` t,${database}.output o
         WHERE o.transaction_txid = t.txid
         AND t.trans_status = 1
-        AND o.status = 0
+        AND o.status = 2
         AND t.block_hash IS NULL
         AND o.wallet_account_id IN
         <foreach item="item" index="index" collection="accountList" open="(" separator="," close=")">
