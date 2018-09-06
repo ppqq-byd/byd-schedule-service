@@ -28,7 +28,7 @@ public class EthereumAccountJob implements Job {
         System.out.println("********************Eth Account Job start......************************");
         long start = System.currentTimeMillis();
         try {
-//            ethBlockScanner.updateAccount(CoinType.ETH.name());
+            ethBlockScanner.updateAccount(CoinType.ETH.name());
         } catch (Exception e) {
             e.printStackTrace();
            log.error("Eth Account job failed:"+e.getMessage(),e);
