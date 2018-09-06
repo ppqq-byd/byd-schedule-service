@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
@@ -29,7 +30,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 
-@Service("ethBlockScaner")
+@Service
 @Slf4j
 public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
@@ -52,10 +53,12 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
     protected abstract String getCoinType();
 
+    public abstract Web3 getWeb3Client();
+
     @Override
     public boolean isNeedScanHeightLasted(Long needScanBlock) throws IOException {
         try {
-            if(needScanBlock>Web3.getInstance(getCoinType()).getCurrentBlockHeight().longValue())
+            if(needScanBlock>getWeb3Client().getCurrentBlockHeight().longValue())
             return true;
         } catch (IOException e) {
             log.error(e.getMessage(),e);
@@ -93,7 +96,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                 queryEthBlockByBlockNumber(CoinType.getDatabase(getCoinType()),(needScanBlock-1));
 
         //与节点中的对比
-        EthBlock block = Web3.getInstance(getCoinType()).getBlockInfoByNumber(needScanBlock-2);
+        EthBlock block = getWeb3Client().getBlockInfoByNumber(needScanBlock-2);
 
 
         if(dbBlock!=null&&!dbBlock.getParentHash().equals(block.getBlock().getHash())){
@@ -166,7 +169,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     @Override
     public void syncBlockAndTx(Long blockHeight) throws Exception {
 
-        EthBlock block = Web3.getInstance(getCoinType()).getBlockInfoByNumber(blockHeight);
+        EthBlock block = getWeb3Client().getBlockInfoByNumber(blockHeight);
         EthereumBlock dbBlock = new EthereumBlock();
         dbBlock.trans(block);
         blockMapper.insertBlock(CoinType.getDatabase(getCoinType()),dbBlock);
@@ -339,7 +342,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
                 try {
                     TransactionReceipt receipt =
-                            Web3.getInstance(getCoinType()).getTransactionReceiptByTxhash(tx.getTxId());
+                            getWeb3Client().getTransactionReceiptByTxhash(tx.getTxId());
                     //如果交易执行状态返回为null 跳过不处理
                     if(StringUtils.isEmpty(receipt.getStatus()))continue;
                     //执行失败 减去花掉的手续费

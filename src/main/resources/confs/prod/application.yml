@@ -51,3 +51,6 @@ rpc:
         url: "http://ELB-Blockchain-1732218811.cn-northwest-1.elb.amazonaws.com.cn:8332"
         username: "ora"
         password: "Oradt!1234"
+    web3j:
+        eth: "http://107.150.99.155:8545"
+        etc: "http://52.83.130.131:8545"

@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 
 @Component
 @DisallowConcurrentExecution
-@ScheduledJob(name = "ethJob", cronExp = "0/8 * * * * ?")
+@ScheduledJob(name = "ethJob", cronExp = "0/3 * * * * ?")
 @Slf4j
 public class EthereumJob implements Job {
 

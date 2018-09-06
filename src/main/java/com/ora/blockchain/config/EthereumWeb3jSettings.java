@@ -9,5 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "rpc.web3j")
 public class EthereumWeb3jSettings {
-    private String url;
+    private String eth;
+    private String etc;
 }
