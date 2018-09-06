@@ -181,7 +181,7 @@ public abstract class BtcfamilyBlockScanner extends BlockScanner {
                     outputMapper.updateOutputBatch(database,OutputStatus.SPENT.ordinal(),outputList);
             }
 
-            // 修改所有新产生的output为“不可用”
+            // 修改所有新产生的output为“未使用”
             if(null != txidList && !txidList.isEmpty()){
                 outputMapper.updateOutputByTxid(database,OutputStatus.VALID.ordinal(),txidList);
             }

@@ -43,6 +43,7 @@ public abstract class BlockServiceImpl implements IBlockService {
     @Autowired
     private WalletMapper walletMapper;
 
+    //TODO 多线程过滤
     private List<Transaction> filterTransaction(String database, List<Transaction> blockchainTrans, Set<String> addressSet) {
         if (null == blockchainTrans || blockchainTrans.isEmpty() || null == addressSet || addressSet.isEmpty()) {
             return null;
@@ -142,8 +143,7 @@ public abstract class BlockServiceImpl implements IBlockService {
         }
 
         Map<String,Long> walletMap = walletList.stream().collect(Collectors.toMap(Wallet::getAddress,Wallet::getWalletAccountId));
-        Set<String> addressSet = walletMap.keySet();
-        List<Transaction> oraTransactinList = filterTransaction(database,paramTransactionList,addressSet);
+        List<Transaction> oraTransactinList = filterTransaction(database,paramTransactionList,walletMap.keySet());
 
         if (null != oraTransactinList && !oraTransactinList.isEmpty()) {
             oraTransactinList.forEach((Transaction t) -> {
@@ -155,26 +155,33 @@ public abstract class BlockServiceImpl implements IBlockService {
                     //当前交易产生的UTXO状态为“不可使用”
                     output.setStatus(OutputStatus.INVALID.ordinal());
                 });
-                List<String> outputAddrList = t.getOutputList().stream().map(Output::getScriptPubKeyAddresses).collect(Collectors.toList());
-                List<String> inputAddrList = new ArrayList<>();
+
+                List<Long> outputAccIdList = t.getOutputList().stream().filter((Output output) -> {
+                    return null != output.getWalletAccountId() && output.getWalletAccountId() > 0;
+                }).map(Output::getWalletAccountId).collect(Collectors.toList());
+
+                List<Long> inputAccIdList = new ArrayList<>();
                 t.getInputList().forEach((Input input) -> {
                     Output output = outputMapper.queryOutputByPrimary(database, input.getTxid(), input.getVout());
                     if(null != output){
-                        inputAddrList.add(output.getScriptPubKeyAddresses());
+                        if(null != output.getWalletAccountId() && output.getWalletAccountId().longValue() > 0)
+                            inputAccIdList.add(output.getWalletAccountId());
                         input.setAddress(output.getScriptPubKeyAddresses());
+                        input.setWalletAccountId(output.getWalletAccountId());
                     }
-                    input.setWalletAccountId(null == output ? null : output.getWalletAccountId());
                     //当前交易使用的UTXO状态为“使用中”
                     outputMapper.updateOutput(database, OutputStatus.USING.ordinal(), input.getTxid(), input.getVout());
                 });
-                //删除找零地址
-                outputAddrList = (List<String>) CollectionUtils.removeAll(outputAddrList,inputAddrList);
+
+                Collection<Long> accIdList = walletMap.values();
+                //删除找零用户
+                outputAccIdList = (List<Long>)CollectionUtils.removeAll(outputAccIdList,inputAccIdList);
 
                 //vin包含平台地址且vout不包含平台址，trans_dire为“内转外”
-                if(null != outputAddrList && !outputAddrList.isEmpty() && CollectionUtils.containsAny(addressSet,inputAddrList) && !CollectionUtils.containsAny(addressSet,outputAddrList)){
+                if(null != outputAccIdList && !outputAccIdList.isEmpty() && CollectionUtils.containsAny(accIdList,inputAccIdList) && !CollectionUtils.containsAny(accIdList,outputAccIdList)){
                     t.setTransDire(TxDireStatus.OUTPUT.ordinal());
                     //vin不包含平台地址且vout包含平台地址，trans_dire为“外转内”
-                }else if(null != outputAddrList && !outputAddrList.isEmpty() && !CollectionUtils.containsAny(addressSet,inputAddrList) && CollectionUtils.containsAny(addressSet,outputAddrList)){
+                }else if(null != outputAccIdList && !outputAccIdList.isEmpty() && !CollectionUtils.containsAny(accIdList,inputAccIdList) && CollectionUtils.containsAny(accIdList,outputAccIdList)){
                     t.setTransDire(TxDireStatus.INPUT.ordinal());
                     //vin和vout同时包含平台地址，trans_dire为“内转内”，不存在vin和vout同时不包含的情况
                 }else{
