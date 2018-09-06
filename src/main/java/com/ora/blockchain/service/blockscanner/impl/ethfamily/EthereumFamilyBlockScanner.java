@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
@@ -29,7 +30,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 
-@Service("ethBlockScaner")
+@Service
 @Slf4j
 public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
@@ -52,10 +53,12 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
     protected abstract String getCoinType();
 
+    public abstract Web3 getWeb3Client();
+
     @Override
     public boolean isNeedScanHeightLasted(Long needScanBlock) throws IOException {
         try {
-            if(needScanBlock>Web3.getInstance(getCoinType()).getCurrentBlockHeight().longValue())
+            if(needScanBlock>getWeb3Client().getCurrentBlockHeight().longValue())
             return true;
         } catch (IOException e) {
             log.error(e.getMessage(),e);
@@ -93,7 +96,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                 queryEthBlockByBlockNumber(CoinType.getDatabase(getCoinType()),(needScanBlock-1));
 
         //与节点中的对比
-        EthBlock block = Web3.getInstance(getCoinType()).getBlockInfoByNumber(needScanBlock-2);
+        EthBlock block = getWeb3Client().getBlockInfoByNumber(needScanBlock-2);
 
 
         if(dbBlock!=null&&!dbBlock.getParentHash().equals(block.getBlock().getHash())){
@@ -121,7 +124,6 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             EthereumTransaction tx = it.next();
             tx.setStatus(TxStatus.CONFIRMING.ordinal());
             tx.setIsDelete(0);
-            tx.setIsSender(0);
             boolean isDelete = false;
             for(EthereumTransaction dbTx:inDbTx){
                 if(dbTx.getTxId().equals(tx.getTxId())){
@@ -167,10 +169,16 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     @Override
     public void syncBlockAndTx(Long blockHeight) throws Exception {
 
-        EthBlock block = Web3.getInstance(getCoinType()).getBlockInfoByNumber(blockHeight);
+        EthBlock block = getWeb3Client().getBlockInfoByNumber(blockHeight);
         EthereumBlock dbBlock = new EthereumBlock();
         dbBlock.trans(block);
         blockMapper.insertBlock(CoinType.getDatabase(getCoinType()),dbBlock);
+
+        if(block.getBlock().getTransactions()==null
+        ||block.getBlock().getTransactions().size()==0){
+            log.info("empty block:"+blockHeight);
+            return;
+        }
 
         //获取erc20的定义
         List<EthereumERC20> erc20 = erc20Mapper.queryERC20(CoinType.getDatabase(getCoinType()));
@@ -334,7 +342,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
                 try {
                     TransactionReceipt receipt =
-                            Web3.getInstance(getCoinType()).getTransactionReceiptByTxhash(tx.getTxId());
+                            getWeb3Client().getTransactionReceiptByTxhash(tx.getTxId());
                     //如果交易执行状态返回为null 跳过不处理
                     if(StringUtils.isEmpty(receipt.getStatus()))continue;
                     //执行失败 减去花掉的手续费
@@ -416,17 +424,18 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
      * @param tx
      * @return
      */
-    private boolean filterByAddress(List<WalletAccountBind> ethAccounts,EthBlock.TransactionObject tx){
+    private int filterByAddress(List<WalletAccountBind> ethAccounts,EthBlock.TransactionObject tx){
         for(WalletAccountBind account:ethAccounts){
             //如果是平台账户的地址或者合约的地址
-            if(account.getAddress().equals(tx.getFrom())||
-                    account.getAddress().equals(tx.getTo())){
-                return true;
+            if(account.getAddress().equals(tx.getFrom())){
+                return 1;
+            }else if(account.getAddress().equals(tx.getTo())){
+                return 0;
             }
 
         }
 
-        return false;
+        return -1;
     }
 
     /**
@@ -486,8 +495,13 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                 }else {
 
                     //如果是平台账户的地址
-                    if(filterByAddress(notContractAccounts,tx)){
+                    if(filterByAddress(notContractAccounts,tx)==0){
                         dbTx.transEthTransaction(tx);
+                        dbTx.setIsSender(0);
+                        needAddList.add(dbTx);
+                    }else if(filterByAddress(notContractAccounts,tx)==1){
+                        dbTx.transEthTransaction(tx);
+                        dbTx.setIsSender(1);
                         needAddList.add(dbTx);
                     }
 
