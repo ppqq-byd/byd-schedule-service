@@ -27,7 +27,6 @@ public class EthereumJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         System.out.println("********************Eth Job start......************************");
         long start = System.currentTimeMillis();
-
         try {//6169721L
              ethBlockScanner.scanBlock(6269649L, CoinType.ETH.name());
         } catch (Exception e) {
