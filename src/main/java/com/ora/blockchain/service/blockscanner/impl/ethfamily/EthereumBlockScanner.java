@@ -19,9 +19,11 @@ import com.ora.blockchain.service.web3j.Web3;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.core.methods.response.EthBlock;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
@@ -31,8 +33,17 @@ import java.util.*;
 public class EthereumBlockScanner extends EthereumFamilyBlockScanner {
 
 
+    @Resource
+    @Qualifier("ethWeb3j")
+    private Web3 web3eth;
+
     @Override
     protected String getCoinType() {
         return CoinType.ETH.name();
+    }
+
+    @Override
+    public Web3 getWeb3Client() {
+        return web3eth;
     }
 }

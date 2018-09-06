@@ -1,6 +1,10 @@
 package com.ora.blockchain.service.web3j;
 
+import com.ora.blockchain.config.EthereumWeb3jSettings;
 import com.ora.blockchain.constants.CoinType;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
@@ -13,30 +17,17 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Web3 {
+@Service
+@Slf4j
+public abstract class Web3 {
 
-    private static Web3 web3Instance = null;
+    @Autowired
+    private EthereumWeb3jSettings settings;
 
-    private Web3j web3;
-
-    //http://52.83.130.131:8545
-    public static synchronized Web3 getInstance(String coinType){
-        if(web3Instance==null){
-            web3Instance = new Web3(coinType);
-        }
-
-        return web3Instance;
-    }
-
-    private Web3(String coinType){
-        if(CoinType.ETC.name().equals(coinType)){
-            web3 = Web3j.build(new HttpService("http://52.83.130.131:8545"));
-        }else  if(CoinType.ETH.name().equals(coinType)){
-            web3 = Web3j.build(new HttpService("http://52.83.130.131:8545"));
-        }
+    //"http://52.83.130.131:8545"
+    public abstract Web3j getWeb3jClient();
 
 
-    }
 
 
     /**
@@ -47,7 +38,7 @@ public class Web3 {
      */
     public  BigInteger getNonce(String address) throws Exception {
         EthGetTransactionCount ethGetTransactionCount =
-                web3.ethGetTransactionCount(address, DefaultBlockParameterName.LATEST).sendAsync().get();
+                getWeb3jClient().ethGetTransactionCount(address, DefaultBlockParameterName.LATEST).sendAsync().get();
         return ethGetTransactionCount.getTransactionCount();
     }
 
@@ -57,7 +48,7 @@ public class Web3 {
      * @throws IOException
      */
     public  BigInteger getCurrentBlockHeight() throws IOException {
-       return web3.ethBlockNumber().send().getBlockNumber();
+       return getWeb3jClient().ethBlockNumber().send().getBlockNumber();
     }
 
     /**
@@ -67,13 +58,13 @@ public class Web3 {
      * @throws Exception
      */
     public  BigInteger getBalance(String address) throws Exception {
-        EthGetBalance ethGetBalance1 = web3.ethGetBalance(address,
+        EthGetBalance ethGetBalance1 = getWeb3jClient().ethGetBalance(address,
                 DefaultBlockParameter.valueOf("latest")).send();
         return ethGetBalance1.getBalance();
     }
 
     public  String getWeb3ClientVersion() throws Exception {
-        Web3ClientVersion web3ClientVersion = web3.web3ClientVersion().send();
+        Web3ClientVersion web3ClientVersion = getWeb3jClient().web3ClientVersion().send();
         String clientVersion = web3ClientVersion.getWeb3ClientVersion();
         System.out.println(clientVersion);
         return clientVersion;
@@ -82,7 +73,7 @@ public class Web3 {
 
 
     public  void getPending(){
-        Subscription subscription = web3.pendingTransactionObservable().subscribe(tx -> {
+        Subscription subscription = getWeb3jClient().pendingTransactionObservable().subscribe(tx -> {
 
         });
     }
@@ -94,7 +85,7 @@ public class Web3 {
      * @throws Exception
      */
     public  EthBlock getBlockInfoByNumber(Long number) throws Exception {
-        EthBlock block = web3.ethGetBlockByNumber(
+        EthBlock block = getWeb3jClient().ethGetBlockByNumber(
                 DefaultBlockParameter.valueOf(BigInteger.valueOf(number)), true).send();
 
         return block;
@@ -107,7 +98,7 @@ public class Web3 {
      * @throws Exception
      */
     public  TransactionReceipt getTransactionReceiptByTxhash(String txHash) throws Exception {
-        TransactionReceipt tr = web3.ethGetTransactionReceipt(txHash).send().getResult();
+        TransactionReceipt tr = getWeb3jClient().ethGetTransactionReceipt(txHash).send().getResult();
 
         return tr;
 
@@ -121,7 +112,7 @@ public class Web3 {
      */
     public  EthBlock getBlockInfoByHash(String hash) throws Exception {
         boolean returnFullTransactionObjects = true;
-        EthBlock block = web3.ethGetBlockByHash(hash,returnFullTransactionObjects).send();
+        EthBlock block = getWeb3jClient().ethGetBlockByHash(hash,returnFullTransactionObjects).send();
 
         return block;
     }
