@@ -25,7 +25,7 @@ public class EthereumJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        System.out.println("********************Eth Job start......************************");
+        log.info("********************Eth Job start......************************");
         long start = System.currentTimeMillis();
         try {//6169721L
              ethBlockScanner.scanBlock(6269649L, CoinType.ETH.name());
@@ -34,6 +34,6 @@ public class EthereumJob implements Job {
            log.error("Eth job failed:"+e.getMessage(),e);
         }
         long end = System.currentTimeMillis();
-        System.out.println(String.format("*********************Eth Job end(spent : %s)*****************************", end - start));
+        log.info(String.format("*********************Eth Job end(spent : %s)*****************************", end - start));
     }
 }
