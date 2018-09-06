@@ -33,8 +33,9 @@ public abstract class BlockScanner implements IBlockScanner {
     @Override
     @Transactional
     public void scanBlock(Long initBlockHeight,String coinType) throws Exception {
+        log.info("*********************************scanBlock:"+coinType);
         Long needScanBlock = getNeedScanBlockHeight(initBlockHeight);
-        System.out.println("*********************************needScanBlock:"+needScanBlock);
+        log.info("*********************************needScanBlock:"+needScanBlock);
         //如果已经是最新块了 那么这次不用扫描了
         if(isNeedScanHeightLasted(needScanBlock)){
             return;

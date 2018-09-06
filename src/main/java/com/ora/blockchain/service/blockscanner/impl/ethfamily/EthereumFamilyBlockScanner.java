@@ -168,7 +168,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
     @Override
     public void syncBlockAndTx(Long blockHeight) throws Exception {
-
+        log.info("*********************************syncBlockAndTx:"+this.getCoinType());
         EthBlock block = getWeb3Client().getBlockInfoByNumber(blockHeight);
         EthereumBlock dbBlock = new EthereumBlock();
         dbBlock.trans(block);
