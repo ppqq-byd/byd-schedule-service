@@ -48,9 +48,9 @@ rpc:
         username: "ora"
         password: "Oradt!1234"
     btc:
-        url: "http://192.168.12.39:8332"
-        username: "bitcoinrpc"
-        password: "2XA4DuKNCbtZXsBQRRNDEwEY2nM6M4H9Tx5dFjoAVVbK"
+        url: "http://ELB-Blockchain-1732218811.cn-northwest-1.elb.amazonaws.com.cn:8332"
+        username: "ora"
+        password: "Oradt!1234"
     web3j:
         eth: "http://107.150.99.155:8545"
         etc: "http://52.83.130.131:8545"

@@ -65,12 +65,27 @@ public class IBlockTest {
     @Qualifier("btgBlockScanner")
     private IBlockScanner btgScanner;
 
+    @Resource
+    @Qualifier("ltcBlockScanner")
+    private IBlockScanner ltcScanner;
+
     @Test
     public void testScanner() throws Exception{
         long start = System.currentTimeMillis();
         for(int i=0;i<1;i++){
-            btcScanner.scanBlock(539022L,CoinType.BTC.name());
+            btcScanner.scanBlock(10287L,CoinType.BTC.name());
             btcScanner.updateAccount(CoinType.BTC.name());
+//            btgScanner.scanBlock(545231L,CoinType.BTG.name());
+//            btgScanner.updateAccount(CoinType.BTG.name());
+//            dogeScanner.scanBlock(35550L,CoinType.DOGE.name());
+//            dogeScanner.updateAccount(CoinType.DOGE.name());
+//            darkScanner.scanBlock(932080L,CoinType.DARK.name());
+//            darkScanner.updateAccount(CoinType.DARK.name());
+
+//            ltcScanner.scanBlock(932015L,CoinType.LTC.name());
+//            ltcScanner.updateAccount(CoinType.LTC.name());
+//            bchScanner.scanBlock(546414L,CoinType.BCH.name());
+//            bchScanner.updateAccount(CoinType.BCH.name());
         }
         long end = System.currentTimeMillis();
         System.out.println("---------------------------"+(end-start)+"----------------------------------------------");

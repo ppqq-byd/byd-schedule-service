@@ -1,6 +1,6 @@
 package com.ora.blockchain.task.jobs;
 
-import com.ora.blockchain.constants.CoinType;
+
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import com.ora.blockchain.task.ScheduledJob;
 import lombok.extern.slf4j.Slf4j;
@@ -15,26 +15,24 @@ import javax.annotation.Resource;
 
 @Slf4j
 @Component
-@ScheduledJob(name = "LtcJob", cronExp = "0 */1 * * * ?")//2.5 minutes
+@ScheduledJob(name = "btgAccountJob", cronExp = "*/30 * * * * ?")
 @DisallowConcurrentExecution
-public class LtcJob implements Job {
-    private static final Long BLOCK_HEIGHT = 1481744L;
-
+public class BtgAccountJob implements Job {
     @Resource
-    @Qualifier("ltcBlockScanner")
+    @Qualifier("btgBlockScanner")
     private IBlockScanner scanner;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        log.info("********************Ltc Scanner Job start......************************");
+        log.info("********************Btg Account Job start......************************");
         long start = System.currentTimeMillis();
         try {
-//            scanner.scanBlock(BLOCK_HEIGHT,CoinType.LTC.name());
+//            scanner.updateAccount(CoinType.BTG.name());
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("Ltc Scanner JOb error! " + e.getMessage());
+            log.error("Btg Account JOb error! " + e.getMessage());
         }
         long end = System.currentTimeMillis();
-        log.info(String.format("*********************Ltc Scanner Job end(spent : %s)*****************************", end - start));
+        log.info(String.format("*********************Btg Account Job end(spent : %s)*****************************", end - start));
     }
 }
