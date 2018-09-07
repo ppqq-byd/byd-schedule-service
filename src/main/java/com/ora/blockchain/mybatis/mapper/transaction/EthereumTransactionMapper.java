@@ -5,6 +5,7 @@ import com.ora.blockchain.mybatis.entity.eth.EthereumTransaction;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -49,4 +50,9 @@ public interface EthereumTransactionMapper {
 
     public List<EthereumTransaction> queryTxByStatus(@Param("database") String database,
                                                      @Param("status") Integer status);
+
+    public List<EthereumTransaction> queryTimeoutTxBySentAndIsolate(@Param("database") String database,
+                                                                    @Param("status1") Integer status1,
+                                                                    @Param("status2") Integer status2,
+                                                                    @Param("beginTime") Date beginTime);
 }

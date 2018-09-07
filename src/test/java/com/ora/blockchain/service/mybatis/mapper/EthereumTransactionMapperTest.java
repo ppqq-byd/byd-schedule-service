@@ -1,5 +1,6 @@
 package com.ora.blockchain.service.mybatis.mapper;
 
+import com.ora.blockchain.constants.TxStatus;
 import com.ora.blockchain.mybatis.entity.block.EthereumBlock;
 import com.ora.blockchain.mybatis.entity.eth.EthereumTransaction;
 import com.ora.blockchain.mybatis.entity.wallet.ERC20Sum;
@@ -15,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -119,5 +121,15 @@ public class EthereumTransactionMapperTest {
         for(EthereumBlock block:list){
             System.out.println(block.getHash());
         }
+    }
+
+    @Test
+    public void testQueryTimeoutTx(){
+        Calendar.getInstance().set(2018,9,3);
+        Date date = new Date();
+        date.setTime( Calendar.getInstance().getTimeInMillis());
+        System.out.println(date);
+        txMapper.queryTimeoutTxBySentAndIsolate("coin_eth", TxStatus.SENT.ordinal(),
+                TxStatus.ISOLATED.ordinal(),date);
     }
 }
