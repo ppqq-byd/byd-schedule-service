@@ -333,8 +333,13 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     }
 
     private void processSendedAndTimeoutTx(){
+        //TODO SQL去过滤 必须是我们自己的发送方
         List<EthereumTransaction> txList = this.txMapper.
                 queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.SENT.ordinal());
+
+        List<EthereumTransaction> isolateTxList = this.txMapper.
+                queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.ISOLATED.ordinal());
+        txList.addAll(isolateTxList);
 
         for(EthereumTransaction tx:txList){
             //如果有发送完后未被确认的交易超过10分钟 则超时了 要查看链上是否已经执行过并且执行失败
@@ -344,19 +349,19 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                     TransactionReceipt receipt =
                             getWeb3Client().getTransactionReceiptByTxhash(tx.getTxId());
                     //如果交易执行状态返回为null 跳过不处理
-                    if(StringUtils.isEmpty(receipt.getStatus()))continue;
+                    if(receipt==null||StringUtils.isEmpty(receipt.getStatus()))continue;
                     //执行失败 减去花掉的手续费
-                    if("0x0".equals(receipt.getStatus())){
+                    if("0x0".equals(receipt.getStatus())){//TODO 常量
                         WalletAccountBalance account =
                                 this.balanceMapper.findBalanceByContractAddressAndCoinType(CoinType.getDatabase(getCoinType()),
                                         getCoinType(),tx.getContractAddress(),tx.getFrom());
 
                         BigInteger gasCost = receipt.getGasUsed().multiply(tx.getGasPrice());
 
-                        account.setTotalBalance(account.getTotalBalance().subtract(gasCost).add(tx.getValue()));
+                        account.setTotalBalance(account.getTotalBalance().subtract(gasCost));
 
                         account.setFrozenBalance(account.getFrozenBalance().subtract(tx.getValue()).subtract(
-                                tx.getGasPrice().multiply(tx.getGasLimit()==null?BigInteger.valueOf(0L):tx.getGasLimit())
+                                tx.getGasPrice().multiply(tx.getGasLimit())
                         ));
                         tx.setStatus(TxStatus.CHAINFAILED.ordinal());
                         txMapper.update(CoinType.getDatabase(getCoinType()),tx);
