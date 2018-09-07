@@ -91,6 +91,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     @Override
     public boolean verifyIsolatedBlock(Long needScanBlock) throws Exception {
 
+        if(needScanBlock==0)return false;
         //现有数据库中最后一个块
         EthereumBlock dbBlock = blockMapper.
                 queryEthBlockByBlockNumber(CoinType.getDatabase(getCoinType()),(needScanBlock-1));
