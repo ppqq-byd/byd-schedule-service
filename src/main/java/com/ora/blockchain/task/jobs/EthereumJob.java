@@ -29,7 +29,7 @@ public class EthereumJob implements Job {
         long start = System.currentTimeMillis();
 
         try {//6169721L 6269649L
-             ethBlockScanner.scanBlock(0L, CoinType.ETH.name());
+            ethBlockScanner.scanBlock(0L, CoinType.ETH.name());
         } catch (Exception e) {
             e.printStackTrace();
            log.error("Eth job failed:"+e.getMessage(),e);
