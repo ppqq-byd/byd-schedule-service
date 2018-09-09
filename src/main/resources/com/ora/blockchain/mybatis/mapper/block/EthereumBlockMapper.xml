@@ -46,7 +46,7 @@
     </insert>
 
     <select id="queryMaxBlockInDb" resultType="Long">
-        SELECT  IFNULL(MAX(block_number),0 ) FROM ${database}.block
+        SELECT  IFNULL(MAX(block_number),-1 ) FROM ${database}.block
     </select>
 
     <select id="queryMinBlockInDb" resultType="Long">
