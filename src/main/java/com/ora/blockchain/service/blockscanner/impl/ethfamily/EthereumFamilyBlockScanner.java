@@ -80,7 +80,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     @Override
     public Long getNeedScanBlockHeight(Long initBlockHeight){
         long dbBlockHeight = blockMapper.queryMaxBlockInDb(CoinType.getDatabase(getCoinType()));
-        if(dbBlockHeight==0){
+        if(dbBlockHeight==-1){
             dbBlockHeight = initBlockHeight;
         }else {
             dbBlockHeight = dbBlockHeight + 1;
@@ -94,10 +94,10 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
         if(needScanBlock==0)return false;
         //现有数据库中最后一个块
         EthereumBlock dbBlock = blockMapper.
-                queryEthBlockByBlockNumber(CoinType.getDatabase(getCoinType()),(needScanBlock-1));
+                queryEthBlockByBlockNumber(CoinType.getDatabase(getCoinType()),(needScanBlock));
 
         //与节点中的对比
-        EthBlock block = getWeb3Client().getBlockInfoByNumber(needScanBlock-2);
+        EthBlock block = getWeb3Client().getBlockInfoByNumber(needScanBlock-1);
 
 
         if(dbBlock!=null&&!dbBlock.getParentHash().equals(block.getBlock().getHash())){
