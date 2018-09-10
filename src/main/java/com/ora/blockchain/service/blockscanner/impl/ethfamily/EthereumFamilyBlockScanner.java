@@ -125,11 +125,17 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             EthereumTransaction tx = it.next();
             tx.setStatus(TxStatus.CONFIRMING.ordinal());
             tx.setIsDelete(0);
-            boolean isDelete = false;
-            for(EthereumTransaction dbTx:inDbTx){
-                if(dbTx.getIsSender()==null){
+            if(tx.getIsSender()==null){
+                WalletAccountBind wab =
+                        accountBindMapper.queryEthWalletByAddress(tx.getFrom(),this.getCoinType());
+                if(wab!=null){
+                    tx.setIsSender(1);
+                }else{
                     tx.setIsSender(0);
                 }
+            }
+            boolean isDelete = false;
+            for(EthereumTransaction dbTx:inDbTx){
 
                 if(dbTx.getTxId().equals(tx.getTxId())){
                     tx.setIsSender(1);//如果是需要更新的tx 说明数据库已记录 则是提币的tx

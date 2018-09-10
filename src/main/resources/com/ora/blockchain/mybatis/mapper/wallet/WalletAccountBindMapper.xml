@@ -108,5 +108,11 @@
         </foreach>
     </select>
 
+    <select id="queryEthWalletByAddress" resultMap="AllColumnMap">
+        SELECT <include refid="all_column"/> FROM ${@com.ora.blockchain.constants.Constants@DATABASE_COMMON}.
+        wallet_account_bind WHERE address =#{address} and coin_type = #{coinType}
+
+    </select>
+
 </mapper>
 
