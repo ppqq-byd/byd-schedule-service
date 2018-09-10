@@ -49,7 +49,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     @Autowired
     private WalletAccountBalanceMapper balanceMapper;
 
-    private static final int DEPTH = 5;
+
 
     protected abstract String getCoinType();
 
@@ -319,7 +319,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
         txList.addAll(isolatedTxList);
 
         for(EthereumTransaction tx:txList){
-            if(lastedBlock - tx.getBlockHeight()>=DEPTH){
+            if(lastedBlock - tx.getBlockHeight()>=Constants.ETH_THRESHOLD){
                 if(!StringUtils.isEmpty(tx.getContractAddress())){//处理token的逻辑
                     //token账户
                     processToken(tx);
