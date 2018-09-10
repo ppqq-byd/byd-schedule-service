@@ -26,6 +26,10 @@ import java.util.List;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IRpcServiceTest {
     @Resource
+    @Qualifier("dogeRpcServiceImpl")
+    private IRpcService dogeService;
+
+    @Resource
     @Qualifier("darkRpcServiceImpl")
     private IRpcService rpcService;
 
@@ -37,5 +41,14 @@ public class IRpcServiceTest {
     public void testGetTransactionList() {
         List<Transaction> transList = btcRpcService.getTransactionList("0000000000000000002ad091cfbf703e1d44ae118cdd93d66624433fd4bd3c25");
         System.out.println(transList.size());
+    }
+
+    @Test
+    public void testDogeGetTransList(){
+        List<Transaction> transList = dogeService.getTransactionList("793136f1e8a22c9823a9dbb25207446b86bd4c2bf153c86bc3d6e751ef019c77");
+
+        for(Transaction t:transList){
+            System.out.println(t);
+        }
     }
 }

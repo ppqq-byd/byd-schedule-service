@@ -2,8 +2,6 @@ package com.ora.blockchain.service.blockscanner.impl;
 
 
 import com.ora.blockchain.constants.CoinType;
-import com.ora.blockchain.mybatis.entity.common.ScanCursor;
-import com.ora.blockchain.mybatis.mapper.common.ScanCursorMapper;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,6 @@ import java.io.IOException;
 @Service
 public abstract class BlockScanner implements IBlockScanner {
 
-    @Autowired
-    private ScanCursorMapper scanCursorMapper;
 
     /**
      * 递归回溯 直到分叉前
@@ -26,7 +22,6 @@ public abstract class BlockScanner implements IBlockScanner {
     private void recursionProcessErrorBlock(Long needScanBlock,String coinType) throws Exception {
         //因为这一个块是孤立块 所以删除该块 并且更改这个块所属的tx相应的状态
         deleteBlockAndUpdateTx(needScanBlock);
-        scanCursorMapper.deleteCursorByBlockNumber(CoinType.getDatabase(coinType),needScanBlock);
 
         if(verifyIsolatedBlock(needScanBlock)){
 
@@ -38,8 +33,9 @@ public abstract class BlockScanner implements IBlockScanner {
     @Override
     @Transactional
     public void scanBlock(Long initBlockHeight,String coinType) throws Exception {
+        log.info("*********************************scanBlock:"+coinType);
         Long needScanBlock = getNeedScanBlockHeight(initBlockHeight);
-        System.out.println("*********************************needScanBlock:"+needScanBlock);
+        log.info("*********************************needScanBlock:"+needScanBlock);
         //如果已经是最新块了 那么这次不用扫描了
         if(isNeedScanHeightLasted(needScanBlock)){
             return;
@@ -52,27 +48,17 @@ public abstract class BlockScanner implements IBlockScanner {
 
         //将块信息和tx同步到数据库
         syncBlockAndTx(needScanBlock);
-        recordCursor(needScanBlock,coinType);
-
     }
 
-    private void recordCursor(Long blockHeight,String coinType){
-        ScanCursor cursor = new ScanCursor();
-        cursor.setCurrentBlock(blockHeight);
-        cursor.setSyncStatus(0);
-        scanCursorMapper.insert(cursor,CoinType.getDatabase(coinType));
-    }
+
 
     @Override
     @Transactional
     public void updateAccount(String coinType) {
-        Long blockHeight = getNeedScanAccountBlanceBlock(CoinType.getDatabase(coinType));
-        if(blockHeight==null)return;
-        updateAccountBalanceByConfirmTx(blockHeight);
-        ScanCursor scanCursor = new ScanCursor();
-        scanCursor.setSyncStatus(1);
-        scanCursor.setCurrentBlock(blockHeight);
-        scanCursorMapper.update(scanCursor,CoinType.getDatabase(coinType));
+
+        updateAccountBalanceByConfirmTx();
+
+
     }
 
     /**
@@ -112,15 +98,9 @@ public abstract class BlockScanner implements IBlockScanner {
 
     /**
      * 更新账户余额的数值
-     * @param lastedBlock
      */
-    public abstract void updateAccountBalanceByConfirmTx(Long lastedBlock);
+    public abstract void updateAccountBalanceByConfirmTx();
 
-    /**
-     * 获取最新的块高度
-     * coinType 币种
-     * @return
-     */
-    public abstract Long getNeedScanAccountBlanceBlock(String coinType);
+
 
 }

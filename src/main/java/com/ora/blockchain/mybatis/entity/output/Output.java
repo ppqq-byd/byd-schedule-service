@@ -11,9 +11,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Output {
-    public static final Integer STATUS_UNSPENT = 1;
-    public static final Integer STATUS_SPENT = 0;
-
     private Long Confirmations;
     private Long height;
     private Long walletAccountId;

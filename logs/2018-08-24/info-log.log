@@ -1,0 +1,69 @@
+2018-08-24 15:01:42,551 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-24 15:01:54,314 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - Starting IBlockTest on pc3022 with PID 5503 (started by root in /data/blockchain/work/byd-schedule-service)
+2018-08-24 15:01:54,316 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - No active profile set, falling back to default profiles: default
+2018-08-24 15:01:59,567 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-24 15:02:11,597 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-24 15:02:11,598 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-24 15:02:11,658 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-24 15:05:57,967 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-24 15:06:09,184 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - Starting IBlockTest on pc3022 with PID 6011 (started by root in /data/blockchain/work/byd-schedule-service)
+2018-08-24 15:06:09,185 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - No active profile set, falling back to default profiles: default
+2018-08-24 15:06:11,108 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-24 15:06:50,208 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-24 15:07:02,063 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - Starting IBlockTest on pc3022 with PID 6148 (started by root in /data/blockchain/work/byd-schedule-service)
+2018-08-24 15:07:02,065 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - No active profile set, falling back to default profiles: default
+2018-08-24 15:07:03,441 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-24 15:07:15,473 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-24 15:07:15,473 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-24 15:07:15,515 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-24 15:07:15,949 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler meta-data: Quartz Scheduler (v2.3.0) 'schedulerFactoryBean' with instanceId 'pc30221535094435456'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 5 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2018-08-24 15:07:15,949 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler 'schedulerFactoryBean' initialized from an externally provided properties instance.
+2018-08-24 15:07:15,949 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler version: 2.3.0
+2018-08-24 15:07:15,949 [main] [INFO ] org.quartz.core.QuartzScheduler - JobFactory set to: com.ora.blockchain.task.QuartzConfig$AutowiringSpringBeanJobFactory@1e7ab390
+2018-08-24 15:07:19,140 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_pc30221535094435456 started.
+2018-08-24 15:07:19,153 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2018-08-24 15:07:19,172 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found {0} custom documentation plugin(s)
+2018-08-24 15:07:19,180 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2018-08-24 15:07:19,197 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - Started IBlockTest in 53.454 seconds (JVM running for 54.068)
+2018-08-24 15:07:19,575 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 28
+2018-08-24 15:07:19,651 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_pc30221535094435456 paused.
+2018-08-24 15:07:19,654 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_pc30221535094435456 shutting down.
+2018-08-24 15:07:19,655 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_pc30221535094435456 paused.
+2018-08-24 15:07:19,655 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_pc30221535094435456 shutdown complete.
+2018-08-24 15:07:19,658 [Thread-5] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} closed
+2018-08-24 15:10:02,370 [background-preinit] [INFO ] org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.3.5.Final
+2018-08-24 15:10:14,187 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - Starting IBlockTest on pc3022 with PID 6442 (started by root in /data/blockchain/work/byd-schedule-service)
+2018-08-24 15:10:14,713 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - No active profile set, falling back to default profiles: default
+2018-08-24 15:10:16,220 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Using default implementation for ThreadExecutor
+2018-08-24 15:10:28,252 [main] [INFO ] org.quartz.core.SchedulerSignalerImpl - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2018-08-24 15:10:28,253 [main] [INFO ] org.quartz.core.QuartzScheduler - Quartz Scheduler v.2.3.0 created.
+2018-08-24 15:10:28,298 [main] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} inited
+2018-08-24 15:10:28,707 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler meta-data: Quartz Scheduler (v2.3.0) 'schedulerFactoryBean' with instanceId 'pc30221535094628235'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 5 threads.
+  Using job-store 'org.springframework.scheduling.quartz.LocalDataSourceJobStore' - which supports persistence. and is clustered.
+
+2018-08-24 15:10:28,707 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler 'schedulerFactoryBean' initialized from an externally provided properties instance.
+2018-08-24 15:10:28,707 [main] [INFO ] org.quartz.impl.StdSchedulerFactory - Quartz scheduler version: 2.3.0
+2018-08-24 15:10:28,707 [main] [INFO ] org.quartz.core.QuartzScheduler - JobFactory set to: com.ora.blockchain.task.QuartzConfig$AutowiringSpringBeanJobFactory@625d9132
+2018-08-24 15:10:30,490 [main] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_pc30221535094628235 started.
+2018-08-24 15:10:30,499 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Context refreshed
+2018-08-24 15:10:30,514 [main] [INFO ] springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper - Found {0} custom documentation plugin(s)
+2018-08-24 15:10:30,520 [main] [INFO ] springfox.documentation.spring.web.scanners.ApiListingReferenceScanner - Scanning for api listing references
+2018-08-24 15:10:30,536 [main] [INFO ] com.ora.blockchain.service.block.IBlockTest - Started IBlockTest in 52.663 seconds (JVM running for 53.33)
+2018-08-24 15:10:30,778 [main] [INFO ] com.ora.blockchain.service.rpc.impl.RpcServiceImpl - getTransactions spent : 25
+2018-08-24 15:10:30,818 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_pc30221535094628235 paused.
+2018-08-24 15:10:30,823 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_pc30221535094628235 shutting down.
+2018-08-24 15:10:30,823 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_pc30221535094628235 paused.
+2018-08-24 15:10:30,824 [Thread-5] [INFO ] org.quartz.core.QuartzScheduler - Scheduler schedulerFactoryBean_$_pc30221535094628235 shutdown complete.
+2018-08-24 15:10:30,826 [Thread-5] [INFO ] com.alibaba.druid.pool.DruidDataSource - {dataSource-1} closed

@@ -89,17 +89,6 @@ CREATE TABLE `output` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Table structure for scancursor
--- ----------------------------
-DROP TABLE IF EXISTS `scancursor`;
-CREATE TABLE `scancursor` (
-  `id` bigint(32) NOT NULL AUTO_INCREMENT,
-  `current_block` bigint(64) DEFAULT NULL,
-  `sync_status` int(2) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
--- ----------------------------
 -- Table structure for transaction
 -- ----------------------------
 DROP TABLE IF EXISTS `transaction`;
@@ -113,8 +102,10 @@ CREATE TABLE `transaction` (
   `height` bigint(20) DEFAULT NULL,
   `time` bigint(20) DEFAULT NULL,
   `block_hash` char(64) DEFAULT NULL,
+  `coinbase` tinyint(3) NOT NULL DEFAULT '0' COMMENT '0：非coinbase交易，1：coinbase交易',
   `block_time` bigint(20) DEFAULT NULL,
-  `trans_status` tinyint(3) NOT NULL COMMENT '1.sent,2.packed',
+  `trans_dire` tinyint(3) NOT NULL COMMENT '0:INTERNAL,1:INPUT,2:OUTPUT',
+  `trans_status` tinyint(3) NOT NULL COMMENT '0:SENDING,1:SENT,2:CONFIRMING,3:COMPLETE,4:ISOLATED,5:ISOLATEDCONRIMING,6:CHAINFAILED',
   `status` tinyint(3) NOT NULL DEFAULT '1' COMMENT '0:无效,1:有效',
   `create_ts` datetime DEFAULT NULL,
   `update_ts` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

@@ -10,7 +10,9 @@
         <result column="block_hash" property="blockHash"/>
         <result column="value" property="value"/>
         <result column="gas_price" property="gasPrice"/>
+        <result column="gas_limit" property="gasLimit"/>
         <result column="gas_used" property="gasUsed"/>
+        <result column="is_sender" property="isSender"/>
         <result column="nonce" property="nonce"/>
         <result column="input" property="input"/>
         <result column="contract_address" property="contractAddress"/>
@@ -26,12 +28,14 @@
         `block_hash`,
         `value`,
         `gas_price`,
+        `gas_limit`,
         `gas_used`,
         `nonce`,
          `input`,
          `status`,
          `is_delete`,
          `contract_address`,
+        `is_sender`,
         `create_ts`,
         `update_ts`
     </sql>
@@ -45,16 +49,19 @@
         `block_hash`,
         `value`,
         `gas_price`,
+        `gas_limit`,
         `gas_used`,
           `input`,
         `nonce`,
          `status`,
          `is_delete`,
+        `is_sender``,
          `contract_address`)
         VALUES (#{pojo.id}, #{pojo.txId}, #{pojo.from}, #{pojo.to},
             #{pojo.blockHeight}, #{pojo.blockHash},#{pojo.value}, #{pojo.gasPrice},
-            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce},
-            #{pojo.status},#{pojo.isDelete},#{pojo.contractAddress})
+        #{pojo.gasLimit},
+        #{pojo.gasUsed},#{pojo.input},#{pojo.nonce},
+            #{pojo.status},#{pojo.isDelete},#{pojo.isSender},#{pojo.contractAddress})
     </insert>
 
     <insert id="insertTxList">
@@ -66,19 +73,21 @@
         `block_hash`,
         `value`,
         `gas_price`,
+        `gas_limit`,
         `gas_used`,
         `input`,
         `nonce`,
         `status`,
         `is_delete`,
+        `is_sender`,
         `contract_address`
         )
         VALUES
         <foreach collection="txList" item="pojo" index="index" separator=",">
             (
             #{pojo.txId}, #{pojo.from}, #{pojo.to},
-            #{pojo.blockHeight}, #{pojo.blockHash},#{pojo.value}, #{pojo.gasPrice},
-            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce},#{pojo.status},#{pojo.isDelete},
+            #{pojo.blockHeight}, #{pojo.blockHash},#{pojo.value}, #{pojo.gasPrice},#{pojo.gasLimit},
+            #{pojo.gasUsed},#{pojo.input},#{pojo.nonce},#{pojo.status},#{pojo.isDelete},#{pojo.isSender},
             #{pojo.contractAddress}
             )
         </foreach>
@@ -89,15 +98,36 @@
         SELECT  IFNULL(MAX(block_height),0 ) FROM ${database}.tx_ethereum
     </select>
 
-    <update id="updateTransacion">
+    <update id="updateTransacionIsolate">
         UPDATE ${database}.tx_ethereum
         <set>
-            `block_hash` = #{blockHash}
+            `block_hash` = #{blockHash},
+            `status`=#{txStatus}
 
         </set>
         WHERE block_height = #{blockHeight}
     </update>
+    <update id="update">
 
+            update ${database}.tx_ethereum
+            <set>
+                status=#{item.status},
+                block_height = #{item.blockHeight},
+                block_hash = #{item.blockHash},
+                gas_price = #{item.gasPrice},
+                gas_limit = #{item.gasLimit},
+                gas_used = #{item.gasUsed},
+                value = #{item.value},
+                input = #{item.input},
+                nonce = #{item.nonce},
+                is_sender=#{item.isSender},
+                update_ts = #{item.updateTs},
+                contract_address=#{item.contractAddress},
+                status=#{item.status}
+            </set>
+            where tx_id = #{item.txId}
+
+    </update>
     <select id="queryIsolatedBlockTx" resultMap="AllColumnMap">
         SELECT  <include refid="all_column"/> FROM ${database}.tx_ethereum
         WHERE block_hash is NULL
@@ -119,12 +149,15 @@
                 block_height = #{item.blockHeight},
                 block_hash = #{item.blockHash},
                 gas_price = #{item.gasPrice},
+                gas_limit = #{item.gasLimit},
                 gas_used = #{item.gasUsed},
                 value = #{item.value},
                 input = #{item.input},
                 nonce = #{item.nonce},
+                is_sender=#{item.isSender},
                 update_ts = #{item.updateTs},
-                contract_address=#{item.contractAddress}
+                contract_address=#{item.contractAddress},
+                status=#{item.status}
             </set>
             where tx_id = #{item.txId}
         </foreach>
@@ -150,6 +183,15 @@
         WHERE block_height&lt;= (SELECT MAX(block_number) FROM coin_eth.block) -12
 
     </select>
+    <select id="queryTxByStatus" resultMap="AllColumnMap">
+        SELECT  <include refid="all_column"/> FROM ${database}.tx_ethereum
+        WHERE status=#{status}
 
+    </select>
 
+    <select id="queryTimeoutTxBySentAndIsolate" resultMap="AllColumnMap">
+        SELECT  <include refid="all_column"/> FROM ${database}.tx_ethereum
+        WHERE (status=#{status1} or status=#{status2}) and create_ts &gt;=#{beginTime}
+
+    </select>
 </mapper>

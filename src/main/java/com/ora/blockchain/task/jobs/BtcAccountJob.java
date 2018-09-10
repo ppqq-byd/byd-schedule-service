@@ -16,11 +16,9 @@ import javax.annotation.Resource;
 
 @Slf4j
 @Component
-@ScheduledJob(name = "btcAccountJob", cronExp = "0 */2 * * * ?")
+@ScheduledJob(name = "btcAccountJob", cronExp = "*/30 * * * * ?")
 @DisallowConcurrentExecution
 public class BtcAccountJob implements Job {
-    private static final Long BTC_BLOCK_HEIGHT = 536052L;
-
     @Resource
     @Qualifier("btcBlockScanner")
     private IBlockScanner scanner;

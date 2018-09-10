@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 
 @Component
 @DisallowConcurrentExecution
-@ScheduledJob(name = "ethJob", cronExp = "0/8 * * * * ?")
+@ScheduledJob(name = "ethJob", cronExp = "0/3 * * * * ?")
 @Slf4j
 public class EthereumJob implements Job {
 
@@ -25,16 +25,16 @@ public class EthereumJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        System.out.println("********************Eth Job start......************************");
+        log.info("********************Eth Job start......************************");
         long start = System.currentTimeMillis();
-        try {
-            ethBlockScanner.scanBlock(6169721L, CoinType.ETH.name());
+
+        try {//6169721L 6269649L
+            ethBlockScanner.scanBlock(0L, CoinType.ETH.name());
         } catch (Exception e) {
             e.printStackTrace();
            log.error("Eth job failed:"+e.getMessage(),e);
         }
         long end = System.currentTimeMillis();
-        System.out.println(String.format("*********************Eth Job end(spent : %s)*****************************", end - start));
-
+        log.info(String.format("*********************Eth Job end(spent : %s)*****************************", end - start));
     }
 }

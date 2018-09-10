@@ -57,39 +57,20 @@ public class IBlockTest {
     @Qualifier("bcdBlockScanner")
     private IBlockScanner bcdScanner;
 
-    private String database;
-    private Block block;
+    @Qualifier("dogeBlockScanner")
+    private IBlockScanner dogeScanner;
 
-    @Before
-    public void init() {
-        database = "dark";
-        block = new Block();
-        block.setBlockHash("000000000000001ee6feea1aef4caf767222a18de463b6e13e71c639f3c1ed2f");
-        block.setPreviousBlockHash("000000000000000ca28709fc6f6000ba998b06d55c6b1e7aea21e0435fb62eb8");
-        block.setNextBlockHash("0000000000000029ebaf37f9bdefbe8ba5e3e3294c5bfd4e8cada0c313e3474f");
-        block.setMerkleroot("d67d9a7afbb09e6b48668af9e1abac6291878c42862d02481d55ebf39459be0c");
-        block.setChainwork("0000000000000000000000000000000000000000000008e803e5fe7ebca6865c");
-        block.setSize(2431L);
-        block.setHeight(904833L);
-        block.setVersion(536870916L);
-        block.setTime(1531815344L);
-        block.setMedianTime(1531814791L);
-        block.setBits("194bf2e2");
-        block.setNonce(3993790313L);
-        block.setDifficulty("56549991.12853394");
-    }
+    @Resource
+    @Qualifier("bchBlockScanner")
+    private IBlockScanner bchScanner;
 
-    @Test
-    public void testBtcScanner(){
-        for(int i=0 ;i<5 ;i++){
-            try {
-                btcScanner.scanBlock(536051L-1,CoinType.BTC.name());
-                btcScanner.updateAccount(CoinType.BTC.name());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    @Resource
+    @Qualifier("btgBlockScanner")
+    private IBlockScanner btgScanner;
+
+    @Resource
+    @Qualifier("ltcBlockScanner")
+    private IBlockScanner ltcScanner;
 
     @Test
     public void testDarkScanner(){
@@ -116,9 +97,24 @@ public class IBlockTest {
         btcBlockService.deleteByHeight(CoinType.getDatabase(CoinType.BTC.name()),536051L);
     }
 
-    @Test
-    public void queryBlock(){
-        Block block = btcBlockService.queryLastBlock("coin_btc");
-        System.out.println(block.getBlockHash());
+    public void testScanner() throws Exception{
+        long start = System.currentTimeMillis();
+        for(int i=0;i<1;i++){
+            btcScanner.scanBlock(10287L,CoinType.BTC.name());
+            btcScanner.updateAccount(CoinType.BTC.name());
+//            btgScanner.scanBlock(545231L,CoinType.BTG.name());
+//            btgScanner.updateAccount(CoinType.BTG.name());
+//            dogeScanner.scanBlock(35550L,CoinType.DOGE.name());
+//            dogeScanner.updateAccount(CoinType.DOGE.name());
+//            darkScanner.scanBlock(932080L,CoinType.DARK.name());
+//            darkScanner.updateAccount(CoinType.DARK.name());
+
+//            ltcScanner.scanBlock(932015L,CoinType.LTC.name());
+//            ltcScanner.updateAccount(CoinType.LTC.name());
+//            bchScanner.scanBlock(546414L,CoinType.BCH.name());
+//            bchScanner.updateAccount(CoinType.BCH.name());
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("---------------------------"+(end-start)+"----------------------------------------------");
     }
 }

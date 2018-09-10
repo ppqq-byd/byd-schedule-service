@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ora.blockchain.mybatis.mapper.output.OutputMapper">
-    <insert id="insertOutput">
-    insert into ${database}.output (`coinbase`,`wallet_account_id`,`transaction_txid`, `value`, `value_sat`, `n`, `script_pub_key_asm`, `script_pub_key_hex`, `script_pub_key_req_sigs`, `script_pub_key_type`, `script_pub_key_addresses`,`create_ts`)
-    values (#{pojo.coinbase},#{pojo.walletAccountId},#{pojo.transactionTxid}, #{pojo.value}, #{pojo.valueSat}, #{pojo.n}, #{pojo.scriptPubKeyAsm}, #{pojo.scriptPubKeyHex}, #{pojo.scriptPubKeyReqSigs}, #{pojo.scriptPubKeyType}, #{pojo.scriptPubKeyAddresses},now())
-  </insert>
+
     <insert id="insertOutputList">
         insert into ${database}.output (`coinbase`,`wallet_account_id`,`transaction_txid`, `value`, `value_sat`, `n`,
         `script_pub_key_asm`, `script_pub_key_hex`, `script_pub_key_req_sigs`, `script_pub_key_type`,
-        `script_pub_key_addresses`,`create_ts`)
+        `script_pub_key_addresses`,`status`,`create_ts`)
         VALUES
         <foreach collection="outputList" item="pojo" index="index" separator=",">
             (#{pojo.coinbase},#{pojo.walletAccountId},#{pojo.transactionTxid}, #{pojo.value}, #{pojo.valueSat}, #{pojo.n},
             #{pojo.scriptPubKeyAsm}, #{pojo.scriptPubKeyHex}, #{pojo.scriptPubKeyReqSigs}, #{pojo.scriptPubKeyType},
-            #{pojo.scriptPubKeyAddresses},now())
+            #{pojo.scriptPubKeyAddresses},#{pojo.status},now())
         </foreach>
     </insert>
+    <update id="updateOutputByTxid">
+        UPDATE ${database}.output SET status = #{status} WHERE transaction_txid IN
+        <foreach item="item" index="index" collection="txidList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
     <update id="updateOutput">
     UPDATE ${database}.output SET status = #{status} WHERE transaction_txid = #{transactionTxid} AND n = #{n}
   </update>
@@ -24,20 +27,8 @@
           UPDATE ${database}.output SET `status` = #{status} WHERE transaction_txid = #{item.transactionTxid} AND n = #{item.n}
         </foreach>
     </update>
-    <update id="updateWalletAccountId">
-    UPDATE ${database}.output SET wallet_account_id = #{walletAccountId} WHERE transaction_txid = #{transactionTxid} and n = #{n}
-  </update>
-    <select id="queryOutputByWalletAccount" resultType="com.ora.blockchain.mybatis.entity.output.Output">
-      SELECT script_pub_key_addresses AS scriptPubKeyAddresses, transaction_txid AS transactionTxid,n FROM ${database}.output WHERE wallet_account_id IS NULL
-  </select>
     <select id="queryOutputByPrimary" resultType="com.ora.blockchain.mybatis.entity.output.Output">
         SELECT wallet_account_id AS walletAccountId,script_pub_key_addresses AS scriptPubKeyAddresses, transaction_txid AS transactionTxid,n FROM ${database}.output WHERE transaction_txid = #{transactionTxid} AND n = #{n} LIMIT 1
-    </select>
-    <select id="queryUTXOList" resultType="com.ora.blockchain.mybatis.entity.output.Output">
-        SELECT 0 AS confirmations,t.height AS height, t.block_hash AS blockHash, o.script_pub_key_addresses AS address,o.transaction_txid AS txid,o.n AS outputIndex,o.script_pub_key_hex AS script ,o.`value`,o.value_sat AS valueSat, `coinbase` AS coinbase
-        FROM ${database}.`transaction` t,${database}.output o
-        WHERE o.transaction_txid = t.txid AND t.trans_status = 2 AND o.status = 1
-        AND o.wallet_account_id = #{walletAccountId} AND t.block_hash IS NOT NULL
     </select>
     <select id="queryAccountByTransactionTxid" resultType="long">
         SELECT wallet_account_id FROM ${database}.output WHERE wallet_account_id > 0 AND transaction_txid IN
@@ -45,16 +36,18 @@
             #{item}
         </foreach>
     </select>
+    <select id="queryAddressByTransactionTxid" resultType="string">
+        SELECT script_pub_key_addresses FROM ${database}.output WHERE wallet_account_id > 0 AND transaction_txid IN
+        <foreach item="item" index="index" collection="txidList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <select id="queryTotalBalance" resultType="com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance">
         SELECT o.wallet_account_id AS accountId,o.value_sat AS totalBalance FROM ${database}.`transaction` t,${database}.output o
         WHERE o.transaction_txid = t.txid
-        AND t.trans_status = 2
+        AND t.trans_status = 3
         AND o.status = 1
         AND t.block_hash IS NOT NULL
-        AND
-        (
-        <![CDATA[(t.height <= #{nHeight} AND o.coinbase = 0) OR (t.height <= #{cHeight} AND o.coinbase = 1)]]>
-        )
         AND o.wallet_account_id IN
         <foreach item="item" index="index" collection="accountList" open="(" separator="," close=")">
             #{item}
@@ -63,7 +56,7 @@
         SELECT o.wallet_account_id AS accountId,o.value_sat AS totalBalance FROM ${database}.`transaction` t,${database}.output o
         WHERE o.transaction_txid = t.txid
         AND t.trans_status = 1
-        AND o.status = 0
+        AND o.status = 2
         AND t.block_hash IS NULL
         AND o.wallet_account_id IN
         <foreach item="item" index="index" collection="accountList" open="(" separator="," close=")">

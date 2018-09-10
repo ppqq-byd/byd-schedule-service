@@ -2,7 +2,7 @@
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
 
 
-    <property name="log_dir" value="./logs" />
+    <property name="log_dir" value="./schedulelogs" />
     <!-- 日志最大的历史 30天 -->
     <property name="maxHistory" value="30"/>
 
@@ -148,7 +148,7 @@
     <logger name="org.apache" level="warn"/>
     <logger name="ch.qos.logback" level="warn"/>
 
-    <root level="DEBUG">
+    <root level="INFO">
         <!-- 控制台输出 -->
         <appender-ref ref="STDOUT" />
         <!-- 文件输出 -->

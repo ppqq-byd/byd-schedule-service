@@ -92,7 +92,7 @@ public interface IRpcService {
                     if (vout.has("value"))
                         output.setValue(vout.get("value").doubleValue());
                     if (vout.has("valueSat"))
-                        output.setValueSat(new BigInteger(vout.get("valueSat").textValue()));
+                        output.setValueSat(new BigInteger(vout.get("valueSat").longValue()+""));//for dark
                     if (vout.has("n"))
                         output.setN(vout.get("n").intValue());
                     if (vout.has("scriptPubKey")) {
@@ -109,13 +109,14 @@ public interface IRpcService {
                             ArrayNode recipientAddressNodes = (ArrayNode) scriptPubKey.get("addresses");
                             String addresses = "";
                             for (JsonNode addr : recipientAddressNodes) {
-                                addresses = addresses + addr.textValue() + ",";
+                                addresses = addresses + addr.textValue().replace("bitcoincash:","") + ",";
                             }
                             output.setScriptPubKeyAddresses(addresses.substring(0, addresses.length() - 1));
                         }
                     }
                     outputList.add(output);
                 }
+                transaction.setCoinbase(coinbaseTransaction ? 1 : 0);
                 transaction.setOutputList(outputList);
             }
             return transaction;
@@ -127,18 +128,30 @@ public interface IRpcService {
             return null;
         }
         Block block = new Block();
-        block.setBlockHash(node.get("hash").textValue());
-        block.setSize(node.get("size").longValue());
-        block.setHeight(node.get("height").longValue());
-        block.setVersion(node.get("version").longValue());
-        block.setMerkleroot(node.get("merkleroot").textValue());
-        block.setTime(node.get("time").longValue());
-        block.setMedianTime(node.get("mediantime").longValue());
-        block.setNonce(node.get("nonce").longValue());
-        block.setBits(node.get("bits").textValue());
-        block.setDifficulty(node.get("difficulty").doubleValue() + "");
-        block.setChainwork(node.get("chainwork").textValue());
-        block.setPreviousBlockHash(node.get("previousblockhash").textValue());
+        if(node.has("hash"))
+            block.setBlockHash(node.get("hash").textValue());
+        if(node.has("size"))
+            block.setSize(node.get("size").longValue());
+        if(node.has("height"))
+            block.setHeight(node.get("height").longValue());
+        if(node.has("version"))
+            block.setVersion(node.get("version").longValue());
+        if(node.has("merkleroot"))
+            block.setMerkleroot(node.get("merkleroot").textValue());
+        if(node.has("time"))
+            block.setTime(node.get("time").longValue());
+        if(node.has("mediantime"))
+            block.setMedianTime(node.get("mediantime").longValue());
+        if(node.has("nonce"))
+            block.setNonce(node.get("nonce").longValue());
+        if(node.has("bits"))
+            block.setBits(node.get("bits").textValue());
+        if(node.has("difficulty"))
+            block.setDifficulty(node.get("difficulty").doubleValue() + "");
+        if(node.has("chainwork"))
+            block.setChainwork(node.get("chainwork").textValue());
+        if(node.has("previousblockhash"))
+            block.setPreviousBlockHash(node.get("previousblockhash").textValue());
         if (node.has("nextblockhash"))
             block.setNextBlockHash(node.get("nextblockhash").textValue());
         if (node.has("tx")){

@@ -1,4 +1,4 @@
-logs/
+schedulelogs/
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 
