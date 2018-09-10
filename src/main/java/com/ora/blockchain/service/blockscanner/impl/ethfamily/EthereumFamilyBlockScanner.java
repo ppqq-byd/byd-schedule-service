@@ -127,6 +127,10 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             tx.setIsDelete(0);
             boolean isDelete = false;
             for(EthereumTransaction dbTx:inDbTx){
+                if(dbTx.getIsSender()==null){
+                    tx.setIsSender(0);
+                }
+
                 if(dbTx.getTxId().equals(tx.getTxId())){
                     tx.setIsSender(1);//如果是需要更新的tx 说明数据库已记录 则是提币的tx
                     if(tx.getStatus()==TxStatus.ISOLATED.ordinal()){//如果是孤立的 则处理成孤立确认
@@ -489,13 +493,6 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                             address.add(dbTx.getTo());
                             List<WalletAccountBind> accoutns = accountBindMapper.queryWalletByAddress(address);
                             if(accoutns.size()>0){
-                                Set<String> fromAccounts = new HashSet<>();
-                                fromAccounts.add(dbTx.getFrom());
-                                List<WalletAccountBind> fromBinds =
-                                        accountBindMapper.queryWalletByAddress(fromAccounts);
-                                if(fromBinds!=null&fromBinds.size()>0){
-                                    dbTx.setIsSender(1);
-                                }
                                 needAddList.add(dbTx);
                             }
 
