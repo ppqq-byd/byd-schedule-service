@@ -35,4 +35,6 @@ public interface Constants {
     String ORA_RPCEXCEPTION_MSG = "RPC接口调用异常";
 
     public static final String DATABASE_COMMON = "wallet_common";
+
+    public static final int ETH_THRESHOLD = 11;
 }
