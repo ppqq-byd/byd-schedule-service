@@ -313,7 +313,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
     }
 
-    private void processConrimingTx(Long lastedBlock){
+    private void processConfirmingTx(Long lastedBlock){
         List<EthereumTransaction> txList = this.txMapper.queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.CONFIRMING.ordinal());
         List<EthereumTransaction> isolatedTxList = this.txMapper.queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.ISOLATEDCONRIMING.ordinal());
         txList.addAll(isolatedTxList);
@@ -380,7 +380,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
         Long lastedBlock = this.blockMapper.queryMaxBlockInDb(CoinType.getDatabase(getCoinType()));
 
         //先处理 确认中和孤立再确认中这两个状态的tx
-        processConrimingTx(lastedBlock);
+        processConfirmingTx(lastedBlock);
 
         processSendedAndTimeoutTx();
 
@@ -489,8 +489,16 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                             address.add(dbTx.getTo());
                             List<WalletAccountBind> accoutns = accountBindMapper.queryWalletByAddress(address);
                             if(accoutns.size()>0){
+                                Set<String> fromAccounts = new HashSet<>();
+                                fromAccounts.add(dbTx.getFrom());
+                                List<WalletAccountBind> fromBinds =
+                                        accountBindMapper.queryWalletByAddress(fromAccounts);
+                                if(fromBinds!=null&fromBinds.size()>0){
+                                    dbTx.setIsSender(1);
+                                }
                                 needAddList.add(dbTx);
                             }
+
                         }else {
                             log.error("contract not support:"+tx.getHash());
                         }
