@@ -48,16 +48,21 @@ public abstract class BlockServiceImpl implements IBlockService {
         if (null == blockchainTrans || blockchainTrans.isEmpty() || null == addressSet || addressSet.isEmpty()) {
             return null;
         }
-
+        List<String> txidList = blockchainTrans.stream().flatMap((Transaction t)->t.getInputList().stream()).map(Input::getTxid).collect(Collectors.toList());
+        final List<String> transactionTxidList = new ArrayList<>();
+        if(null != txidList && !txidList.isEmpty()){
+            transactionTxidList.addAll(outputMapper.queryTransactionByTxid(database,txidList));
+        }
         List<Transaction> transList = new ArrayList<>();
         blockchainTrans.forEach((Transaction t) -> {
-            List<String> outputAddrList = t.getOutputList().stream().map(Output::getScriptPubKeyAddresses).collect(Collectors.toList());
-            List<String> inputAddrList = t.getInputList().stream().map(input -> {
-                Output output = outputMapper.queryOutputByPrimary(database, input.getTxid(), input.getVout());
-                return null == output ? null : output.getScriptPubKeyAddresses();
-            }).collect(Collectors.toList());
-            if (CollectionUtils.containsAny(addressSet, outputAddrList) || CollectionUtils.containsAny(addressSet, inputAddrList)) {
+            List<String> inputTxidList = t.getInputList().stream().map(Input::getTxid).collect(Collectors.toList());
+            if(CollectionUtils.containsAny(inputTxidList,transactionTxidList)){
                 transList.add(t);
+            }else{
+                List<String> outputAddrList = t.getOutputList().stream().map(Output::getScriptPubKeyAddresses).collect(Collectors.toList());
+                if(CollectionUtils.containsAny(addressSet,outputAddrList)){
+                    transList.add(t);
+                }
             }
         });
         return transList;
@@ -173,12 +178,12 @@ public abstract class BlockServiceImpl implements IBlockService {
                     outputMapper.updateOutput(database, OutputStatus.USING.ordinal(), input.getTxid(), input.getVout());
                 });
 
-                Collection<Long> accIdList = walletMap.values();
+                Collection<Long> accIdList = walletMap.values().stream().distinct().collect(Collectors.toList());
                 //删除找零用户
                 outputAccIdList = (List<Long>)CollectionUtils.removeAll(outputAccIdList,inputAccIdList);
 
                 //vin包含平台地址且vout不包含平台址，trans_dire为“内转外”
-                if(null != outputAccIdList && !outputAccIdList.isEmpty() && CollectionUtils.containsAny(accIdList,inputAccIdList) && !CollectionUtils.containsAny(accIdList,outputAccIdList)){
+                if((null == outputAccIdList || outputAccIdList.isEmpty()) && CollectionUtils.containsAny(accIdList,inputAccIdList)){
                     t.setTransDire(TxDireStatus.OUTPUT.ordinal());
                     //vin不包含平台地址且vout包含平台地址，trans_dire为“外转内”
                 }else if(null != outputAccIdList && !outputAccIdList.isEmpty() && !CollectionUtils.containsAny(accIdList,inputAccIdList) && CollectionUtils.containsAny(accIdList,outputAccIdList)){

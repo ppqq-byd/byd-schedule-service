@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
@@ -46,8 +47,9 @@ public abstract class RpcServiceImpl implements IRpcService {
             JsonNode transaction = getRpcRestTemplate().exchange("/", HttpMethod.POST, transactionRequestEntity, JsonNode.class).getBody().get("result");
             return transaction;
         } catch (HttpServerErrorException e) {
-            e.printStackTrace();
-            log.error("Failed to get transaction data" + e.getResponseBodyAsString());
+            String responseStr = e.getResponseBodyAsString();
+            String message = method + " failed:" + responseStr;
+            log.error(message);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Failed to extract transaction data", e);
@@ -75,7 +77,6 @@ public abstract class RpcServiceImpl implements IRpcService {
             return null;
 
         JsonNode res = rpcRequest("getblockhash",blockHeight);
-        System.out.println(null == res ? null : res.asText());
         return null == res ? null : res.asText();
     }
 

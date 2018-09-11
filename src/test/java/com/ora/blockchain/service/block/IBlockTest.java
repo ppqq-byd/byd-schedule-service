@@ -1,15 +1,11 @@
 package com.ora.blockchain.service.block;
 
 import com.ora.blockchain.constants.CoinType;
-import com.ora.blockchain.mybatis.entity.block.Block;
 import com.ora.blockchain.service.blockscanner.IBlockScanner;
-import com.ora.blockchain.service.rpc.IRpcService;
-import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,27 +20,6 @@ import javax.annotation.Resource;
 @Rollback
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class IBlockTest {
-    @Resource
-    @Qualifier("darkBlockServiceImpl")
-    private IBlockService darkBlockService;
-    @Resource
-    @Qualifier("darkRpcServiceImpl")
-    private IRpcService darkRpcService;
-
-    @Resource
-    @Qualifier("ltcBlockServiceImpl")
-    private IBlockService ltcBlockService;
-    @Resource
-    @Qualifier("ltcRpcServiceImpl")
-    private IRpcService ltcRpcService;
-
-    @Resource
-    @Qualifier("btcBlockServiceImpl")
-    private IBlockService btcBlockService;
-    @Resource
-    @Qualifier("btcRpcServiceImpl")
-    private IRpcService btcRpcService;
-
     @Resource
     @Qualifier("btcBlockScanner")
     private IBlockScanner btcScanner;
@@ -72,8 +47,8 @@ public class IBlockTest {
     @Test
     public void testScanner() throws Exception{
         long start = System.currentTimeMillis();
-        for(int i=0;i<1;i++){
-            btcScanner.scanBlock(10287L,CoinType.BTC.name());
+        for(int i=0;i<100;i++){
+            btcScanner.scanBlock(11386L,CoinType.BTC.name());
             btcScanner.updateAccount(CoinType.BTC.name());
 //            btgScanner.scanBlock(545231L,CoinType.BTG.name());
 //            btgScanner.updateAccount(CoinType.BTG.name());
@@ -81,9 +56,9 @@ public class IBlockTest {
 //            dogeScanner.updateAccount(CoinType.DOGE.name());
 //            darkScanner.scanBlock(932080L,CoinType.DARK.name());
 //            darkScanner.updateAccount(CoinType.DARK.name());
-
-//            ltcScanner.scanBlock(932015L,CoinType.LTC.name());
+//            ltcScanner.scanBlock(1486254L,CoinType.LTC.name());
 //            ltcScanner.updateAccount(CoinType.LTC.name());
+
 //            bchScanner.scanBlock(546414L,CoinType.BCH.name());
 //            bchScanner.updateAccount(CoinType.BCH.name());
         }

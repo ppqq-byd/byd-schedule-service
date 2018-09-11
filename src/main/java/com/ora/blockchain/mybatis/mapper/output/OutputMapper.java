@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
 @Mapper
 public interface OutputMapper {
 
@@ -23,6 +22,8 @@ public interface OutputMapper {
     public List<Long> queryAccountByTransactionTxid(@Param("database") String database, @Param("txidList") List<String> txidList);
 
     public List<String> queryAddressByTransactionTxid(@Param("database") String database, @Param("txidList") List<String> txidList);
+
+    public List<String> queryTransactionByTxid(@Param("database") String database, @Param("txidList") List<String> txidList);
 
     public List<WalletAccountBalance> queryTotalBalance(@Param("database") String database, @Param("accountList") List<Long> accountList);
 }
