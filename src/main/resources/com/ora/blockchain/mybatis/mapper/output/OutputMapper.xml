@@ -42,6 +42,12 @@
             #{item}
         </foreach>
     </select>
+    <select id="queryTransactionByTxid" resultType="string">
+        SELECT DISTINCT transaction_txid FROM ${database}.output WHERE wallet_account_id > 0 AND transaction_txid IN
+        <foreach item="item" index="index" collection="txidList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <select id="queryTotalBalance" resultType="com.ora.blockchain.mybatis.entity.wallet.WalletAccountBalance">
         SELECT o.wallet_account_id AS accountId,o.value_sat AS totalBalance FROM ${database}.`transaction` t,${database}.output o
         WHERE o.transaction_txid = t.txid
