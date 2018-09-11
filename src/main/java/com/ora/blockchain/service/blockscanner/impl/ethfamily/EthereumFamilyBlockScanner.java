@@ -354,17 +354,14 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     }
 
     private void processSendedAndTimeoutTx(){
-        //TODO SQL去过滤 必须是我们自己的发送方
-        List<EthereumTransaction> txList = this.txMapper.
-                queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.SENT.ordinal());
 
-        List<EthereumTransaction> isolateTxList = this.txMapper.
-                queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.ISOLATED.ordinal());
-        txList.addAll(isolateTxList);
+        long before10min = System.currentTimeMillis()-Constants.ETHTXTIMEOUT ;
+        Date timeoutTime = new Date(before10min);
+        //如果有发送完后未被确认的交易超过10分钟 则超时了 要查看链上是否已经执行过并且执行失败
+        List<EthereumTransaction> txList = this.txMapper.queryTimeoutTxBySentAndIsolate(CoinType.getDatabase(getCoinType()),
+                TxStatus.SENT.ordinal(),TxStatus.ISOLATED.ordinal(),timeoutTime);
 
         for(EthereumTransaction tx:txList){
-            //如果有发送完后未被确认的交易超过10分钟 则超时了 要查看链上是否已经执行过并且执行失败
-            if((System.currentTimeMillis()-tx.getCreateTs().getTime())>Constants.ETHTXTIMEOUT ){
 
                 try {
                     TransactionReceipt receipt =
@@ -390,7 +387,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                 } catch (Exception e) {
                     log.error("process ethfamily timeout tx:"+tx.getTxId(),e);
                 }
-            }
+
 
         }
     }

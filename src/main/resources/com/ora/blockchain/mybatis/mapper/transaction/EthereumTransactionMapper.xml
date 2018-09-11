@@ -191,7 +191,7 @@
 
     <select id="queryTimeoutTxBySentAndIsolate" resultMap="AllColumnMap">
         SELECT  <include refid="all_column"/> FROM ${database}.tx_ethereum
-        WHERE (status=#{status1} or status=#{status2}) and create_ts &gt;=#{beginTime}
+        WHERE (status=#{status1} or status=#{status2}) and create_ts &lt;=#{beginTime}
 
     </select>
 </mapper>
