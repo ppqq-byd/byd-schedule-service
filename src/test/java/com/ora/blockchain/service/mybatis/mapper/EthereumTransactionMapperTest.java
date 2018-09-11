@@ -125,11 +125,13 @@ public class EthereumTransactionMapperTest {
 
     @Test
     public void testQueryTimeoutTx(){
-        Calendar.getInstance().set(2018,9,3);
-        Date date = new Date();
-        date.setTime( Calendar.getInstance().getTimeInMillis());
+        long before10min = System.currentTimeMillis()-10*1000*60;
+        Date date = new Date(before10min);
+
         System.out.println(date);
-        txMapper.queryTimeoutTxBySentAndIsolate("coin_eth", TxStatus.SENT.ordinal(),
+        List<EthereumTransaction> list = txMapper.queryTimeoutTxBySentAndIsolate("coin_eth", TxStatus.SENT.ordinal(),
                 TxStatus.ISOLATED.ordinal(),date);
+
+        System.out.println(list.size());
     }
 }
