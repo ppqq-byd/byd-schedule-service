@@ -162,19 +162,29 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
     /**
      * 判断是否是合约
-     * @param list
+     * @param erc20Map
      * @param address
      * @return
      */
-    private boolean isContract(List<EthereumERC20> list,String address){
+    private boolean isContract( Map<String,EthereumERC20> erc20Map,String address){
         if(address==null)return false;
-        for(EthereumERC20 erc20:list){
-            if(erc20.getContractAddress().toLowerCase().equals(address.toLowerCase())){
-                return true;
-            }
+        if(erc20Map.get(address.toLowerCase())!=null){
+            return true;
         }
-
         return false;
+    }
+
+    /**
+     * 将list转成map
+     * @param erc20
+     * @return
+     */
+    private Map<String,EthereumERC20> transERC20ToMap(List<EthereumERC20> erc20){
+        Map<String,EthereumERC20> map = new HashMap<>();
+        for(EthereumERC20 erc:erc20){
+            map.put(erc.getContractAddress().toLowerCase(),erc);
+        }
+        return map;
     }
 
     @Override
@@ -193,9 +203,9 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
         //获取erc20的定义
         List<EthereumERC20> erc20 = erc20Mapper.queryERC20(CoinType.getDatabase(getCoinType()));
-
+        Map<String,EthereumERC20> erc20Map = transERC20ToMap(erc20);
         //过滤掉非系统账户的tx 以及 非支持的ERC20的tx
-        List<EthereumTransaction> filteredTx = filterTx(block,erc20);
+        List<EthereumTransaction> filteredTx = filterTx(block,erc20Map);
         System.out.println("filteredTx:"+filteredTx.size());
 
         if(filteredTx==null||filteredTx.size()==0)return;
@@ -459,7 +469,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
      * @param block
      * @return
      */
-    private List<EthereumTransaction> filterTx(EthBlock block,List<EthereumERC20> erc20) throws Exception {
+    private List<EthereumTransaction> filterTx(EthBlock block, Map<String,EthereumERC20> erc20Map) throws Exception {
 
         List<EthereumTransaction> needAddList = new ArrayList<>();
 
@@ -480,7 +490,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                 if(tx.getTo()==null){
                     log.info("is not erc20 contract:"+tx.getHash());
                 }
-                if(isContract(erc20,tx.getTo())){//如果是ERC20
+                if(isContract(erc20Map,tx.getTo())){//如果是ERC20
 
                     //链上处理失败 扫块逻辑不用处理 账户处理job会处理此种情况
                     //https://etherscan.io/tx/0xc00e08d2df4dcceee72ab54b1bb5f7ad2c1d5e051a6004157d1da9355ba1e860
@@ -493,12 +503,14 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                             //如果从inputData解析出的账户属于ERC20或from属于ERC20
                             dbTx.transEthTransaction(tx);
                             dbTx.setTo(result[0]);
-                            dbTx.setValue( new BigInteger(result[1],10));
+                            EthereumERC20 erc20Define = erc20Map.get(tx.getTo().toLowerCase());
+                            dbTx.setValue( new BigInteger(result[1],10).
+                                    multiply(erc20Define.getDecimalBigInteger()));
                             Set<String> address = new HashSet<>();
                             address.add(dbTx.getFrom());
                             address.add(dbTx.getTo());
-                            List<WalletAccountBind> accoutns = accountBindMapper.queryWalletByAddress(address);
-                            if(accoutns.size()>0){
+                            List<WalletAccountBind> accounts = accountBindMapper.queryWalletByAddress(address);
+                            if(accounts.size()>0){
                                 needAddList.add(dbTx);
                             }
 
