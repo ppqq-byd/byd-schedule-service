@@ -49,7 +49,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     @Autowired
     private WalletAccountBalanceMapper balanceMapper;
 
-    private static final int DEPTH = 5;
+
 
     protected abstract String getCoinType();
 
@@ -80,7 +80,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     @Override
     public Long getNeedScanBlockHeight(Long initBlockHeight){
         long dbBlockHeight = blockMapper.queryMaxBlockInDb(CoinType.getDatabase(getCoinType()));
-        if(dbBlockHeight==0){
+        if(dbBlockHeight==-1){
             dbBlockHeight = initBlockHeight;
         }else {
             dbBlockHeight = dbBlockHeight + 1;
@@ -91,12 +91,13 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     @Override
     public boolean verifyIsolatedBlock(Long needScanBlock) throws Exception {
 
+        if(needScanBlock==0)return false;
         //现有数据库中最后一个块
         EthereumBlock dbBlock = blockMapper.
-                queryEthBlockByBlockNumber(CoinType.getDatabase(getCoinType()),(needScanBlock-1));
+                queryEthBlockByBlockNumber(CoinType.getDatabase(getCoinType()),(needScanBlock));
 
         //与节点中的对比
-        EthBlock block = getWeb3Client().getBlockInfoByNumber(needScanBlock-2);
+        EthBlock block = getWeb3Client().getBlockInfoByNumber(needScanBlock-1);
 
 
         if(dbBlock!=null&&!dbBlock.getParentHash().equals(block.getBlock().getHash())){
@@ -124,8 +125,18 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             EthereumTransaction tx = it.next();
             tx.setStatus(TxStatus.CONFIRMING.ordinal());
             tx.setIsDelete(0);
+            if(tx.getIsSender()==null){
+                WalletAccountBind wab =
+                        accountBindMapper.queryEthWalletByAddress(tx.getFrom(),this.getCoinType());
+                if(wab!=null){
+                    tx.setIsSender(1);
+                }else{
+                    tx.setIsSender(0);
+                }
+            }
             boolean isDelete = false;
             for(EthereumTransaction dbTx:inDbTx){
+
                 if(dbTx.getTxId().equals(tx.getTxId())){
                     tx.setIsSender(1);//如果是需要更新的tx 说明数据库已记录 则是提币的tx
                     if(tx.getStatus()==TxStatus.ISOLATED.ordinal()){//如果是孤立的 则处理成孤立确认
@@ -151,24 +162,34 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
     /**
      * 判断是否是合约
-     * @param list
+     * @param erc20Map
      * @param address
      * @return
      */
-    private boolean isContract(List<EthereumERC20> list,String address){
+    private boolean isContract( Map<String,EthereumERC20> erc20Map,String address){
         if(address==null)return false;
-        for(EthereumERC20 erc20:list){
-            if(erc20.getContractAddress().toLowerCase().equals(address.toLowerCase())){
-                return true;
-            }
+        if(erc20Map.get(address.toLowerCase())!=null){
+            return true;
         }
-
         return false;
+    }
+
+    /**
+     * 将list转成map
+     * @param erc20
+     * @return
+     */
+    private Map<String,EthereumERC20> transERC20ToMap(List<EthereumERC20> erc20){
+        Map<String,EthereumERC20> map = new HashMap<>();
+        for(EthereumERC20 erc:erc20){
+            map.put(erc.getContractAddress().toLowerCase(),erc);
+        }
+        return map;
     }
 
     @Override
     public void syncBlockAndTx(Long blockHeight) throws Exception {
-
+        log.info("*********************************syncBlockAndTx:"+this.getCoinType());
         EthBlock block = getWeb3Client().getBlockInfoByNumber(blockHeight);
         EthereumBlock dbBlock = new EthereumBlock();
         dbBlock.trans(block);
@@ -182,9 +203,9 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
         //获取erc20的定义
         List<EthereumERC20> erc20 = erc20Mapper.queryERC20(CoinType.getDatabase(getCoinType()));
-
+        Map<String,EthereumERC20> erc20Map = transERC20ToMap(erc20);
         //过滤掉非系统账户的tx 以及 非支持的ERC20的tx
-        List<EthereumTransaction> filteredTx = filterTx(block,erc20);
+        List<EthereumTransaction> filteredTx = filterTx(block,erc20Map);
         System.out.println("filteredTx:"+filteredTx.size());
 
         if(filteredTx==null||filteredTx.size()==0)return;
@@ -312,13 +333,13 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
     }
 
-    private void processConrimingTx(Long lastedBlock){
+    private void processConfirmingTx(Long lastedBlock){
         List<EthereumTransaction> txList = this.txMapper.queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.CONFIRMING.ordinal());
         List<EthereumTransaction> isolatedTxList = this.txMapper.queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.ISOLATEDCONRIMING.ordinal());
         txList.addAll(isolatedTxList);
 
         for(EthereumTransaction tx:txList){
-            if(lastedBlock - tx.getBlockHeight()>=DEPTH){
+            if(lastedBlock - tx.getBlockHeight()>=Constants.ETH_THRESHOLD){
                 if(!StringUtils.isEmpty(tx.getContractAddress())){//处理token的逻辑
                     //token账户
                     processToken(tx);
@@ -333,8 +354,13 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
     }
 
     private void processSendedAndTimeoutTx(){
+        //TODO SQL去过滤 必须是我们自己的发送方
         List<EthereumTransaction> txList = this.txMapper.
                 queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.SENT.ordinal());
+
+        List<EthereumTransaction> isolateTxList = this.txMapper.
+                queryTxByStatus(CoinType.getDatabase(getCoinType()),TxStatus.ISOLATED.ordinal());
+        txList.addAll(isolateTxList);
 
         for(EthereumTransaction tx:txList){
             //如果有发送完后未被确认的交易超过10分钟 则超时了 要查看链上是否已经执行过并且执行失败
@@ -344,19 +370,19 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                     TransactionReceipt receipt =
                             getWeb3Client().getTransactionReceiptByTxhash(tx.getTxId());
                     //如果交易执行状态返回为null 跳过不处理
-                    if(StringUtils.isEmpty(receipt.getStatus()))continue;
+                    if(receipt==null||StringUtils.isEmpty(receipt.getStatus()))continue;
                     //执行失败 减去花掉的手续费
-                    if("0x0".equals(receipt.getStatus())){
+                    if("0x0".equals(receipt.getStatus())){//TODO 常量
                         WalletAccountBalance account =
                                 this.balanceMapper.findBalanceByContractAddressAndCoinType(CoinType.getDatabase(getCoinType()),
                                         getCoinType(),tx.getContractAddress(),tx.getFrom());
 
                         BigInteger gasCost = receipt.getGasUsed().multiply(tx.getGasPrice());
 
-                        account.setTotalBalance(account.getTotalBalance().subtract(gasCost).add(tx.getValue()));
+                        account.setTotalBalance(account.getTotalBalance().subtract(gasCost));
 
                         account.setFrozenBalance(account.getFrozenBalance().subtract(tx.getValue()).subtract(
-                                tx.getGasPrice().multiply(tx.getGasLimit()==null?BigInteger.valueOf(0L):tx.getGasLimit())
+                                tx.getGasPrice().multiply(tx.getGasLimit())
                         ));
                         tx.setStatus(TxStatus.CHAINFAILED.ordinal());
                         txMapper.update(CoinType.getDatabase(getCoinType()),tx);
@@ -374,7 +400,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
         Long lastedBlock = this.blockMapper.queryMaxBlockInDb(CoinType.getDatabase(getCoinType()));
 
         //先处理 确认中和孤立再确认中这两个状态的tx
-        processConrimingTx(lastedBlock);
+        processConfirmingTx(lastedBlock);
 
         processSendedAndTimeoutTx();
 
@@ -443,7 +469,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
      * @param block
      * @return
      */
-    private List<EthereumTransaction> filterTx(EthBlock block,List<EthereumERC20> erc20) throws Exception {
+    private List<EthereumTransaction> filterTx(EthBlock block, Map<String,EthereumERC20> erc20Map) throws Exception {
 
         List<EthereumTransaction> needAddList = new ArrayList<>();
 
@@ -464,7 +490,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                 if(tx.getTo()==null){
                     log.info("is not erc20 contract:"+tx.getHash());
                 }
-                if(isContract(erc20,tx.getTo())){//如果是ERC20
+                if(isContract(erc20Map,tx.getTo())){//如果是ERC20
 
                     //链上处理失败 扫块逻辑不用处理 账户处理job会处理此种情况
                     //https://etherscan.io/tx/0xc00e08d2df4dcceee72ab54b1bb5f7ad2c1d5e051a6004157d1da9355ba1e860
@@ -477,14 +503,17 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                             //如果从inputData解析出的账户属于ERC20或from属于ERC20
                             dbTx.transEthTransaction(tx);
                             dbTx.setTo(result[0]);
-                            dbTx.setValue( new BigInteger(result[1],10));
+                            EthereumERC20 erc20Define = erc20Map.get(tx.getTo().toLowerCase());
+                            dbTx.setValue( new BigInteger(result[1],10).
+                                    multiply(erc20Define.getDecimalBigInteger()));
                             Set<String> address = new HashSet<>();
                             address.add(dbTx.getFrom());
                             address.add(dbTx.getTo());
-                            List<WalletAccountBind> accoutns = accountBindMapper.queryWalletByAddress(address);
-                            if(accoutns.size()>0){
+                            List<WalletAccountBind> accounts = accountBindMapper.queryWalletByAddress(address);
+                            if(accounts.size()>0){
                                 needAddList.add(dbTx);
                             }
+
                         }else {
                             log.error("contract not support:"+tx.getHash());
                         }

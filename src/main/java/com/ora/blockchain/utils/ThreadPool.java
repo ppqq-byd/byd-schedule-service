@@ -22,6 +22,7 @@ public class ThreadPool {
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error(e.getMessage(), e);
+            return null;
         }
         return results;
     }

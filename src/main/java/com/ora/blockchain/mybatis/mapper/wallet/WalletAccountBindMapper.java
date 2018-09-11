@@ -23,5 +23,7 @@ public interface WalletAccountBindMapper {
 
     List<WalletAccountBind> queryWalletByAddress(@Param("addressList") Set<String> addressList);
 
+    WalletAccountBind queryEthWalletByAddress(@Param("address") String address,@Param("coinType")String coinType);
+
 }
 

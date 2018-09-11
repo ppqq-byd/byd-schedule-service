@@ -2,6 +2,8 @@ package com.ora.blockchain.mybatis.entity.eth;
 
 import lombok.*;
 
+import java.math.BigInteger;
+
 
 @Setter
 @Getter
@@ -16,5 +18,9 @@ public class EthereumERC20 {
     private String contractAddress;
     private Integer decimal;
     private String officialsite;
+
+    public BigInteger getDecimalBigInteger(){
+        return new BigInteger("10").pow(this.decimal);
+    }
 
 }
