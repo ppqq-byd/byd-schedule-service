@@ -125,20 +125,12 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             EthereumTransaction tx = it.next();
             tx.setStatus(TxStatus.CONFIRMING.ordinal());
             tx.setIsDelete(0);
-            if(tx.getIsSender()==null){
-                WalletAccountBind wab =
-                        accountBindMapper.queryEthWalletByAddress(tx.getFrom(),this.getCoinType());
-                if(wab!=null){
-                    tx.setIsSender(1);
-                }else{
-                    tx.setIsSender(0);
-                }
-            }
+
             boolean isDelete = false;
             for(EthereumTransaction dbTx:inDbTx){
 
                 if(dbTx.getTxId().equals(tx.getTxId())){
-                    tx.setIsSender(1);//如果是需要更新的tx 说明数据库已记录 则是提币的tx
+
                     if(tx.getStatus()==TxStatus.ISOLATED.ordinal()){//如果是孤立的 则处理成孤立确认
                         tx.setStatus(TxStatus.ISOLATEDCONRIMING.ordinal());
                     }
@@ -505,6 +497,15 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                 if(tx.getTo()==null){
                     log.info("is not erc20 contract:"+tx.getHash());
                 }
+
+                WalletAccountBind wab =
+                        accountBindMapper.queryEthWalletByAddress(tx.getFrom(),this.getCoinType());
+                if(wab!=null){
+                    dbTx.setIsSender(1);
+                }else{
+                    dbTx.setIsSender(0);
+                }
+
                 if(isContract(erc20Map,tx.getTo())){//如果是ERC20
 
                     //链上处理失败 扫块逻辑不用处理 账户处理job会处理此种情况
