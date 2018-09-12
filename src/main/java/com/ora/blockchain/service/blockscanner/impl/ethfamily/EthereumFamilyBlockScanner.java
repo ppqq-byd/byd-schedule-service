@@ -114,7 +114,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
      * @return
      */
     private  Map<String, List<EthereumTransaction> > processTxStatus(List<EthereumTransaction> filteredTx,
-                                                  List<EthereumTransaction> inDbTx){
+                                                  List<EthereumTransaction> inDbTx,Map<String,EthereumERC20> erc20Map){
 
         List<EthereumTransaction> needUpdateTx = new ArrayList<>();
 
@@ -146,6 +146,14 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
         needInsertTx = filteredTx;
         Map<String, List<EthereumTransaction> > map = new HashMap<>();
+        for(EthereumTransaction tx:needInsertTx){//检查发送成功 但是数据库没记录上的数据
+            if(tx.getIsSender()==1&&tx.getContractAddress()!=null){
+                BigInteger transValue = tx.getValue().
+                        multiply(erc20Map.get(tx.getContractAddress()).getDecimalBigInteger());
+                tx.setValue(transValue);
+            }
+
+        }
         map.put("insert",needInsertTx);
         map.put("update",needUpdateTx);
 
@@ -204,7 +212,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
         //找出已在DB中存在的tx
         List<EthereumTransaction> inDbTx = txMapper.queryTxInDb(CoinType.getDatabase(getCoinType()),filteredTx);
         //根据inDBtx集合 将filteredTx处理为 待update和待insert两个集合
-        Map<String, List<EthereumTransaction> > map = processTxStatus(filteredTx,inDbTx);
+        Map<String, List<EthereumTransaction> > map = processTxStatus(filteredTx,inDbTx,erc20Map);
 
         if(map.get("update")!=null&&map.get("update").size()>0){
 
@@ -520,8 +528,11 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                             dbTx.transEthTransaction(tx);
                             dbTx.setTo(result[0]);
                             EthereumERC20 erc20Define = erc20Map.get(tx.getTo().toLowerCase());
-                            dbTx.setValue( new BigInteger(result[1],10).
-                                    multiply(erc20Define.getDecimalBigInteger()));
+                            if(dbTx.getIsSender()==0){//如果是erc20收币的逻辑 根据位数 处理成大整数
+                                dbTx.setValue( new BigInteger(result[1],10).
+                                        multiply(erc20Define.getDecimalBigInteger()));
+                            }
+
                             Set<String> address = new HashSet<>();
                             address.add(dbTx.getFrom());
                             address.add(dbTx.getTo());
