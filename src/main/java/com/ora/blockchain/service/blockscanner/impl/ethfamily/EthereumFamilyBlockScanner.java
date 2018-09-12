@@ -244,6 +244,8 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             if(in!=null){
                 in.setTotalBalance(in.getTotalBalance().add(tx.getValue()));
                 balanceMapper.update(in);
+                log.warn("balance;" +getCoinType()+
+                        ";inner-receive;account:"+in.getAccountId()+";amount:"+tx.getValue());
             }
 
             //冻结减去gasLimit*gasPrice
@@ -256,6 +258,12 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             ));
 
             balanceMapper.update(out);
+
+            log.warn("balance;" +getCoinType()+
+                    ";send;account:"+out.getAccountId()+";amount:"+tx.getValue());
+
+            log.warn("balance;" +getCoinType()+
+                    ";sendgas:"+out.getAccountId()+";amount:"+tx.getGasPrice().multiply(tx.getGasUsed()));
         }else{//如果是收币
 
             WalletAccountBalance in =
@@ -264,6 +272,9 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             in.setTotalBalance(in.getTotalBalance().add(tx.getValue()));
 
             balanceMapper.update(in);
+
+            log.warn("balance;" +getCoinType()+
+                    ";receive;account:"+in.getAccountId()+";amount:"+tx.getValue());
         }
 
     }
@@ -294,6 +305,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                     receiveAccount.setTotalBalance(
                             receiveAccount.getTotalBalance().add(tx.getValue()));
                     balanceMapper.update(receiveAccount);
+                    log.warn("balance;token;innerreceive;account:"+account.getAccountId()+";token:"+account.getTokenId()+";amount:"+tx.getValue());
                 }
 
                 //这里处理代币的账户减钱
@@ -308,10 +320,16 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                 ethAccount.setFrozenBalance(ethAccount.getFrozenBalance().
                         subtract((tx.getGasLimit()==null?BigInteger.valueOf(0L):tx.getGasLimit()).multiply(tx.getGasPrice())));
                 //账户的手续费为gasUsed
-                ethAccount.setTotalBalance(ethAccount.getTotalBalance().subtract(tx.getGasUsed().multiply(tx.getGasPrice())));
+                BigInteger gasUsed = tx.getGasUsed().multiply(tx.getGasPrice());
+                ethAccount.setTotalBalance(ethAccount.getTotalBalance().subtract(gasUsed));
                 balanceMapper.update(ethAccount);
+                log.warn("balance;token;send;account:"+account.getAccountId()+
+                        ";token:"+account.getTokenId()+";amount:"+tx.getValue());
+            log.warn("balance;token-gas;send;account:"+account.getAccountId()+
+                    ";token:"+account.getTokenId()+";amount:"+gasUsed);
             }else {
                 account.setTotalBalance(account.getTotalBalance().add(tx.getValue()));
+                log.warn("balance;token;receive;account:"+account.getAccountId()+";token:"+account.getTokenId()+";amount:"+tx.getValue());
             }
 
             balanceMapper.update(account);
@@ -510,7 +528,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                             if(accounts.size()>0){
                                 needAddList.add(dbTx);
                             }
-
+                            log.warn("contract tx:"+tx.getHash()+"/"+tx.getInput());
                         }else {
                             log.error("contract not support:"+tx.getHash());
                         }
