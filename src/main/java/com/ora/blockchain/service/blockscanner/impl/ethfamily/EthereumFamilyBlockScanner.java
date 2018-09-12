@@ -114,7 +114,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
      * @return
      */
     private  Map<String, List<EthereumTransaction> > processTxStatus(List<EthereumTransaction> filteredTx,
-                                                  List<EthereumTransaction> inDbTx){
+                                                  List<EthereumTransaction> inDbTx,Map<String,EthereumERC20> erc20Map){
 
         List<EthereumTransaction> needUpdateTx = new ArrayList<>();
 
@@ -125,20 +125,12 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
             EthereumTransaction tx = it.next();
             tx.setStatus(TxStatus.CONFIRMING.ordinal());
             tx.setIsDelete(0);
-            if(tx.getIsSender()==null){
-                WalletAccountBind wab =
-                        accountBindMapper.queryEthWalletByAddress(tx.getFrom(),this.getCoinType());
-                if(wab!=null){
-                    tx.setIsSender(1);
-                }else{
-                    tx.setIsSender(0);
-                }
-            }
+
             boolean isDelete = false;
             for(EthereumTransaction dbTx:inDbTx){
 
                 if(dbTx.getTxId().equals(tx.getTxId())){
-                    tx.setIsSender(1);//如果是需要更新的tx 说明数据库已记录 则是提币的tx
+
                     if(tx.getStatus()==TxStatus.ISOLATED.ordinal()){//如果是孤立的 则处理成孤立确认
                         tx.setStatus(TxStatus.ISOLATEDCONRIMING.ordinal());
                     }
@@ -154,6 +146,14 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
 
         needInsertTx = filteredTx;
         Map<String, List<EthereumTransaction> > map = new HashMap<>();
+        for(EthereumTransaction tx:needInsertTx){//检查发送成功 但是数据库没记录上的数据
+            if(tx.getIsSender()==1&&tx.getContractAddress()!=null){
+                BigInteger transValue = tx.getValue().
+                        multiply(erc20Map.get(tx.getContractAddress()).getDecimalBigInteger());
+                tx.setValue(transValue);
+            }
+
+        }
         map.put("insert",needInsertTx);
         map.put("update",needUpdateTx);
 
@@ -212,7 +212,7 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
         //找出已在DB中存在的tx
         List<EthereumTransaction> inDbTx = txMapper.queryTxInDb(CoinType.getDatabase(getCoinType()),filteredTx);
         //根据inDBtx集合 将filteredTx处理为 待update和待insert两个集合
-        Map<String, List<EthereumTransaction> > map = processTxStatus(filteredTx,inDbTx);
+        Map<String, List<EthereumTransaction> > map = processTxStatus(filteredTx,inDbTx,erc20Map);
 
         if(map.get("update")!=null&&map.get("update").size()>0){
 
@@ -505,6 +505,15 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                 if(tx.getTo()==null){
                     log.info("is not erc20 contract:"+tx.getHash());
                 }
+
+                WalletAccountBind wab =
+                        accountBindMapper.queryEthWalletByAddress(tx.getFrom(),this.getCoinType());
+                if(wab!=null){
+                    dbTx.setIsSender(1);
+                }else{
+                    dbTx.setIsSender(0);
+                }
+
                 if(isContract(erc20Map,tx.getTo())){//如果是ERC20
 
                     //链上处理失败 扫块逻辑不用处理 账户处理job会处理此种情况
@@ -519,8 +528,11 @@ public abstract class EthereumFamilyBlockScanner extends BlockScanner {
                             dbTx.transEthTransaction(tx);
                             dbTx.setTo(result[0]);
                             EthereumERC20 erc20Define = erc20Map.get(tx.getTo().toLowerCase());
-                            dbTx.setValue( new BigInteger(result[1],10).
-                                    multiply(erc20Define.getDecimalBigInteger()));
+                            if(dbTx.getIsSender()==0){//如果是erc20收币的逻辑 根据位数 处理成大整数
+                                dbTx.setValue( new BigInteger(result[1],10).
+                                        multiply(erc20Define.getDecimalBigInteger()));
+                            }
+
                             Set<String> address = new HashSet<>();
                             address.add(dbTx.getFrom());
                             address.add(dbTx.getTo());
