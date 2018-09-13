@@ -29,6 +29,9 @@ public class IBlockTest {
     private IBlockScanner darkScanner;
 
     @Resource
+    @Qualifier("bcdBlockScanner")
+    private IBlockScanner bcdScanner;
+
     @Qualifier("dogeBlockScanner")
     private IBlockScanner dogeScanner;
 
@@ -45,6 +48,30 @@ public class IBlockTest {
     private IBlockScanner ltcScanner;
 
     @Test
+    public void testDarkScanner(){
+        for(int i=0;i<100;i++){
+            try {
+                darkScanner.scanBlock(921662L,CoinType.DARK.name());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Test
+    public void testBcdScanner(){
+        try {
+            bcdScanner.scanBlock(531049L, CoinType.BCD.name());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void deleteBlock(){
+        btcBlockService.deleteByHeight(CoinType.getDatabase(CoinType.BTC.name()),536051L);
+    }
+
     public void testScanner() throws Exception{
         long start = System.currentTimeMillis();
         for(int i=0;i<100;i++){
