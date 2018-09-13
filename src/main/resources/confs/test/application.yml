@@ -51,5 +51,10 @@ rpc:
         username: "ora"
         password: "Oradt!1234"
     web3j:
+        url: "http://52.83.130.131:8545"
         eth: "http://52.83.97.36:8545"
         etc: "http://52.83.157.48:8545"
+    bcd:
+        url: "http://127.0.0.1:7116/"
+        username: "ora"
+        password: "Oradt!1234"
