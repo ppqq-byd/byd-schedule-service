@@ -67,11 +67,6 @@ public class IBlockTest {
         }
     }
 
-    @Test
-    public void deleteBlock(){
-        btcBlockService.deleteByHeight(CoinType.getDatabase(CoinType.BTC.name()),536051L);
-    }
-
     public void testScanner() throws Exception{
         long start = System.currentTimeMillis();
         for(int i=0;i<100;i++){
