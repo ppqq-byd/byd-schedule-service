@@ -51,5 +51,8 @@ rpc:
         username: "ora"
         password: "Oradt!1234"
     web3j:
-        eth: "http://52.83.97.36:8545"
-        etc: "http://52.83.157.48:8545"
+        eth: "http://106.75.87.205:8545"
+        etc: "http://106.75.87.205:8545"
+        #52.83.157.48:8545 public
+        #52.83.97.36 pri  aws
+        #106.75.87.205 pri ucloud
