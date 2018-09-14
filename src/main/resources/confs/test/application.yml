@@ -56,3 +56,8 @@ rpc:
         #52.83.157.48:8545 public
         #52.83.97.36 pri  aws
         #106.75.87.205 pri ucloud
+    bcd:
+        url: "http://127.0.0.1:7116/"
+        username: "ora"
+        password: "Oradt!1234"
+
